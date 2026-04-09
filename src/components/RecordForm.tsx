@@ -14,7 +14,14 @@
  */
 
 import * as React from "react";
-import { MapPin, Loader2, CheckCircle2, RefreshCcw } from "lucide-react";
+import {
+  MapPin,
+  Loader2,
+  RefreshCcw,
+  Moon,
+  Sunrise,
+  TrendingUp,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,6 +43,7 @@ import {
 import {
   formatDateJst,
   getDefaultPrefectureCode,
+  getRecords,
   getTodayRecord,
   saveRecord,
   setDefaultPrefectureCode,
@@ -123,13 +131,52 @@ export function RecordForm(): JSX.Element {
   const [showManualFallback, setShowManualFallback] = React.useState(false);
   const [manual, setManual] = React.useState<ManualWeather>(DEFAULT_MANUAL);
   const [savedView, setSavedView] = React.useState<SleepRecord | null>(null);
+  // マウント後に localStorage から読み出した全記録 (メトリクスバー用)
+  const [allRecords, setAllRecords] = React.useState<SleepRecord[]>([]);
 
   // 初回マウント時に localStorage から既存記録を読み込む
   React.useEffect(() => {
     const today = getTodayRecord();
     setExistingRecord(today);
     setForm(buildInitialState(today));
+    setAllRecords(getRecords());
   }, []);
+
+  // ヘッダメトリクス: 今月の記録件数と連続記録日数
+  const metrics = React.useMemo(() => {
+    if (allRecords.length === 0) {
+      return { monthCount: 0, streak: 0 };
+    }
+    // 今月の件数 (JST の yyyy-MM)
+    const todayStr = formatDateJst(new Date());
+    const yearMonth = todayStr.slice(0, 7);
+    const monthCount = allRecords.filter((r) => r.date.startsWith(yearMonth))
+      .length;
+
+    // 連続日数: 今日 (または昨日) から遡って date が連続している件数
+    const dateSet = new Set(allRecords.map((r) => r.date));
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const base = new Date(`${todayStr}T00:00:00+09:00`).getTime();
+    let streak = 0;
+    // 今日が無くても昨日から連続していればカウント開始
+    const startOffset = dateSet.has(todayStr) ? 0 : 1;
+    if (startOffset === 1) {
+      const yesterday = formatDateJst(new Date(base - msPerDay));
+      if (!dateSet.has(yesterday)) {
+        return { monthCount, streak: 0 };
+      }
+    }
+    // 連続カウント
+    for (let i = startOffset; ; i += 1) {
+      const d = formatDateJst(new Date(base - i * msPerDay));
+      if (dateSet.has(d)) {
+        streak += 1;
+      } else {
+        break;
+      }
+    }
+    return { monthCount, streak };
+  }, [allRecords]);
 
   const isUpdate = existingRecord !== null;
 
@@ -308,40 +355,48 @@ export function RecordForm(): JSX.Element {
     const w = savedView.weather;
     return (
       <div className="container mx-auto max-w-screen-md px-4 py-10 sm:py-14">
-        <Card className="border-white/5 bg-[#1a1f2e]">
+        <Card className="border-0 bg-transparent shadow-none">
           <CardHeader className="items-center text-center">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[#1d9bf0]/15 text-[#1d9bf0]">
-              <CheckCircle2 className="h-6 w-6" aria-hidden="true" />
+            <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#1d9bf0]/10 shadow-[0_0_40px_-10px_rgba(29,155,240,0.5)] ring-1 ring-[#1d9bf0]/30">
+              <Moon className="h-7 w-7 text-[#1d9bf0]" aria-hidden="true" />
             </div>
             <CardTitle className="text-xl text-[#e6e8ee]">
               今日の記録を保存しました
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-sm text-[#e6e8ee]">
-            <dl className="grid grid-cols-2 gap-3">
-              <div className="rounded-md bg-[#0f1117] p-3">
-                <dt className="text-xs text-[#8b92a5]">睡眠品質</dt>
-                <dd className="mt-1 text-lg font-semibold">
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-white/5 pt-4">
+              <div className="border-0 bg-transparent py-2">
+                <dt className="text-[11px] uppercase tracking-wider text-[#8b92a5]">
+                  睡眠品質
+                </dt>
+                <dd className="mt-1 text-2xl font-semibold tabular-nums text-[#e6e8ee]">
                   {savedView.quality} / 5
                 </dd>
               </div>
-              <div className="rounded-md bg-[#0f1117] p-3">
-                <dt className="text-xs text-[#8b92a5]">都道府県</dt>
-                <dd className="mt-1 text-lg font-semibold">
+              <div className="border-0 bg-transparent py-2">
+                <dt className="text-[11px] uppercase tracking-wider text-[#8b92a5]">
+                  都道府県
+                </dt>
+                <dd className="mt-1 text-2xl font-semibold tabular-nums text-[#e6e8ee]">
                   {pref?.name ?? savedView.prefectureCode}
                 </dd>
               </div>
-              <div className="rounded-md bg-[#0f1117] p-3">
-                <dt className="text-xs text-[#8b92a5]">気温</dt>
-                <dd className="mt-1 text-lg font-semibold">
+              <div className="border-0 bg-transparent py-2">
+                <dt className="text-[11px] uppercase tracking-wider text-[#8b92a5]">
+                  気温
+                </dt>
+                <dd className="mt-1 text-2xl font-semibold tabular-nums text-[#e6e8ee]">
                   {w.temperatureC.toFixed(1)}°C
                 </dd>
               </div>
-              <div className="rounded-md bg-[#0f1117] p-3">
-                <dt className="text-xs text-[#8b92a5]">気圧 (24h 差)</dt>
-                <dd className="mt-1 text-lg font-semibold">
+              <div className="border-0 bg-transparent py-2">
+                <dt className="text-[11px] uppercase tracking-wider text-[#8b92a5]">
+                  気圧 (24h 差)
+                </dt>
+                <dd className="mt-1 text-2xl font-semibold tabular-nums text-[#e6e8ee]">
                   {w.pressureHpa.toFixed(1)}{" "}
-                  <span className="text-sm text-[#8b92a5]">
+                  <span className="text-sm tabular-nums text-[#8b92a5]">
                     ({w.pressureDeltaHpa >= 0 ? "+" : ""}
                     {w.pressureDeltaHpa.toFixed(1)})
                   </span>
@@ -350,8 +405,8 @@ export function RecordForm(): JSX.Element {
             </dl>
             <Button
               type="button"
-              variant="outline"
-              className="w-full"
+              variant="ghost"
+              className="w-full text-[#8b92a5] hover:bg-transparent hover:text-[#1d9bf0]"
               onClick={handleEditAgain}
             >
               <RefreshCcw className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -368,8 +423,16 @@ export function RecordForm(): JSX.Element {
   }
 
   return (
-    <div className="container mx-auto max-w-screen-md px-4 py-8 sm:py-12">
+    <div className="container mx-auto max-w-screen-md px-4 py-8 pb-24 sm:py-12 sm:pb-0">
       <div className="mb-6 text-center">
+        <div className="mb-4 flex items-center justify-center gap-4 text-xs tabular-nums text-[#8b92a5]">
+          <span className="inline-flex items-center gap-1.5">
+            <TrendingUp className="h-3.5 w-3.5" aria-hidden="true" />
+            今月 {metrics.monthCount}/30
+          </span>
+          <span aria-hidden="true">·</span>
+          <span>連続 {metrics.streak} 日</span>
+        </div>
         <h1 className="text-2xl font-bold text-[#e6e8ee] sm:text-3xl">
           今日の睡眠を記録する
         </h1>
@@ -379,8 +442,8 @@ export function RecordForm(): JSX.Element {
       </div>
 
       <form onSubmit={handleSubmit} noValidate>
-        <Card className="border-white/5 bg-[#1a1f2e]">
-          <CardContent className="space-y-6 p-5 sm:p-6">
+        <Card className="border-0 bg-transparent shadow-none">
+          <CardContent className="space-y-8 p-0 sm:p-2">
             {/* 1) 5 段階評価 */}
             <fieldset>
               <legend className="mb-3 block text-sm font-medium text-[#e6e8ee]">
@@ -406,10 +469,10 @@ export function RecordForm(): JSX.Element {
                       aria-label={opt.aria}
                       onClick={() => handleQualityPick(opt.value)}
                       className={[
-                        "flex min-h-[72px] min-w-[44px] flex-col items-center justify-center gap-1 rounded-lg border-2 p-1 transition-colors",
+                        "flex min-h-[76px] min-w-[44px] flex-col items-center justify-center gap-1 rounded-lg bg-white/[0.03] p-1 text-[#8b92a5] transition-colors hover:bg-white/[0.06] hover:text-[#e6e8ee] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d9bf0]",
                         selected
-                          ? "border-[#1d9bf0] bg-[#1d9bf0]/15 text-[#e6e8ee]"
-                          : "border-white/10 bg-[#0f1117] text-[#8b92a5] hover:border-[#1d9bf0]/50 hover:text-[#e6e8ee]",
+                          ? "bg-[#1d9bf0]/10 text-[#e6e8ee] ring-1 ring-inset ring-[#1d9bf0]/60 shadow-[0_0_24px_-8px_rgba(29,155,240,0.55)]"
+                          : "",
                       ].join(" ")}
                     >
                       <span className="text-2xl" aria-hidden="true">
@@ -418,6 +481,12 @@ export function RecordForm(): JSX.Element {
                       <span className="text-[10px] leading-tight sm:text-xs">
                         {opt.label}
                       </span>
+                      {selected ? (
+                        <span
+                          className="mt-1 block h-0.5 w-6 rounded-full bg-[#1d9bf0]"
+                          aria-hidden="true"
+                        />
+                      ) : null}
                     </button>
                   );
                 })}
@@ -449,7 +518,7 @@ export function RecordForm(): JSX.Element {
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="h-8 gap-1 px-2 text-xs text-[#8b92a5] hover:text-[#1d9bf0]"
+                  className="h-8 gap-1 px-2 text-xs text-[#8b92a5] underline-offset-4 hover:bg-transparent hover:text-[#1d9bf0] hover:underline"
                   onClick={handleGeolocate}
                   disabled={isGeolocating}
                   aria-label="現在地から都道府県を自動取得"
@@ -471,12 +540,12 @@ export function RecordForm(): JSX.Element {
               >
                 <SelectTrigger
                   id="prefecture"
-                  className="h-11 border-white/10 bg-[#0f1117] text-[#e6e8ee]"
+                  className="h-11 border-0 bg-white/[0.04] text-[#e6e8ee] focus:ring-1 focus:ring-[#1d9bf0] focus:ring-offset-0"
                   aria-label="都道府県を選択"
                 >
                   <SelectValue placeholder="都道府県を選択" />
                 </SelectTrigger>
-                <SelectContent className="max-h-[320px] border-white/10 bg-[#1a1f2e] text-[#e6e8ee]">
+                <SelectContent className="max-h-[320px] border-white/5 bg-[#141826] text-[#e6e8ee]">
                   {PREFECTURES.map((p) => (
                     <SelectItem key={p.code} value={p.code}>
                       {p.name}
@@ -496,8 +565,12 @@ export function RecordForm(): JSX.Element {
               <div className="space-y-2">
                 <Label
                   htmlFor="bedtime"
-                  className="text-sm font-medium text-[#e6e8ee]"
+                  className="flex items-center text-sm font-medium text-[#e6e8ee]"
                 >
+                  <Moon
+                    className="mr-1 h-3.5 w-3.5 text-[#8b92a5]"
+                    aria-hidden="true"
+                  />
                   就寝時刻 (任意)
                 </Label>
                 <Input
@@ -509,7 +582,7 @@ export function RecordForm(): JSX.Element {
                   onChange={(e) =>
                     setForm((prev) => ({ ...prev, bedtime: e.target.value }))
                   }
-                  className="h-11 border-white/10 bg-[#0f1117] text-[#e6e8ee]"
+                  className="h-11 rounded-none border-0 border-b border-white/10 bg-transparent px-0 text-[#e6e8ee] tabular-nums focus-visible:border-[#1d9bf0] focus-visible:ring-0"
                 />
                 {errors.bedtime ? (
                   <p className="text-xs text-[#f87171]" role="alert">
@@ -520,8 +593,12 @@ export function RecordForm(): JSX.Element {
               <div className="space-y-2">
                 <Label
                   htmlFor="wakeTime"
-                  className="text-sm font-medium text-[#e6e8ee]"
+                  className="flex items-center text-sm font-medium text-[#e6e8ee]"
                 >
+                  <Sunrise
+                    className="mr-1 h-3.5 w-3.5 text-[#8b92a5]"
+                    aria-hidden="true"
+                  />
                   起床時刻 (任意)
                 </Label>
                 <Input
@@ -533,7 +610,7 @@ export function RecordForm(): JSX.Element {
                   onChange={(e) =>
                     setForm((prev) => ({ ...prev, wakeTime: e.target.value }))
                   }
-                  className="h-11 border-white/10 bg-[#0f1117] text-[#e6e8ee]"
+                  className="h-11 rounded-none border-0 border-b border-white/10 bg-transparent px-0 text-[#e6e8ee] tabular-nums focus-visible:border-[#1d9bf0] focus-visible:ring-0"
                 />
                 {errors.wakeTime ? (
                   <p className="text-xs text-[#f87171]" role="alert">
@@ -549,7 +626,8 @@ export function RecordForm(): JSX.Element {
                 htmlFor="note"
                 className="text-sm font-medium text-[#e6e8ee]"
               >
-                自由メモ (任意 · {form.note.length}/280)
+                自由メモ (任意 ·{" "}
+                <span className="tabular-nums">{form.note.length}/280</span>)
               </Label>
               <textarea
                 id="note"
@@ -559,7 +637,7 @@ export function RecordForm(): JSX.Element {
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, note: e.target.value }))
                 }
-                className="w-full rounded-md border border-white/10 bg-[#0f1117] px-3 py-2 text-sm text-[#e6e8ee] placeholder:text-[#8b92a5] focus:outline-none focus:ring-2 focus:ring-[#1d9bf0]"
+                className="w-full rounded-md border-0 bg-white/[0.03] px-3 py-2 text-sm text-[#e6e8ee] placeholder:text-[#8b92a5]/70 focus:outline-none focus:ring-1 focus:ring-[#1d9bf0]"
                 placeholder="例: 夜中に一度目が覚めた / 寝る前にスマホを見すぎた"
               />
               {errors.note ? (
@@ -599,7 +677,7 @@ export function RecordForm(): JSX.Element {
                           temperatureC: e.target.value,
                         }))
                       }
-                      className="h-11 border-white/10 bg-[#0f1117] text-[#e6e8ee]"
+                      className="h-11 rounded-none border-0 border-b border-white/10 bg-transparent px-0 text-[#e6e8ee] tabular-nums focus-visible:border-[#1d9bf0] focus-visible:ring-0"
                     />
                   </div>
                   <div className="space-y-1">
@@ -621,7 +699,7 @@ export function RecordForm(): JSX.Element {
                           humidity: e.target.value,
                         }))
                       }
-                      className="h-11 border-white/10 bg-[#0f1117] text-[#e6e8ee]"
+                      className="h-11 rounded-none border-0 border-b border-white/10 bg-transparent px-0 text-[#e6e8ee] tabular-nums focus-visible:border-[#1d9bf0] focus-visible:ring-0"
                     />
                   </div>
                   <div className="space-y-1">
@@ -643,30 +721,35 @@ export function RecordForm(): JSX.Element {
                           pressureHpa: e.target.value,
                         }))
                       }
-                      className="h-11 border-white/10 bg-[#0f1117] text-[#e6e8ee]"
+                      className="h-11 rounded-none border-0 border-b border-white/10 bg-transparent px-0 text-[#e6e8ee] tabular-nums focus-visible:border-[#1d9bf0] focus-visible:ring-0"
                     />
                   </div>
                 </div>
               </div>
             ) : null}
 
-            {/* 送信 */}
-            <Button
-              type="submit"
-              className="h-12 w-full bg-[#1d9bf0] text-base font-semibold text-white hover:bg-[#1d9bf0]/90"
-              disabled={submitDisabled}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                  保存中...
-                </>
-              ) : isUpdate ? (
-                "今日の記録を更新する"
-              ) : (
-                "記録する"
-              )}
-            </Button>
+            {/* 送信 (モバイル下部固定、デスクトップは通常配置) */}
+            <div className="sticky bottom-0 -mx-4 mt-2 border-t border-white/5 bg-[#0f1117]/90 p-4 pb-[env(safe-area-inset-bottom)] backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
+              <Button
+                type="submit"
+                className="h-12 w-full bg-[#1d9bf0] text-base font-semibold text-white hover:bg-[#1d9bf0]/90 disabled:opacity-50"
+                disabled={submitDisabled}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2
+                      className="mr-2 h-4 w-4 animate-spin"
+                      aria-hidden="true"
+                    />
+                    保存中...
+                  </>
+                ) : isUpdate ? (
+                  "今日の記録を更新する"
+                ) : (
+                  "記録する"
+                )}
+              </Button>
+            </div>
 
             <p className="text-center text-xs text-[#8b92a5]">
               本サービスは医療行為・診断を目的としたものではありません。

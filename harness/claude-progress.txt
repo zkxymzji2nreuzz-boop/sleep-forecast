@@ -145,3 +145,8 @@ Format:
   * source:"manual" の pressureDeltaHpa は 0 固定 (手動入力時)
 - Next action: Dependency Auditor → Test Engineer → Designer(A/B/C) →
   Design Judge → Security → Legal → Evaluator
+
+[2026-04-10 02:59] Generator apply-design F002
+- Applied Design Judge decision (案A base + B/C elements)
+- Files modified: src/components/RecordForm.tsx
+- Next action: Security Reviewer should run
