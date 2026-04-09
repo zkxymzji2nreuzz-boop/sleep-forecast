@@ -36,3 +36,58 @@ Format:
   - localStorage 以外のストレージには MVP では触らない
 
 ================================================================
+
+[2026-04-10 00:40] Generator session F001 "プロジェクト初期化 (STEP 1)"
+- Implemented:
+  - Next.js 14 (App Router) + TypeScript strict + Tailwind を一時ディレクトリで
+    `npx create-next-app@14` 経由で生成し、harness/ と .claude/ を温存したまま
+    プロジェクトルートへ設定ファイル一式をコピー
+  - package.json の name を sleep-forecast に変更、engines.node >=18.17.0 を追加
+  - 依存追加: chart.js, react-chartjs-2, suncalc, @types/suncalc, date-fns,
+    lucide-react (0.460.0)、および shadcn/ui 用の radix-ui / cva / clsx /
+    tailwind-merge / tailwindcss-animate
+  - shadcn/ui 8 コンポーネントを src/components/ui/ に手動生成
+    (button, card, dialog, input, label, select, slider, toast)
+    ※ CLI が対話式のため components.json と utils.ts を自前で配置
+  - globals.css にダークテーマ HSL 変数を定義
+    (#0f1117 / #1a1f2e / #1d9bf0 / #e6e8ee / #8b92a5)
+  - tailwind.config.ts に darkMode: "class" と shadcn カラートークンを追加
+  - layout.tsx: <html lang="ja" className="dark">、metadata (title / description /
+    themeColor)、Header + main + Footer の骨格
+  - Header.tsx (モバイル: ハンバーガー Dialog、デスクトップ: 横並びナビ)
+  - Footer.tsx (医療免責文 + © 2026 SleepForecast + About/Privacy/Terms/Contact)
+  - page.tsx: H1「明日の眠気を予報する」、CTA 2 つ、特徴 Card 3 枚
+  - /record /dashboard /settings /about /privacy /terms /contact の
+    ComingSoon スケルトン (F001 で最低限のルートを通す)
+  - src/lib/types.ts と src/lib/prefectures.ts をプレースホルダー (`export {}`)
+  - .env.example (NEXT_PUBLIC_SITE_URL / GA_ID / ADSENSE_CLIENT)
+  - .gitignore を整備 (.env.local, *.log, .vercel/ などを追加)
+  - README.md 整備 (概要 / セットアップ / 環境変数 / ロードマップ)
+- Verification:
+  - `npm run lint` -> No ESLint warnings or errors
+  - `npm run build` -> TypeScript strict で成功、12 静的ページを生成
+  - `npm run dev` + curl で / /record /dashboard /settings が全て 200 応答
+  - /home の HTML に `明日の眠気を予報する` / `SleepForecast` / `医療行為・診断`
+    の各文字列が含まれることを確認
+- Files added/modified (抜粋):
+  - package.json, package-lock.json, tsconfig.json, tailwind.config.ts,
+    postcss.config.mjs, next.config.mjs, .eslintrc.json, next-env.d.ts,
+    components.json, .env.example, .gitignore, README.md
+  - src/app/{layout,page,globals.css,favicon.ico}
+  - src/app/{record,dashboard,settings,about,privacy,terms,contact}/page.tsx
+  - src/app/{articles/[slug], api/weather}/.gitkeep
+  - src/components/{Header,Footer,ComingSoon}.tsx
+  - src/components/ui/{button,card,dialog,input,label,select,slider,toast}.tsx
+  - src/lib/{utils,types,prefectures}.ts
+  - harness/feature-list.json (Planner が事前に refine した詳細 steps を反映)
+  - harness/spec.md (Planner 補助メモを新規追加)
+- Notes / 注意点:
+  - Planner が session 開始前に harness/feature-list.json を refine 済み
+    だったため、本コミットに含めた (status は "failing" のまま変更していない)
+  - shadcn/ui 初期化は CLI が対話式で使えなかったため手動配置にしたが、
+    components.json と lib/utils.ts を正規位置に置いているので F002 以降も
+    `npx shadcn@latest add <component>` が使えるはず
+- Next action: Evaluator should run (acceptance_criteria 13 項目を検証し、
+  各軸 8 点以上なら F001 status を passing に更新する)
+
+================================================================
