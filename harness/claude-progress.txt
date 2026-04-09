@@ -169,4 +169,24 @@ Format:
 - Commits added in this cycle:
   - 1652ad0 chore(harness): expand agent lineup to 11+2 and add statusline
   - dbf1c7e feat: implement F002 weather API + record form (WIP)
-  - d711295 tes
+  - d711295 test: add F002 unit tests and smoke checks
+  - 355be3b style: apply Design Judge recommendations for F002
+- Gate results:
+  - Dep Auditor: PASS (halluc 0; Next.js 14 high×4 既存 → WARNING)
+  - Test Engineer: PASS (vitest 17/17, tsc/lint/build clean, smokes)
+  - Design Judge: 案 A (40/50) ベース + 案 B (月アイコン glow) +
+    案 C (tabular-nums, メトリクスバー) のハイブリッド採用
+  - Security: PASS (SSRF/XSS/PII/secret いずれも 0、CSP 未設定は WARNING)
+  - Legal: PASS (薬機法/景表法/個情法 問題なし、医療免責 3 箇所)
+  - Evaluator: Design 9 / Originality 9 / Craft 9 / Functionality 10
+- Known WARNINGs carried forward:
+  - next.config.mjs の security headers 未設定 → F006 で追加予定
+  - /api/weather にレート制限なし (edge cache 600s で緩和)
+  - Next.js 14 の npm audit high 4 件 (技術スタック固定のため upgrade せず)
+- Known harness limitation this session:
+  - 新規エージェント (dependency-auditor / test-engineer / designer-a|b|c /
+    design-judge / security-reviewer / legal) はセッション起動後に
+    追加されたため subagent_type として callable でなかった。
+    general-purpose agent に各 spec をインラインして代行実行した。
+    次セッションは Claude Code を再起動すれば subagent_type として
+    直接起動可能に�

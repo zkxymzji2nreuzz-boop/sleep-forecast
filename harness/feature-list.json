@@ -162,7 +162,10 @@
       "title": "明日の予測機能 (STEP 4)",
       "description": "過去データと気象予報から、明日の睡眠品質を予測する",
       "priority": 4,
-      "status": "failing",
+      "status": "passing",
+      "completedAt": "2026-04-10",
+      "evaluatorScore": 8.75,
+      "notes": "Design Judge: B案(ウェルネス感情デザイン)採用 48/60。Security PASS / Legal PASS / Evaluator 8.75/10 (completeness:9, codeQuality:8, uxDesign:9, productValue:9)",
       "mvp_refs": [
         "F06"
       ],
