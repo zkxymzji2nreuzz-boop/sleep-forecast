@@ -1,0 +1,215 @@
+{
+  "project": "SleepForecast",
+  "description": "気温・湿度・気圧・月齢から明日の眠気を予測するヘルスケアWebアプリ",
+  "version": "0.1.0",
+  "created_at": "2026-04-09",
+  "target_launch_days": 14,
+  "tech_stack": {
+    "framework": "Next.js 14 (App Router)",
+    "language": "TypeScript",
+    "styling": "Tailwind CSS + shadcn/ui",
+    "charts": "Chart.js + react-chartjs-2",
+    "storage": "localStorage (MVP)",
+    "weather_api": "Open-Meteo",
+    "hosting": "Vercel"
+  },
+  "features": [
+    {
+      "id": "F001",
+      "title": "プロジェクト初期化 (STEP 1)",
+      "description": "Next.js 14 + TypeScript + Tailwind + shadcn/ui でプロジェクト骨格を作る",
+      "priority": 1,
+      "status": "failing",
+      "mvp_refs": ["setup"],
+      "steps": [
+        "create-next-app で TypeScript + Tailwind + App Router + ESLint + src/ 構成で初期化",
+        "shadcn/ui をセットアップし Button/Card/Dialog/Input/Label/Select/Toast/Slider を追加",
+        "追加パッケージをインストール: chart.js, react-chartjs-2, suncalc, date-fns, lucide-react",
+        "ディレクトリ構造を作成: src/app (page/record/dashboard/settings/articles/api/weather), src/components (ui/RecordForm/CorrelationChart/PredictionCard/AdBanner), src/lib (storage/weather/correlation/prediction/prefectures/types), src/content/articles",
+        "最低限のヘッダー・フッター・ルーティングを実装",
+        "ダークテーマ基調のレイアウト設定 (背景 #0f1117, カード #1a1f2e, アクセント #1d9bf0)",
+        "npm run dev で http://localhost:3000 が表示されることを確認",
+        "git init / .gitignore 整備 / 初回 commit"
+      ],
+      "acceptance_criteria": [
+        "npm run dev で 3000 番ポートが応答する",
+        "トップページに SleepForecast の名前が表示される",
+        "ヘッダーから /record /dashboard /settings に遷移できる",
+        "shadcn/ui のコンポーネントが利用可能",
+        "TypeScript strict モードでビルドが通る",
+        "git log に初回コミットが存在する"
+      ]
+    },
+    {
+      "id": "F002",
+      "title": "気象 API 連携と記録フォーム (STEP 2)",
+      "description": "Open-Meteo API から気象データを取得し、毎朝 30 秒で記録できる入力フォームを実装する",
+      "priority": 2,
+      "status": "failing",
+      "mvp_refs": ["F01", "F02", "F03"],
+      "steps": [
+        "src/lib/types.ts に WeatherData, SleepRecord インターフェースを定義",
+        "src/lib/prefectures.ts に 47 都道府県の県庁所在地の緯度経度を定数配列で用意",
+        "src/lib/weather.ts に Open-Meteo API (https://api.open-meteo.com/v1/forecast) クライアントを実装",
+        "気温・湿度・気圧・前日比気圧を取得する関数を作る",
+        "suncalc を使って月齢計算を実装",
+        "src/lib/storage.ts に saveRecord/getRecords/deleteRecord/getTodayRecord を実装、localStorage キー 'sleep_records_v1'",
+        "src/app/record/page.tsx に 5 段階評価 (😴😐🙂😀🌟) のボタン UI を実装",
+        "任意入力: 就寝時刻 / 起床時刻 / 自由メモ",
+        "都道府県 select または Geolocation API で位置取得",
+        "提出時に自動で気象データを取得して localStorage に保存",
+        "30 秒以内に完了できる UX を確認"
+      ],
+      "acceptance_criteria": [
+        "5 段階評価をタップして記録が保存される",
+        "localStorage に 'sleep_records_v1' キーで JSON が保存される",
+        "Open-Meteo API から気温・湿度・気圧が取得できる",
+        "同じ日に 2 回記録すると上書きされる",
+        "モバイル幅 (375px) でレイアウトが崩れない",
+        "医療免責の注記が画面下部に表示される"
+      ]
+    },
+    {
+      "id": "F003",
+      "title": "ダッシュボード実装 (STEP 3)",
+      "description": "過去 30 日の睡眠データを可視化し、気圧との相関を分析する",
+      "priority": 3,
+      "status": "failing",
+      "mvp_refs": ["F04", "F05"],
+      "steps": [
+        "src/lib/correlation.ts に calculatePearsonCorrelation, calculateLinearRegression, generateInsights を実装",
+        "src/app/dashboard/page.tsx に KPI カード 4 枚 (過去 7 日平均品質 / 今月の記録日数 / 最長連続記録 / 最も眠りが浅かった日)",
+        "折れ線グラフ: 過去 30 日の睡眠品質推移 (Chart.js)",
+        "散布図: 気圧と睡眠品質の相関、回帰直線を重ねる",
+        "気象別平均グラフ: 気圧が下がった日 / 月齢別の平均スコア",
+        "src/components/CorrelationChart.tsx をダークテーマで作る (背景 #0f1117, カード #1a1f2e)",
+        "デモモード: 記録が 7 日未満ならサンプルデータで表示",
+        "自然言語インサイト: 「気圧が 3hPa 以上下がる日はあなたの睡眠品質が約 23% 低下します」のような文を generateInsights で出す",
+        "モバイル: 縦スクロールで全データが見える、タップで詳細"
+      ],
+      "acceptance_criteria": [
+        "記録が 0 件でもデモモードでダッシュボードが表示される",
+        "記録を 10 件追加するとリアルデータに切り替わる",
+        "ピアソン相関係数が正しく計算される",
+        "Chart.js の散布図に回帰直線が表示される",
+        "モバイル幅で KPI カードが崩れない",
+        "ダークテーマで文字が読める"
+      ]
+    },
+    {
+      "id": "F004",
+      "title": "明日の予測機能 (STEP 4)",
+      "description": "過去データと気象予報から、明日の睡眠品質を予測する",
+      "priority": 4,
+      "status": "failing",
+      "mvp_refs": ["F06"],
+      "steps": [
+        "src/lib/prediction.ts に predictTomorrow(records, forecast) を実装",
+        "Open-Meteo の forecast_days=2 を使って明日の気象予報を取得",
+        "過去 7 日以上のデータがある場合、線形回帰で予測値を計算",
+        "信頼区間 (low/medium/high) を計算",
+        "主要因を文字列で返す (「気圧の急低下」「月齢満月」など)",
+        "アドバイス文を生成 (「早めの就寝を推奨」など)",
+        "src/components/PredictionCard.tsx を実装、グラデーション背景 (青 → 紫)",
+        "トップページ (/) とダッシュボード上部に予測カードを配置",
+        "非ログインユーザー向けにサンプル予測を表示",
+        "連続記録バッジ (3 日 / 7 日 / 30 日 / 100 日) をトップに表示"
+      ],
+      "acceptance_criteria": [
+        "1 週間分のダミーデータを入れると予測が表示される",
+        "予測値が 1.0〜5.0 の範囲内",
+        "主要因が日本語で表示される",
+        "アドバイスが表示される",
+        "記録が 7 日未満でもサンプル予測が表示される",
+        "連続記録バッジが正しく計算される",
+        "医療免責: 「診断ではありません」と小さく表示"
+      ]
+    },
+    {
+      "id": "F005",
+      "title": "SEO 記事システムと PWA 化 (STEP 5)",
+      "description": "Markdown 記事システムを構築し、10 本の初期記事を執筆。PWA 化して iOS/Android ホーム画面対応",
+      "priority": 5,
+      "status": "failing",
+      "mvp_refs": ["F07"],
+      "steps": [
+        "gray-matter + remark または next-mdx-remote で Markdown → HTML 変換を実装",
+        "src/app/articles/[slug]/page.tsx で動的ルーティング",
+        "目次自動生成、関連記事表示、アプリへの CTA",
+        "src/content/articles/ 配下に 10 本の初期記事を執筆: 気圧と頭痛, 寒暖差疲労, 月齢と睡眠, 不眠症サイン, 自律神経, 睡眠負債, ブルーライト, GABA サプリ, 快眠環境, 気象病チェック",
+        "各記事 2000 字以上、H2/H3 見出し、内部リンク、JSON-LD (Article)",
+        "next-sitemap で sitemap.xml と robots.txt を自動生成",
+        "各ページに title / description / OGP / Twitter Card / canonical を設定",
+        "next-pwa を導入、public/manifest.json を作成 (テーマカラー #1d9bf0)",
+        "iOS/Android のホーム画面追加に対応",
+        "Service Worker でオフラインでも記録可能にする"
+      ],
+      "acceptance_criteria": [
+        "/articles/kiatsu-zutsu で記事 1 本目が表示される",
+        "10 本の記事が全て表示可能",
+        "sitemap.xml が生成され、全記事が含まれる",
+        "各ページに OGP 画像が設定されている",
+        "iPhone Safari でホーム画面追加ができる",
+        "オフラインでも /record が動作する",
+        "JSON-LD 構造化データが埋め込まれている"
+      ]
+    },
+    {
+      "id": "F006",
+      "title": "必須ページと広告準備 (STEP 6-A)",
+      "description": "AdSense 審査に必要なページを整備し、GA4 と広告枠を準備する",
+      "priority": 6,
+      "status": "failing",
+      "mvp_refs": ["legal", "monetization"],
+      "steps": [
+        "/about (運営者情報): 個人開発者が家族の気象病のために作った趣旨",
+        "/privacy (プライバシーポリシー): localStorage 使用、広告、GA、個人情報保護法対応",
+        "/terms (利用規約): 医療診断ではない旨、免責事項",
+        "/contact (お問い合わせ): Google フォームへのリンク or mailto",
+        "Google Analytics 4 導入、環境変数 NEXT_PUBLIC_GA_ID で制御",
+        "src/components/AdBanner.tsx を実装 (審査通過まで非表示)",
+        "public/ads.txt を配置できるようにする",
+        "広告枠を配置: ファーストビュー下, ダッシュボードのグラフ下, 記事末, 記事中央",
+        "WebApplication の JSON-LD をトップページに埋め込み",
+        "全ページに BreadcrumbList を追加"
+      ],
+      "acceptance_criteria": [
+        "/about /privacy /terms /contact が全て表示される",
+        "プライバシーポリシーに localStorage・広告・GA の記載がある",
+        "利用規約に医療免責が明記されている",
+        "GA4 のトラッキングコードが埋め込まれている (環境変数で無効化可能)",
+        "AdBanner コンポーネントが非表示でも DOM 破綻しない",
+        "ads.txt が /ads.txt でアクセス可能",
+        "JSON-LD が各ページに埋め込まれている"
+      ]
+    },
+    {
+      "id": "F007",
+      "title": "デプロイ前チェックと README 整備 (STEP 6-B)",
+      "description": "Vercel デプロイ前の最終チェック。README・.env.example・Lighthouse スコア確認",
+      "priority": 7,
+      "status": "failing",
+      "mvp_refs": ["deploy-prep"],
+      "steps": [
+        ".env.example を作成 (NEXT_PUBLIC_GA_ID, NEXT_PUBLIC_ADSENSE_CLIENT など)",
+        "README.md を整備: プロジェクト概要 / セットアップ / 環境変数 / デプロイ手順",
+        ".gitignore を確認 (.env.local, node_modules, .next)",
+        "npm run build が成功することを確認",
+        "npm run lint が clean であることを確認",
+        "Lighthouse スコア計測: Performance / SEO / Accessibility / Best Practices がそれぞれ 90 以上",
+        "モバイル実機相当 (DevTools の iPhone 12 プリセット) で全画面動作確認",
+        "全機能の動作フロー: 記録 → 保存 → ダッシュボード → 予測まで一貫して動く",
+        "/deploy-check コマンドを実行し、全チェック項目を passing にする"
+      ],
+      "acceptance_criteria": [
+        "npm run build がエラーなく完了する",
+        "npm run lint に警告がない",
+        "Lighthouse 4 軸すべて 90 以上",
+        "/deploy-check の全 10 項目が passing",
+        "README に必要な情報がすべて記載されている",
+        ".env.local が git に含まれていない",
+        "人間にデプロイ承認を求めるメッセージが表示される"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+================================================================
+SleepForecast - Claude Progress Log
+================================================================
+このファイルは Planner / Generator / Evaluator の 3 エージェントが
+互いの作業状況を引き継ぐための共有メモリである。
+各セッションの終わりに必ず追記すること。古いエントリは削除しない。
+
+Format:
+[YYYY-MM-DD HH:MM] <role> - <feature-id> <title>
+- <本文>
+
+================================================================
+
+[2026-04-09 00:00] Human (Initializer) - Session 0 "Harness bootstrap"
+- ~/Documents/sleep-forecast/ に harness スキャフォールドを配置した。
+- 構成:
+  - .claude/CLAUDE.md (プロジェクトメモリ、10 Core Principles、ダークテーマ指定)
+  - .claude/agents/planner.md
+  - .claude/agents/generator.md
+  - .claude/agents/evaluator.md (閾値: 各軸 8/10 厳格)
+  - .claude/commands/next-feature.md
+  - .claude/commands/deploy-check.md (必ず人間承認)
+  - .claude/commands/resume.md
+  - harness/feature-list.json (F001〜F007, 全て status: "failing")
+  - harness/claude-progress.txt (このファイル)
+- 次セッションで実行すべきこと:
+  1. `git init` と初回コミット (harness スキャフォールドのみ)
+  2. /next-feature を実行し、最優先の F001 "プロジェクト初期化" を着手
+  3. Planner → Generator → Evaluator の 1 サイクルを完了
+  4. このファイルと feature-list.json を更新して commit
+- 安全制約:
+  - 1 セッションで 1 機能のみ進める
+  - デプロイは /deploy-check 経由で人間の明示承認を得ること
+  - vercel deploy は絶対に自動実行しない
+  - 医療免責 (「診断ではありません」) を常にフッターと予測カードに表示
+  - localStorage 以外のストレージには MVP では触らない
+
+================================================================
