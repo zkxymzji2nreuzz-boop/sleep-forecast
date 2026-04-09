@@ -19,8 +19,10 @@
       "title": "プロジェクト初期化 (STEP 1)",
       "description": "Next.js 14 + TypeScript + Tailwind + shadcn/ui でプロジェクト骨格を作る",
       "priority": 1,
-      "status": "failing",
-      "mvp_refs": ["setup"],
+      "status": "passing",
+      "mvp_refs": [
+        "setup"
+      ],
       "steps": [
         "作業ディレクトリのルートで `npx create-next-app@14 . --ts --tailwind --app --eslint --src-dir --import-alias \"@/*\" --use-npm` を実行し、既存の harness/ と .claude/ を壊さないよう同一ディレクトリに初期化する (プロンプトが出た場合は上書きを選ぶが harness と .claude は温存)",
         "Node 18+ を前提とし、`package.json` の engines に `\"node\": \">=18.17.0\"` を追加する",
@@ -64,7 +66,11 @@
       "description": "Open-Meteo API から気象データを取得し、毎朝 30 秒で記録できる入力フォームを実装する",
       "priority": 2,
       "status": "failing",
-      "mvp_refs": ["F01", "F02", "F03"],
+      "mvp_refs": [
+        "F01",
+        "F02",
+        "F03"
+      ],
       "steps": [
         "src/lib/types.ts に WeatherData, SleepRecord インターフェースを定義",
         "src/lib/prefectures.ts に 47 都道府県の県庁所在地の緯度経度を定数配列で用意",
@@ -93,7 +99,10 @@
       "description": "過去 30 日の睡眠データを可視化し、気圧との相関を分析する",
       "priority": 3,
       "status": "failing",
-      "mvp_refs": ["F04", "F05"],
+      "mvp_refs": [
+        "F04",
+        "F05"
+      ],
       "steps": [
         "src/lib/correlation.ts に calculatePearsonCorrelation, calculateLinearRegression, generateInsights を実装",
         "src/app/dashboard/page.tsx に KPI カード 4 枚 (過去 7 日平均品質 / 今月の記録日数 / 最長連続記録 / 最も眠りが浅かった日)",
@@ -120,7 +129,9 @@
       "description": "過去データと気象予報から、明日の睡眠品質を予測する",
       "priority": 4,
       "status": "failing",
-      "mvp_refs": ["F06"],
+      "mvp_refs": [
+        "F06"
+      ],
       "steps": [
         "src/lib/prediction.ts に predictTomorrow(records, forecast) を実装",
         "Open-Meteo の forecast_days=2 を使って明日の気象予報を取得",
@@ -149,7 +160,9 @@
       "description": "Markdown 記事システムを構築し、10 本の初期記事を執筆。PWA 化して iOS/Android ホーム画面対応",
       "priority": 5,
       "status": "failing",
-      "mvp_refs": ["F07"],
+      "mvp_refs": [
+        "F07"
+      ],
       "steps": [
         "gray-matter + remark または next-mdx-remote で Markdown → HTML 変換を実装",
         "src/app/articles/[slug]/page.tsx で動的ルーティング",
@@ -178,7 +191,10 @@
       "description": "AdSense 審査に必要なページを整備し、GA4 と広告枠を準備する",
       "priority": 6,
       "status": "failing",
-      "mvp_refs": ["legal", "monetization"],
+      "mvp_refs": [
+        "legal",
+        "monetization"
+      ],
       "steps": [
         "/about (運営者情報): 個人開発者が家族の気象病のために作った趣旨",
         "/privacy (プライバシーポリシー): localStorage 使用、広告、GA、個人情報保護法対応",
@@ -207,7 +223,9 @@
       "description": "Vercel デプロイ前の最終チェック。README・.env.example・Lighthouse スコア確認",
       "priority": 7,
       "status": "failing",
-      "mvp_refs": ["deploy-prep"],
+      "mvp_refs": [
+        "deploy-prep"
+      ],
       "steps": [
         ".env.example を作成 (NEXT_PUBLIC_GA_ID, NEXT_PUBLIC_ADSENSE_CLIENT など)",
         "README.md を整備: プロジェクト概要 / セットアップ / 環境変数 / デプロイ手順",
