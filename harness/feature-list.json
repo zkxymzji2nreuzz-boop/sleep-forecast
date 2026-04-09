@@ -65,7 +65,7 @@
       "title": "気象 API 連携と記録フォーム (STEP 2)",
       "description": "Open-Meteo API から気象データを取得し、毎朝 30 秒で記録できる入力フォームを実装する",
       "priority": 2,
-      "status": "failing",
+      "status": "passing",
       "mvp_refs": [
         "F01",
         "F02",
