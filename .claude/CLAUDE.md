@@ -27,6 +27,37 @@
 9. **Deploy requires human approval** - Vercel へのデプロイは必ず人間に y/n 確認を取る
 10. **Medical disclaimer always** - 睡眠は健康情報なので「医療行為ではない」旨の免責を必ず含める
 
+## Agent Lineup（11 体制 + 特殊 2）
+
+`/next-feature` は以下の順で各エージェントを起動する:
+
+Planner(Sonnet) → Generator(Opus) → Dependency Auditor(Haiku)
+→ Test Engineer(Sonnet) → Designer A/B/C(Opus 並列)
+→ Design Judge(Sonnet) → Security Reviewer(Sonnet)
+→ Legal(Sonnet) → Evaluator(Sonnet)
+
+`/deploy-check` は SRE(Sonnet) を最終ゲートとして起動する。
+`/cleanup` は Refactorer(Sonnet) を起動して未使用コード・重複を掃除する。
+
+| # | Agent | Model | Role | Trigger |
+|---|---|---|---|---|
+| 1 | Planner | Sonnet | 仕様 refine | /next-feature |
+| 2 | Generator | Opus | コード実装 | /next-feature |
+| 3 | Dependency Auditor | Haiku | import / npm audit 軽量チェック | /next-feature |
+| 4 | Test Engineer | Sonnet | tsc / build / Vitest / Playwright 実行 | /next-feature |
+| 5 | Designer A | Opus | ミニマル・モダン案 | /next-feature |
+| 6 | Designer B | Opus | ウェルネス・感情デザイン案 | /next-feature |
+| 7 | Designer C | Opus | データビジュアライゼーション案 | /next-feature |
+| 8 | Design Judge | Sonnet | 3 案比較・最良案決定 | /next-feature |
+| 9 | Security Reviewer | Sonnet | XSS / 脆弱性 / OWASP Top 10 | /next-feature |
+| 10 | Legal | Sonnet | 薬機法・景表法・個人情報保護法 | /next-feature |
+| 11 | Evaluator | Sonnet | 4 軸採点（閾値 8/10） | /next-feature |
+| +1 | SRE | Sonnet | 18 項目デプロイ前チェック | /deploy-check |
+| +2 | Refactorer | Sonnet | knip / ts-prune / jscpd による断捨離 | /cleanup |
+
+差し戻しは最大 3 回まで。それ以上は feature を failing のまま次セッションへ引き継ぐ。
+Refactorer と SRE は削除や不可逆操作の前に必ず人間の y/n を取る。
+
 ## 技術スタック（変更禁止）
 
 - **フレームワーク**: Next.js 14（App Router）+ TypeScript

@@ -1,5 +1,6 @@
 ---
 name: planner
+model: sonnet
 description: Expand terse user instructions into refined feature specs for SleepForecast. High-level design only, no code.
 tools: Read, Write, WebSearch, WebFetch
 ---

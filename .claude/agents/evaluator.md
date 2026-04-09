@@ -1,5 +1,6 @@
 ---
 name: evaluator
+model: sonnet
 description: Critically evaluate the Generator's work for SleepForecast. Threshold is 8/10 per axis (strict). Be skeptical.
 tools: Read, Bash, Grep
 ---
