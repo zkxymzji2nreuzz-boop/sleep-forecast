@@ -54,6 +54,7 @@ import {
 } from "lucide-react";
 
 import { CorrelationChart } from "@/components/CorrelationChart";
+import { PredictionCard } from "@/components/PredictionCard";
 import { Button } from "@/components/ui/button";
 import {
   Tabs,
@@ -67,9 +68,14 @@ import {
   type DashboardStats,
   type InsightItem,
 } from "@/lib/correlation";
+import {
+  predictTomorrow,
+} from "@/lib/prediction";
+import { fetchWeatherForecast } from "@/lib/weather";
+import { getPrefectureByCode } from "@/lib/prefectures";
 import { DEMO_RECORDS } from "@/lib/demoData";
 import { getRecords } from "@/lib/storage";
-import type { SleepRecord } from "@/lib/types";
+import type { SleepRecord, PredictionResult } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
 // Chart.js グローバル設定 (モジュールスコープで 1 度だけ実行)
@@ -307,6 +313,7 @@ export default function DashboardPage() {
   // 初期値は常に DEMO_RECORDS にしてマウント後に差し替える。
   const [records, setRecords] = React.useState<SleepRecord[]>(DEMO_RECORDS);
   const [isDemo, setIsDemo] = React.useState<boolean>(true);
+  const [prediction, setPrediction] = React.useState<PredictionResult | null>(null);
 
   React.useEffect(() => {
     const real = getRecords();
@@ -316,6 +323,29 @@ export default function DashboardPage() {
     } else {
       setRecords(DEMO_RECORDS);
       setIsDemo(true);
+    }
+
+    // 予測を計算
+    if (real.length > 0) {
+      const loadPrediction = async () => {
+        try {
+          const lastRecord = real[0];
+          const prefecture = getPrefectureByCode(lastRecord.prefectureCode);
+
+          if (prefecture) {
+            const forecast = await fetchWeatherForecast(
+              prefecture.latitude,
+              prefecture.longitude
+            );
+            const result = predictTomorrow(real, forecast);
+            setPrediction(result);
+          }
+        } catch (err) {
+          console.error("予測計算エラー:", err);
+        }
+      };
+
+      loadPrediction();
     }
   }, []);
 
@@ -412,6 +442,13 @@ export default function DashboardPage() {
       </header>
 
       {isDemo && <DemoBanner />}
+
+      {/* 予測カード */}
+      {prediction && (
+        <div className="mb-8">
+          <PredictionCard prediction={prediction} variant="full" />
+        </div>
+      )}
 
       {/* KPI カード */}
       <section

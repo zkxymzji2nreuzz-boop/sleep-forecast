@@ -39,10 +39,22 @@ type OpenMeteoHourly = {
   pressure_msl?: number[];
 };
 
+/** Open-Meteo の `daily` レスポンス部分の型 (必要なフィールドのみ) */
+type OpenMeteoDaily = {
+  time?: string[];
+  temperature_2m_max?: number[];
+  temperature_2m_min?: number[];
+  relative_humidity_2m_max?: number[];
+  precipitation_probability?: number[];
+  pressure_msl_min?: number[];
+  pressure_msl_max?: number[];
+};
+
 /** Open-Meteo レスポンス全体 (必要なフィールドのみ) */
 export type OpenMeteoResponse = {
   current?: OpenMeteoCurrent;
   hourly?: OpenMeteoHourly;
+  daily?: OpenMeteoDaily;
 };
 
 /**
@@ -157,6 +169,40 @@ export async function fetchWeather(
   return json;
 }
 
+/**
+ * 明日の気象予報を取得する。
+ * `/api/weather` の `forecast=true` パラメータを使用。
+ *
+ * @param latitude   緯度 (-90..90)
+ * @param longitude  経度 (-180..180)
+ * @returns 明日の気象予報 WeatherData
+ * @throws WeatherFetchError
+ */
+export async function fetchWeatherForecast(
+  latitude: number,
+  longitude: number
+): Promise<WeatherData> {
+  const url = `/api/weather?lat=${encodeURIComponent(
+    latitude
+  )}&lon=${encodeURIComponent(longitude)}&forecast=true`;
+  let res: Response;
+  try {
+    res = await fetch(url, { method: "GET", cache: "no-store" });
+  } catch (err) {
+    throw new WeatherFetchError(
+      `ネットワークエラー (明日の予報): ${(err as Error).message}`
+    );
+  }
+  if (!res.ok) {
+    throw new WeatherFetchError(
+      `明日の予報取得に失敗しました (status=${res.status})`,
+      res.status
+    );
+  }
+  const json = (await res.json()) as WeatherData;
+  return json;
+}
+
 /** 小数 1 桁で丸める */
 function round1(n: number): number {
   return Math.round(n * 10) / 10;
@@ -170,4 +216,64 @@ function round4(n: number): number {
 /** 数値以外を fallback にフォールバックする */
 function numberOr(v: unknown, fallback: number): number {
   return typeof v === "number" && Number.isFinite(v) ? v : fallback;
+}
+
+/**
+ * Open-Meteo の daily レスポンスから指定インデックスの気象を WeatherData に変換。
+ * 月齢は計算日(明日)基準。気圧差は daily の min/max 平均で補完。
+ *
+ * @param daily        Open-Meteo daily オブジェクト
+ * @param dayIndex     0=今日, 1=明日, ...
+ * @param baseDate     基準日時
+ */
+export function mapOpenMeteoDailyToWeather(
+  daily: {
+    time?: string[];
+    temperature_2m_max?: number[];
+    temperature_2m_min?: number[];
+    relative_humidity_2m_max?: number[];
+    precipitation_probability?: number[];
+    pressure_msl_min?: number[];
+    pressure_msl_max?: number[];
+  },
+  dayIndex: number,
+  baseDate: Date
+): WeatherData {
+  // dayIndex=1 なら、baseDate + 1日
+  const tomorrowDate = new Date(baseDate);
+  tomorrowDate.setDate(tomorrowDate.getDate() + dayIndex);
+
+  // 気温: min/max 平均
+  const tempMin = daily.temperature_2m_min?.[dayIndex] ?? 0;
+  const tempMax = daily.temperature_2m_max?.[dayIndex] ?? 0;
+  const temperatureC = round1((tempMin + tempMax) / 2);
+
+  // 湿度: max を使用
+  const humidity = Math.round(daily.relative_humidity_2m_max?.[dayIndex] ?? 50);
+
+  // 気圧: min/max 平均
+  const pressureMin = daily.pressure_msl_min?.[dayIndex] ?? 1013;
+  const pressureMax = daily.pressure_msl_max?.[dayIndex] ?? 1013;
+  const pressureHpa = round1((pressureMin + pressureMax) / 2);
+
+  // 気圧差: 予報では 24h 前を持たないため、
+  // 「最低気圧 (min) - 前日の最高気圧 (max[0])」で補完
+  let pressureDeltaHpa = 0;
+  if (dayIndex === 1 && daily.pressure_msl_max && daily.pressure_msl_max[0]) {
+    pressureDeltaHpa = round1(pressureMin - daily.pressure_msl_max[0]);
+  }
+
+  // 月齢: 明日の日付で計算
+  const moon = getMoonData(tomorrowDate);
+
+  return {
+    temperatureC,
+    humidity,
+    pressureHpa,
+    pressureDeltaHpa,
+    moonPhase: round4(moon.phase),
+    moonIllumination: round4(moon.illumination),
+    fetchedAt: new Date().toISOString(),
+    source: "open-meteo",
+  };
 }

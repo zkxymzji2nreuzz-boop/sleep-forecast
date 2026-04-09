@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /tmp/sf-init)",
+      "Read(//tmp/**)",
+      "Bash(rm -rf sf-temp)",
+      "Bash(npx --yes create-next-app@14 sf-temp --ts --tailwind --app --eslint --src-dir --import-alias \"@/*\" --use-npm)",
+      "Bash

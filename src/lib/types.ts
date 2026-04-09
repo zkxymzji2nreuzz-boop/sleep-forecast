@@ -83,3 +83,77 @@ export type StoredRecords = {
   version: 1;
   records: SleepRecord[];
 };
+
+/**
+ * 予測に寄与した主要な気象要因を区分。
+ * 複数該当する可能性があるため配列で返す。
+ */
+export type PredictionFactor =
+  | "pressure_drop"      // 気圧が 3hPa 以上下降
+  | "pressure_rise"      // 気圧が 3hPa 以上上昇
+  | "full_moon"          // 満月前後 (moonPhase 0.45〜0.55)
+  | "new_moon"           // 新月前後 (moonPhase 0.0〜0.1 または 0.9〜1.0)
+  | "high_temperature"   // 気温が過去平均より 3°C 以上高い
+  | "low_temperature"    // 気温が過去平均より 3°C 以上低い
+  | "high_humidity"      // 湿度が 70% 以上
+  | "neutral";           // 特に顕著な要因なし
+
+/**
+ * predictTomorrow() の戻り値。
+ * 明日の睡眠品質予測をまるごと包含する。
+ */
+export type PredictionResult = {
+  /** 予測睡眠品質 (1.0 〜 5.0, 小数 1 桁) */
+  predictedQuality: number;
+
+  /** 信頼度: "low" (7日未満) | "medium" (7〜14日) | "high" (15日以上) */
+  confidence: "low" | "medium" | "high";
+
+  /** 主要因配列 (最大 2 個) */
+  factors: PredictionFactor[];
+
+  /** 日本語の詳細説明 (1 行, 最大 80 字) */
+  factorDescription: string;
+
+  /**
+   * アドバイスメッセージ (複数)。
+   * 優先度順で返す (最初の 2 件を UI に表示)。
+   */
+  advice: {
+    /** "info" | "warning" | "positive" */
+    severity: "info" | "warning" | "positive";
+    /** 日本語のアクション文 (最大 60 字) */
+    text: string;
+  }[];
+
+  /** このサンプルデータか否か (7日未満 = true) */
+  isSample: boolean;
+
+  /**
+   * 返す際に使用した過去データの有効件数。
+   * "0 件のため全サンプル" とか "12 件から計算" を UI に表示するのに使う。
+   */
+  dataPointCount: number;
+};
+
+/**
+ * トップページに表示する連続記録バッジ。
+ * 最長連続日数に応じた 4 段階バッジ。
+ */
+export type ContinuousRecordBadge = {
+  /** 最長連続記録日数 */
+  longestStreak: number;
+
+  /**
+   * バッジレベル:
+   * - "bronze"   : 3〜6日
+   * - "silver"   : 7〜29日
+   * - "gold"     : 30〜99日
+   * - "platinum" : 100日以上
+   * - null       : 3日未満 (非表示)
+   */
+  level: "bronze" | "silver" | "gold" | "platinum" | null;
+
+  /** 表示用テキスト (例: "7 日連続記録 🥈") */
+  displayText: string;
+};

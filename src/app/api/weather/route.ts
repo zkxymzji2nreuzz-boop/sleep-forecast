@@ -10,6 +10,7 @@
 import {
   OPEN_METEO_BASE_URL,
   mapOpenMeteoResponse,
+  mapOpenMeteoDailyToWeather,
   type OpenMeteoResponse,
 } from "@/lib/weather";
 
@@ -41,6 +42,12 @@ function parseLatLon(searchParams: URLSearchParams):
   return { ok: true, lat, lon };
 }
 
+/** forecast パラメータの解析 */
+function parseForecast(searchParams: URLSearchParams): boolean {
+  const val = searchParams.get("forecast");
+  return val === "true";
+}
+
 export async function GET(request: Request): Promise<Response> {
   const { searchParams } = new URL(request.url);
   const parsed = parseLatLon(searchParams);
@@ -48,19 +55,33 @@ export async function GET(request: Request): Promise<Response> {
     return Response.json({ error: parsed.reason }, { status: 400 });
   }
 
-  // Open-Meteo へ渡すクエリ (spec.md の F002 補足に準拠)
+  const isForecast = parseForecast(searchParams);
+
+  // Open-Meteo へ渡すクエリ
   const upstream = new URL(OPEN_METEO_BASE_URL);
   upstream.searchParams.set("latitude", parsed.lat.toString());
   upstream.searchParams.set("longitude", parsed.lon.toString());
-  upstream.searchParams.set(
-    "current",
-    "temperature_2m,relative_humidity_2m,surface_pressure,pressure_msl"
-  );
-  upstream.searchParams.set("hourly", "pressure_msl");
-  upstream.searchParams.set("past_days", "1");
-  upstream.searchParams.set("forecast_days", "1");
-  upstream.searchParams.set("timezone", "Asia/Tokyo");
-  upstream.searchParams.set("windspeed_unit", "ms");
+
+  if (isForecast) {
+    // 明日の予報を取得
+    upstream.searchParams.set(
+      "daily",
+      "temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,precipitation_probability,pressure_msl_min,pressure_msl_max"
+    );
+    upstream.searchParams.set("forecast_days", "2");
+    upstream.searchParams.set("timezone", "Asia/Tokyo");
+  } else {
+    // 現在の気象を取得 (既存ロジック)
+    upstream.searchParams.set(
+      "current",
+      "temperature_2m,relative_humidity_2m,surface_pressure,pressure_msl"
+    );
+    upstream.searchParams.set("hourly", "pressure_msl");
+    upstream.searchParams.set("past_days", "1");
+    upstream.searchParams.set("forecast_days", "1");
+    upstream.searchParams.set("timezone", "Asia/Tokyo");
+    upstream.searchParams.set("windspeed_unit", "ms");
+  }
 
   let upstreamRes: Response;
   try {
@@ -98,12 +119,30 @@ export async function GET(request: Request): Promise<Response> {
     );
   }
 
-  const weather = mapOpenMeteoResponse(json, new Date());
-
-  return Response.json(weather, {
-    status: 200,
-    headers: {
-      "Cache-Control": "public, s-maxage=600, stale-while-revalidate=1800",
-    },
-  });
+  if (isForecast) {
+    // daily[1] をマッピング
+    const daily = json.daily;
+    if (!daily || !daily.time || daily.time.length < 2) {
+      return Response.json(
+        { error: "明日の予報データが利用できません" },
+        { status: 502 }
+      );
+    }
+    const forecastData = mapOpenMeteoDailyToWeather(daily, 1, new Date());
+    return Response.json(forecastData, {
+      status: 200,
+      headers: {
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=7200",
+      },
+    });
+  } else {
+    // 既存の現在値マッピング
+    const weather = mapOpenMeteoResponse(json, new Date());
+    return Response.json(weather, {
+      status: 200,
+      headers: {
+        "Cache-Control": "public, s-maxage=600, stale-while-revalidate=1800",
+      },
+    });
+  }
 }

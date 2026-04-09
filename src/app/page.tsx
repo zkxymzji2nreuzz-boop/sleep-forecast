@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Activity, Moon, Timer, Watch } from "lucide-react";
 
@@ -9,6 +12,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { PredictionCard } from "@/components/PredictionCard";
+import { ContinuousRecordBadge } from "@/components/ContinuousRecordBadge";
+import { getRecords } from "@/lib/storage";
+import {
+  predictTomorrow,
+  calculateContinuousRecordBadge,
+} from "@/lib/prediction";
+import { fetchWeatherForecast } from "@/lib/weather";
+import { getPrefectureByCode } from "@/lib/prefectures";
+import { calculateStats } from "@/lib/correlation";
+import type { PredictionResult } from "@/lib/types";
 
 /**
  * ランディングページ。
@@ -36,8 +50,64 @@ const FEATURES = [
 ] as const;
 
 export default function HomePage() {
+  const [prediction, setPrediction] = useState<PredictionResult | null>(null);
+  const [badge, setBadge] = useState<ReturnType<typeof calculateContinuousRecordBadge> | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadPrediction = async () => {
+      try {
+        const records = getRecords();
+
+        // 連続記録バッジを計算
+        if (records.length > 0) {
+          const stats = calculateStats(records);
+          setBadge(calculateContinuousRecordBadge(stats.longestStreak));
+        }
+
+        // 予測を計算
+        if (records.length > 0) {
+          const lastRecord = records[0];
+          const prefecture = getPrefectureByCode(lastRecord.prefectureCode);
+
+          if (prefecture) {
+            const forecast = await fetchWeatherForecast(
+              prefecture.latitude,
+              prefecture.longitude
+            );
+            const result = predictTomorrow(records, forecast);
+            setPrediction(result);
+          }
+        }
+      } catch (err) {
+        console.error("予測計算エラー:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPrediction();
+  }, []);
+
   return (
     <div className="container mx-auto max-w-screen-md px-4 py-10 sm:py-14">
+      {/* 連続記録バッジ + 予測カード */}
+      {!loading && (
+        <>
+          {badge?.level && (
+            <div className="mb-6">
+              <ContinuousRecordBadge badge={badge} />
+            </div>
+          )}
+
+          {prediction && (
+            <div className="mb-12">
+              <PredictionCard prediction={prediction} variant="compact" />
+            </div>
+          )}
+        </>
+      )}
+
       <section className="mb-12 text-center sm:mb-16">
         <p className="mb-3 text-xs uppercase tracking-widest text-[#1d9bf0]">
           SleepForecast
