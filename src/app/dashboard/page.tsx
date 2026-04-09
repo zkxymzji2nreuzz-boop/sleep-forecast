@@ -42,8 +42,11 @@ import {
   type TooltipItem,
 } from "chart.js";
 import {
+  AlertCircle,
+  AlertTriangle,
   ArrowRight,
   CalendarDays,
+  CheckCircle2,
   Flame,
   Info,
   Moon,
@@ -115,10 +118,17 @@ const MOON_BUCKETS = [
 ] as const;
 const MOON_BUCKET_COLORS = ["#7c4dff", "#1d9bf0", "#facc15", "#4ade80"];
 
+// B案: 感情別カラー (warning=rose / info=sky / positive=emerald)
 const INSIGHT_BORDER: Record<InsightItem["severity"], string> = {
-  warning: "border-[#ef4444]",
-  info: "border-[#1d9bf0]",
-  positive: "border-[#4ade80]",
+  warning: "border-rose-400 bg-rose-500/5",
+  info: "border-sky-400 bg-sky-500/5",
+  positive: "border-emerald-400 bg-emerald-500/5",
+};
+
+const INSIGHT_ICON: Record<InsightItem["severity"], React.ReactNode> = {
+  warning: <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-rose-400" aria-hidden />,
+  info: <Info className="mt-0.5 h-4 w-4 shrink-0 text-sky-400" aria-hidden />,
+  positive: <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" aria-hidden />,
 };
 
 // ---------------------------------------------------------------------------
@@ -326,11 +336,13 @@ export default function DashboardPage() {
         {
           label: "品質",
           data: values,
-          borderColor: "#1d9bf0",
-          backgroundColor: "rgba(29, 155, 240, 0.08)",
+          // B案: violet (#a78bfa) ライン
+          borderColor: "#a78bfa",
+          backgroundColor: "rgba(167, 139, 250, 0.12)",
           borderWidth: 2,
-          pointBackgroundColor: "#1d9bf0",
-          pointBorderColor: "#1d9bf0",
+          pointBackgroundColor: "#a78bfa",
+          pointBorderColor: "#1a1f2e",
+          pointBorderWidth: 2,
           pointRadius: 4,
           pointHoverRadius: 6,
           fill: true,
@@ -496,22 +508,19 @@ export default function DashboardPage() {
         </Tabs>
       </ChartCard>
 
-      {/* 自然言語インサイト */}
+      {/* 自然言語インサイト — B案: 感情別カラー */}
       {insights.length > 0 && (
         <section aria-label="睡眠インサイト" className="mb-6 space-y-3">
           <h2 className="mb-2 text-sm font-semibold text-[#e6e8ee]">
-            気になる傾向
+            あなたへの気づき
           </h2>
           <ul className="space-y-3">
             {insights.map((item) => (
               <li
                 key={item.key}
-                className={`flex items-start gap-3 rounded-r-lg border-l-4 bg-[#1a1f2e] p-3 ${INSIGHT_BORDER[item.severity]}`}
+                className={`flex items-start gap-3 rounded-r-lg border-l-4 p-3 transition-colors duration-150 hover:opacity-90 ${INSIGHT_BORDER[item.severity]}`}
               >
-                <Info
-                  className="mt-0.5 h-4 w-4 shrink-0 text-[#8b92a5]"
-                  aria-hidden
-                />
+                {INSIGHT_ICON[item.severity]}
                 <p className="text-sm leading-relaxed text-[#e6e8ee]">
                   {item.message}
                 </p>
@@ -521,12 +530,17 @@ export default function DashboardPage() {
         </section>
       )}
 
-      {/* 医療免責 */}
-      <p className="px-4 py-4 text-center text-xs text-[#8b92a5]">
-        本ダッシュボードの分析・インサイトは統計的な傾向の参考情報であり、
-        医療行為・診断を目的としたものではありません。
-        体調に不安がある場合は医療機関にご相談ください。
-      </p>
+      {/* 医療免責 — C案要素取り込み: AlertCircle + amber テキスト */}
+      <div className="mt-6 rounded-md border border-amber-700/30 bg-amber-900/10 px-4 py-3">
+        <div className="flex items-start gap-2 text-xs text-amber-200">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" aria-hidden />
+          <p className="leading-relaxed">
+            本ダッシュボードの分析・インサイトは統計的な傾向の参考情報であり、
+            医療行為・診断を目的としたものではありません。
+            体調に不安がある場合は医療機関にご相談ください。
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -537,18 +551,19 @@ export default function DashboardPage() {
 
 function DemoBanner() {
   return (
+    // B案: グラデーション from-violet-500/10 to-sky-500/10
     <div
       role="status"
-      className="mb-6 flex flex-col gap-3 rounded-lg border border-[#1d9bf0] bg-[#1a1f2e] p-3 sm:flex-row sm:items-center sm:justify-between"
+      className="mb-6 flex flex-col gap-3 rounded-lg border border-violet-400/30 bg-gradient-to-r from-violet-500/10 to-sky-500/10 p-3 sm:flex-row sm:items-center sm:justify-between"
     >
-      <p className="text-sm text-[#8b92a5]">
-        これはサンプルデータです。10 日以上記録するとあなたのデータが表示されます。
+      <p className="text-sm text-gray-200">
+        📊 サンプルデータを表示しています。10 日以上記録するとあなた専用の分析に切り替わります。
       </p>
       <Button
         asChild
         variant="outline"
         size="sm"
-        className="border-[#1d9bf0] bg-transparent text-[#1d9bf0] hover:bg-[#1d9bf0]/10 hover:text-[#1d9bf0] focus-visible:ring-2 focus-visible:ring-[#1d9bf0]"
+        className="border-violet-400/50 bg-transparent text-violet-400 hover:bg-violet-500/10 hover:text-violet-300 focus-visible:ring-2 focus-visible:ring-violet-400"
       >
         <Link href="/record">
           今日を記録する
@@ -569,13 +584,14 @@ type KpiCardProps = {
 
 function KpiCard({ icon, label, value, small }: KpiCardProps) {
   return (
-    <div className="flex flex-col gap-2 rounded-xl bg-[#1a1f2e] p-4">
-      <div className="flex items-center gap-2 text-[#8b92a5]">
-        <span className="text-[#1d9bf0]">{icon}</span>
-        <span className="text-xs">{label}</span>
+    // B案: グラデーション背景 + ホバー時 violet ボーダー
+    <div className="flex flex-col gap-2 rounded-xl border border-gray-700/50 bg-gradient-to-br from-gray-900 to-[#161a24] p-4 shadow-md transition-all duration-200 hover:border-violet-400/30 hover:shadow-lg">
+      <div className="flex items-center gap-2 text-gray-400">
+        <span className="text-violet-400">{icon}</span>
+        <span className="text-xs font-medium">{label}</span>
       </div>
       <p
-        className={`font-bold tabular-nums text-[#e6e8ee] ${
+        className={`font-bold tabular-nums text-gray-100 ${
           small ? "text-lg" : "text-2xl"
         }`}
       >

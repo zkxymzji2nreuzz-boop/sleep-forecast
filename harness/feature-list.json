@@ -112,7 +112,7 @@
       "title": "ダッシュボード実装 (STEP 3)",
       "description": "過去 30 日の睡眠データを可視化し、気圧との相関を分析する",
       "priority": 3,
-      "status": "failing",
+      "status": "passing",
       "mvp_refs": [
         "F04",
         "F05"
@@ -152,7 +152,10 @@
         "ページ最下部に医療免責注記が `text-xs text-[#8b92a5]` で表示される",
         "`npm run build` と `npm run lint` がエラー・警告ゼロで完了する",
         "Chart.js の tooltip 背景色が `#1a1f2e` (ダーク) になっており、白背景 tooltip が表示されない"
-      ]
+      ],
+      "completedAt": "2026-04-10",
+      "evaluatorScore": 9.25,
+      "notes": "Design Judge: B案(ウェルネス感情デザイン)採用 48/60。Security PASS / Legal PASS / Evaluator 9.25/10"
     },
     {
       "id": "F004",

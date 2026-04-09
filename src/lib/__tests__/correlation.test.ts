@@ -216,4 +216,26 @@ describe("generateInsights", () => {
     ];
     expect(generateInsights(records)).toEqual([]);
   });
+
+  it("空配列を渡した場合は空配列を返す", () => {
+    expect(generateInsights([])).toEqual([]);
+  });
+
+  it("5〜9 件でほかのルールに非該当なら general インサイトを返す", () => {
+    // 全 quality 同じ (3)、気圧変動なし → どのルールも非該当
+    // 件数 7 件 → 5〜9 の range に入るので general が返るはず
+    const records: SleepRecord[] = [
+      rec("2026-04-10", 3, { pressureDeltaHpa: 0, moonPhase: 0.2, temperatureC: 15 }),
+      rec("2026-04-09", 3, { pressureDeltaHpa: 0, moonPhase: 0.2, temperatureC: 16 }),
+      rec("2026-04-08", 3, { pressureDeltaHpa: 0, moonPhase: 0.2, temperatureC: 15 }),
+      rec("2026-04-07", 3, { pressureDeltaHpa: 0, moonPhase: 0.2, temperatureC: 16 }),
+      rec("2026-04-06", 3, { pressureDeltaHpa: 0, moonPhase: 0.2, temperatureC: 15 }),
+      rec("2026-04-05", 3, { pressureDeltaHpa: 0, moonPhase: 0.2, temperatureC: 16 }),
+      rec("2026-04-04", 3, { pressureDeltaHpa: 0, moonPhase: 0.2, temperatureC: 15 }),
+    ];
+    const insights = generateInsights(records);
+    const general = insights.find((i) => i.key === "general");
+    expect(general).toBeDefined();
+    expect(general!.severity).toBe("info");
+  });
 });
