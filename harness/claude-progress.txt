@@ -197,3 +197,106 @@ Format:
 
 ================================================================
 
+[2026-04-10 03:55] Generator F003 "ダッシュボード実装 (STEP 3)"
+- Implemented:
+  * src/lib/demoData.ts: 30 件固定 DEMO_RECORDS (prefectureCode "13" /
+    source "open-meteo")。quality / pressureDeltaHpa / pressureHpa /
+    temperatureC / humidity は仕様通りの固定配列。pressureDeltaHpa <= -3 の
+    日を index 1,5,9,14,19,23,26,28 の 8 件に配置。moonPhase は 0.03
+    刻みで 0..1 ラップ、moonIllumination は sin(phase*PI) 近似。
+    offsetDate() で DEMO_BASE_DATE=2026-04-10 から逆算し SSR 安定。
+  * src/lib/correlation.ts: 4 関数 + 2 型を実装
+    - calculatePearsonCorrelation(xs, ys): number
+      長さ不一致/<2/定数列 は NaN、範囲 [-1,1] にクランプ
+    - calculateLinearRegression(xs, ys): {slope,intercept}|null
+      長さ不一致/<2/全同値 xs は null
+    - calculateStats(records): DashboardStats
+      空配列は {avg7Days:null, recordCountThisMonth:0,
+      longestStreak:0, worstDay:null}。
+      avg7Days は最新 7 件平均を小数 1 桁丸め、
+      longestStreak は date 昇順ユニーク化して連続判定、
+      worstDay は最小 quality、同点なら最新 date。
+    - generateInsights(records): InsightItem[]
+      優先度: 気圧急低下 warning → 満月 info → 気温 info
+      → データ不足 (5〜9 件) general info → なければ []
+    - 型: DashboardStats, InsightItem
+  * src/lib/__tests__/correlation.test.ts: 17 ケース新規追加
+    pearson 5 / regression 4 / calculateStats 6 / generateInsights 2
+    受入基準 #4 #5 #6 #10 を網羅
+  * src/components/CorrelationChart.tsx: 'use client' 散布図コンポ
+    Props: { records: SleepRecord[]; height?: number (default 240) }
+    register(LinearScale, PointElement, LineElement, ScatterController,
+    Tooltip, Legend)。散布点は quality 1..5 の色マップ、
+    回帰直線は showLine: true + borderDash:[4,4] で重ね描画。
+    records が 2 件未満のとき回帰直線 dataset を含めない。
+    Y 軸 1..5 固定、Tooltip は "気圧変化: -3.7 hPa — 品質: 悪い (2)" 形式。
+    aria-label + role="img" 付与。
+  * src/app/dashboard/page.tsx: ComingSoon を完全置換
+    'use client'、モジュールスコープで ChartJS.register(
+    CategoryScale, LinearScale, PointElement, LineElement, BarElement,
+    LineController, BarController, ScatterController, Tooltip, Legend,
+    Filler) と defaults.color/borderColor/font.family を 1 度だけ設定。
+    - SSR 安定: 初期 state = DEMO_RECORDS, useEffect で getRecords()
+      が 10 件未満ならデモ維持、10 件以上なら実データに差し替え。
+    - KPI グリッド grid-cols-2 md:grid-cols-4 gap-3 mb-6、
+      各カード bg-[#1a1f2e] rounded-xl p-4、値 tabular-nums。
+      TrendingUp / CalendarDays / Flame / Moon のアイコン。
+      データなし時は "--" 表示。
+    - 折れ線 (h-[200px] md:h-[280px]): records を date 昇順で 30 件分、
+      #1d9bf0 線 + rgba(29,155,240,0.08) fill、
+      tooltip title に元日付 (YYYY/MM/DD) を表示。
+    - 散布図 (h-[220px] md:h-[280px]): <CorrelationChart /> を埋込
+    - Tabs (気圧別/月齢別, h-[180px] md:h-[240px]):
+      気圧別 = ["#4ade80","#8b92a5","#ef4444"] 3 バケツ
+      月齢別 = ["#7c4dff","#1d9bf0","#facc15","#4ade80"] 4 バケツ
+      (満月期 0.45〜0.55 優先)。0 件は 0 高、tooltip 「データなし」。
+    - generateInsights() の結果をリスト表示、severity でボーダー色を
+      切替 (warning #ef4444 / info #1d9bf0 / positive #4ade80)。
+      0 件時はセクション全体を条件レンダリングで除外。
+    - デモバナー (isDemo 時のみ): border-[#1d9bf0] bg-[#1a1f2e]
+      に Button variant="outline" で /record 遷移リンク。
+    - 医療免責を最下部に text-xs text-[#8b92a5] text-center で配置。
+    - F002 の視覚言語を継承: tabular-nums / #1d9bf0 アクセント /
+      透明カード / focus-visible ring / lucide-react アイコン。
+  * src/components/ui/tabs.tsx: npx shadcn@latest add tabs で追加
+    (@radix-ui/react-tabs も同時インストール)
+- Files modified/added:
+    src/lib/demoData.ts (new),
+    src/lib/correlation.ts (new),
+    src/lib/__tests__/correlation.test.ts (new),
+    src/components/CorrelationChart.tsx (new),
+    src/components/ui/tabs.tsx (new, shadcn),
+    src/app/dashboard/page.tsx (full replace),
+    package.json / package-lock.json (@radix-ui/react-tabs 追加)
+- Verification:
+  * npm run lint → clean (No ESLint warnings or errors)
+  * npm run build → success
+      Route /dashboard: 78.9 kB / 187 kB First Load (Chart.js 込み)
+      Pre-render: ○ (Static)、警告なし (/api/weather の edge runtime
+      警告のみ、これは F002 で既出)
+  * npm run test → 34/34 passed (4 test files)
+      既存: prefectures 4 / storage 10 / weather 3 (17)
+      新規: correlation 17 (pearson 5 / regression 4 /
+            calculateStats 6 / generateInsights 2)
+  * dev smoke test (localhost:3001 → 3000 に切替):
+      GET /dashboard → 200 (21,923 bytes, 6 canvas 要素)
+      GET /record    → 200 (F002 リグレッション無)
+      GET /          → 200
+      HTML に "睡眠ダッシュボード" / "サンプルデータ" /
+      "7 日平均品質" / "最長連続" / "tabular-nums" /
+      "医療行為・診断" を目視確認
+- Notes:
+  * feature-list.json の status は "failing" のまま触っていない
+  * calculateStats の longestStreak は date ユニーク化後に判定
+    (同日 2 件記録でも 2 日連続と誤判定しない)
+  * currentYearMonth() は Asia/Tokyo 固定、テストではモック不要
+  * Chart.js の Scatter で回帰直線を重ねる際は type:'line' 併記ができない
+    ため、scatter dataset に showLine:true + borderDash を付けて代用した
+  * worstDay の KpiCard だけ `small` flag で文字サイズを 1 段階下げた
+    (375px 2 列で "04/03 (品質1)" が 1 行に収まるように)
+  * SSR 安定: 初期レンダは常に DEMO_RECORDS を描く (hydration mismatch 回避)
+- Next action: Dependency Auditor → Test Engineer → Designer(A/B/C)
+  → Design Judge → Security Reviewer → Legal → Evaluator
+
+================================================================
+
