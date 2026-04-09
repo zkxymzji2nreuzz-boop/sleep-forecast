@@ -98,3 +98,50 @@ Format:
   - ビルドが壊れる可能性がある場合は即中止
 
 ================================================================
+
+================================================================
+
+[2026-04-10 02:20] Generator session F002
+- Implemented: 気象 API 連携と記録フォーム (STEP 2) 本実装
+  * src/lib/types.ts: WeatherData / SleepRecord / PrefectureMaster / StoredRecords
+  * src/lib/prefectures.ts: 47 都道府県マスタ (JIS X 0401, 県庁所在地 lat/lon) +
+    getPrefectureByCode + findNearestPrefecture (ハバーサイン)
+  * src/lib/weather.ts: mapOpenMeteoResponse / computePressureDelta /
+    getMoonData (suncalc) / fetchWeather (クライアント→/api/weather) +
+    WeatherFetchError
+  * src/app/api/weather/route.ts: Edge Route Handler。lat/lon バリデーション
+    → Open-Meteo 呼び出し → WeatherData を JSON で返却、
+    Cache-Control: s-maxage=600, stale-while-revalidate=1800
+  * src/lib/storage.ts: localStorage (sleep_records_v1) CRUD +
+    getTodayRecord / formatDateJst (Asia/Tokyo) +
+    デフォルト都道府県 key helper
+  * src/components/RecordForm.tsx: 5 段階評価 (role=radiogroup) /
+    都道府県 Select / 就寝・起床時刻 / 自由メモ 280 字 / Geolocation /
+    API 失敗時の手動入力フォールバック / 送信後の記録済みビュー /
+    同日 2 回目は「更新する」文言、医療免責を末尾表示
+  * src/app/record/page.tsx: metadata 保持 + <RecordForm /> に委譲
+  * src/components/ui/toaster.tsx + src/hooks/use-toast.ts:
+    shadcn 純正の useToast / Toaster 実装を追加し layout.tsx に組み込み
+- Files modified/added:
+    harness/feature-list.json, harness/spec.md (Planner refine 分も同梱),
+    src/app/layout.tsx, src/app/record/page.tsx,
+    src/lib/{types,prefectures,storage,weather}.ts,
+    src/app/api/weather/route.ts, src/components/RecordForm.tsx,
+    src/components/ui/toaster.tsx, src/hooks/use-toast.ts
+- Verification:
+  * npm run lint → clean (No ESLint warnings or errors)
+  * npm run build → success (Edge runtime /api/weather, /record 27.3kB)
+  * dev smoke test:
+      GET /record                                  → 200 (20,190 bytes)
+      GET /api/weather?lat=35.6895&lon=139.6917    → 200
+        {"temperatureC":15.1,"humidity":91,"pressureHpa":1011.5,
+         "pressureDeltaHpa":-9.9,"moonPhase":0.7374,"moonIllumination":0.5397,
+         "source":"open-meteo"}
+      GET /api/weather?lat=abc&lon=200             → 400
+      GET /api/weather                             → 400
+- Notes:
+  * feature-list.json の status は "failing" のまま触っていない (Evaluator の役割)
+  * 医療免責はフォーム末尾と記録済みビュー末尾の両方に配置
+  * source:"manual" の pressureDeltaHpa は 0 固定 (手動入力時)
+- Next action: Dependency Auditor → Test Engineer → Designer(A/B/C) →
+  Design Judge → Security → Legal → Evaluator

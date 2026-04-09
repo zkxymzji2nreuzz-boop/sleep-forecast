@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { ComingSoon } from "@/components/ComingSoon";
+import { RecordForm } from "@/components/RecordForm";
 
 export const metadata: Metadata = {
   title: "記録",
@@ -8,12 +8,6 @@ export const metadata: Metadata = {
     "毎朝 30 秒で昨晩の眠りを記録します。気象データは自動取得されます。",
 };
 
-export default function RecordPage() {
-  return (
-    <ComingSoon
-      title="記録"
-      step="STEP 2"
-      description="毎朝 30 秒、昨晩の眠りを 5 段階で記録できるフォームを STEP 2 で実装します。"
-    />
-  );
+export default function RecordPage(): JSX.Element {
+  return <RecordForm />;
 }

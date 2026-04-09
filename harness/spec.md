@@ -30,7 +30,7 @@ shadcn/ui の CSS 変数 (`--background` 等) を上書きする形でもよい�
 ### トップページ H1 / サブコピー
 
 - H1: `明日の眠気を予報する`
-- Sub: `気圧・気温・月齢からあなたの睡眠を読み解く`
+- Sub: `気圧・月齢・気温からあなたの睡眠を読み解く`
 
 ### メタデータ (layout.tsx)
 
@@ -76,3 +76,117 @@ create-next-app を既存ディレクトリ (harness/ と .claude/ がある) �
 
 create-next-app の上書き確認プロンプトで誤って harness を消さないよう、
 先に `ls -la` で現状を確認してから実行する。
+
+---
+
+## F002 補足: 気象 API 連携と記録フォーム
+
+feature-list.json の F002 を補足する横断ノート。実装の正は feature-list.json 側に置き、
+ここでは表組みやサンプル JSON など、JSON で持ちにくい情報のみを残す。
+
+### Open-Meteo API パラメータ表
+
+ベース URL: `https://api.open-meteo.com/v1/forecast` (認証不要 / 非商用無料)
+
+| クエリ | 値 | 役割 |
+|---|---|---|
+| `latitude` | 例 `35.6895` | 都道府県の緯度 (PREFECTURES から取得) |
+| `longitude` | 例 `139.6917` | 同経度 |
+| `current` | `temperature_2m,relative_humidity_2m,surface_pressure,pressure_msl` | 現在値 4 種を 1 リクエストで取得 |
+| `hourly` | `pressure_msl` | 24h 前気圧の参照用 (前日比計算) |
+| `past_days` | `1` | hourly に昨日 24h を含める |
+| `forecast_days` | `1` | 当日のみ (F004 で 2 に拡張) |
+| `timezone` | `Asia/Tokyo` | hourly.time をローカル時刻で返す |
+| `windspeed_unit` | `ms` | 将来の拡張用 (任意) |
+
+レスポンスの主要フィールド:
+
+- `current.temperature_2m` (°C)
+- `current.relative_humidity_2m` (%)
+- `current.surface_pressure` (hPa, 観測点標高)
+- `current.pressure_msl` (hPa, 海面更正) ← **記録に使う基準値**
+- `hourly.time[]` / `hourly.pressure_msl[]` (24h 分以上)
+
+### 前日比気圧の計算
+
+```
+const target = new Date(Date.now() - 24 * 60 * 60 * 1000);
+const idx = hourly.time.findIndex((t) => new Date(t).getTime() >= target.getTime());
+const past = hourly.pressure_msl[Math.max(0, idx)];
+const delta = +(current.pressure_msl - past).toFixed(1); // 小数 1 桁
+```
+
+`delta < -3` を「気圧の急低下」しきい値とする (F004 の予測ロジックでも使用)。
+
+### CORS 方針
+
+- ブラウザから `api.open-meteo.com` を直接叩かない
+- `src/app/api/weather/route.ts` をプロキシとして経由する
+- 利点: (1) CORS 安定、(2) Vercel エッジでキャッシュ可、(3) 将来別 API へ差し替え容易、(4) クライアントから API 仕様を隠蔽
+- `Cache-Control: public, s-maxage=600, stale-while-revalidate=1800` で 10 分キャッシュ
+
+### 5 段階評価ラベル対応表
+
+| value | 絵文字 | ラベル | aria-label | 備考 |
+|---|---|---|---|---|
+| 1 | 😴 | とても悪い | `睡眠品質 1 とても悪い` | 全く眠れなかった / 何度も中途覚醒 |
+| 2 | 😐 | 悪い | `睡眠品質 2 悪い` | 寝付き悪い or 浅い |
+| 3 | 🙂 | 普通 | `睡眠品質 3 普通` | 平均的 |
+| 4 | 😀 | 良い | `睡眠品質 4 良い` | スッキリ目覚めた |
+| 5 | 🌟 | とても良い | `睡眠品質 5 とても良い` | 過去最高クラス |
+
+絵文字は装飾扱い (`aria-hidden="true"`)、ラベル文字は SR 用に `sr-only` ではなくボタン直下に表示する (タップで何が選ばれるか目視確認できるよう)。
+
+### localStorage スキーマ (`sleep_records_v1`)
+
+```json
+{
+  "version": 1,
+  "records": [
+    {
+      "id": "rec_2026-04-10_8f3a",
+      "date": "2026-04-10",
+      "quality": 3,
+      "bedtime": "23:30",
+      "wakeTime": "06:45",
+      "note": "夜中に一度トイレで目が覚めた",
+      "prefectureCode": "13",
+      "weather": {
+        "temperatureC": 14.2,
+        "humidity": 62,
+        "pressureHpa": 1008.4,
+        "pressureDeltaHpa": -3.7,
+        "moonPhase": 0.18,
+        "moonIllumination": 0.32,
+        "fetchedAt": "2026-04-10T07:12:00+09:00",
+        "source": "open-meteo"
+      },
+      "createdAt": "2026-04-10T07:12:05+09:00",
+      "updatedAt": "2026-04-10T07:12:05+09:00"
+    }
+  ]
+}
+```
+
+補足:
+
+- `id` は `rec_${date}_${random4}` 形式 (`crypto.randomUUID()` の先頭でも可)
+- 同じ `date` は配列内に 1 件まで。`saveRecord` 側で重複排除
+- 配列は date 降順でソートして返す (`getRecords`)
+- `version` は将来のスキーマ移行のためのフィールド。今は `1` 固定
+
+### Geolocation の都道府県スナップ
+
+- `navigator.geolocation.getCurrentPosition` で `(lat, lon)` 取得
+- PREFECTURES 47 件に対してハバーサイン距離を計算し、最小の県をセット
+- 精度は「都道府県まで」に丸めることでプライバシーを守る (緯度経度自体は保存しない)
+- 拒否・タイムアウト (10s) は select を変更せずトーストで通知
+
+### フォーム UX 順序 (1 画面で完結)
+
+1. 5 段階評価ボタン (必須) ─ 一番上に大きく
+2. 都道府県 select (デフォルトプリフィル済み)
+3. 任意: 就寝時刻 / 起床時刻 (`<input type="time">` 2 つ並列)
+4. 任意: 自由メモ (textarea, 280 字)
+5. 送信ボタン (主 CTA, アクセント色, 全幅)
+6. 医療免責の小さな注記
