@@ -1,5 +1,5 @@
 ---
-description: Run one Planner → Generator → Dep Auditor → Test Engineer → Designer(×3) → Design Judge → Security → Legal → Evaluator cycle for SleepForecast
+description: Run one File Integrity → Planner → Generator → Dep Auditor → Test Engineer → Designer(×3 JSON) → Design Judge → Generator(design) → Security → Legal → Evaluator cycle for SleepForecast
 ---
 
 # /next-feature
@@ -8,10 +8,19 @@ SleepForecast の次の failing 機能を 1 つ実装するサイクルを実行
 
 ## 手順
 
+### フェーズ 0: ファイル整合性チェック（必須・最初に実行）
+0. **File Integrity Agent**（Sonnet）を起動する（`.claude/agents/file-integrity.md` の指示に従う）
+   - git 管理ファイルの破損を検知・自動修復してから先へ進む
+   - `harness/audit.log` に修復ログを記録する
+   - 修復不可能な場合は作業を中断し、人間に報告する
+
+### フェーズ 1: 状態確認
 1. `cat harness/feature-list.json` で機能台帳を読む
 2. `tail -50 harness/claude-progress.txt` で前回までの作業を把握
 3. `git log --oneline -20` で過去のコミットを確認
 4. `status == "failing"` で最優先の機能を 1 つ特定
+
+### フェーズ 2: 実装
 5. **Planner Agent**（Sonnet）を起動し、steps / acceptance_criteria を refine する
 6. **Generator Agent**（Opus）を起動し、その機能を **1 つだけ** 実装する
 7. Generator の実装完了後、git commit する（`feat: implement Fxxx (WIP)`）
@@ -19,9 +28,16 @@ SleepForecast の次の failing 機能を 1 つ実装するサイクルを実行
    - FAIL の場合: Generator に差し戻し → 修正 → 再チェック
 9. **Test Engineer Agent**（Sonnet）を起動し、テストを書いて実行する
    - FAIL の場合: Generator に差し戻し → 修正 → 再テスト
-10. **Designer Agent A・B・C**（各 Opus）を並列起動し、それぞれデザイン改善案を提案する
-11. **Design Judge Agent**（Sonnet）を起動し、3 案を評価して最良案を決定・Generator に実装指示を出す
-12. Generator が Design Judge の指示に従いデザインを適用し、git commit する（`style: apply Design Judge recommendations for Fxxx`）
+
+### フェーズ 3: デザイン（並列実行・競合防止）
+10. **Designer Agent A・B・C**（各 Opus）を**並列起動**する
+    - ⚠️ 各 Designer は `harness/design-proposals/Fxxx-A.json` / `Fxxx-B.json` / `Fxxx-C.json` に提案を書くのみ
+    - ⚠️ ソースファイル（src/ 以下）への直接 Write/Edit は**禁止**
+11. **Design Judge Agent**（Sonnet）を起動し、3 案の JSON を比較して最良案を決定する
+12. **Generator**（Opus）が Design Judge の選択した JSON 提案に従いソースファイルを更新する
+    - git commit する（`style: apply Design Judge recommendations for Fxxx`）
+
+### フェーズ 4: レビュー
 13. **Security Reviewer Agent**（Sonnet）を起動し、技術的脆弱性をチェックする
     - FAIL の場合: Generator に差し戻し → 修正 → 再チェック
     - WARNING の場合: 次へ進む
@@ -29,20 +45,23 @@ SleepForecast の次の failing 機能を 1 つ実装するサイクルを実行
     - FAIL の場合: Generator に差し戻し → 修正 → 再チェック
     - PASS / WARNING の場合: 次へ進む
 15. **Evaluator Agent**（Sonnet）を起動し、4 軸で採点する（閾値 各 8 点以上）
+
+### フェーズ 5: 完了
 16. 評価結果を feature-list.json と claude-progress.txt に反映する
 17. 最終 git commit（`feat: complete Fxxx`）してセッションサマリを出力する
 
-## エージェント構成（9 体制）
+## エージェント構成（12 体制）
 
 | # | エージェント | モデル | 役割 | タイミング |
 |---|---|---|---|---|
-| 1 | Planner | Sonnet | 仕様 refine | 最初 |
-| 2 | Generator | Opus | コード実装 | 2nd / 各差し戻し後 |
+| 0 | **File Integrity Agent** | **Sonnet** | **破損検知・自動修復** | **最初（フェーズ 0）** |
+| 1 | Planner | Sonnet | 仕様 refine | フェーズ 1 後 |
+| 2 | Generator | Opus | コード実装 / デザイン適用 | 実装 + デザイン後 |
 | 3 | Dependency Auditor | Haiku | import / 脆弱性高速チェック | 実装直後 |
 | 4 | Test Engineer | Sonnet | テスト作成・実行 | Dep Auditor 後 |
-| 5 | Designer A | Opus | ミニマル・モダン案 | 並列 |
-| 6 | Designer B | Opus | ウェルネス・感情デザイン案 | 並列 |
-| 7 | Designer C | Opus | データビジュアライゼーション案 | 並列 |
+| 5 | Designer A | Opus | ミニマル・モダン案（JSON のみ） | 並列 |
+| 6 | Designer B | Opus | ウェルネス・感情デザイン案（JSON のみ） | 並列 |
+| 7 | Designer C | Opus | データビジュアライゼーション案（JSON のみ） | 並列 |
 | 8 | Design Judge | Sonnet | 3 案比較・最良案決定 | Designer 後 |
 | 9 | Security Reviewer | Sonnet | 技術的脆弱性チェック | デザイン適用後 |
 | 10 | Legal | Sonnet | 法的コンプライアンスチェック | Security 後 |
