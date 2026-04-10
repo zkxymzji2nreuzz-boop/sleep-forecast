@@ -561,3 +561,11 @@ Format:
 - Files created: src/content/articles/{kandansa-hirou,fuminshou-sign,jiritsu-shinkei,suimin-fusai,blue-light,gaba-supplement,kisho-byo-check}.md
 - Verification: npm run test (69/69 pass), npm run build (23 pages, 10 article SSG routes), npm run lint (0 warnings), sitemap has all 10 article URLs
 - Next action: Evaluator should run
+
+[2026-04-10 14:30] Evaluator - F005 "SEO 記事システムと PWA 化" (retry 2)
+- Design Quality: 9/10 - Indigo/purple/rose wellness gradient fully consistent with F003/F004. Article header, TOC card, CTA block, related-article cards all cohesive. prose-lg + leading-[1.9] reading width 680px is optimal. Minor: no per-article hero image (only og-default.png shared), slight missed opportunity.
+- Originality: 9/10 - Custom extractTocFromHtml regex approach instead of rehype-toc plugin shows deliberate craft. "月夜文庫" aesthetic with gradient dividers, numbered TOC items (01/02...), subtle left-edge accent bar on hover. Not a generic shadcn template.
+- Craft: 8/10 - Focus-visible rings on all interactive elements (ARIA compliant). min-h-[44px] on back-link satisfies touch target spec. Time element with dateTime attribute. aria-hidden on decorative icons. Path traversal defense via slug regex guard. dangerouslySetInnerHTML XSS mitigation (replace < with \u003c). One small gap: TOC links are anchor jumps but no smooth-scroll CSS — minor UX miss.
+- Functionality: 8/10 - All 7 acceptance criteria met: /articles/kiatsu-zutsu renders, 10 articles SSG'd, sitemap.xml contains all 10 article URLs, per-article OGP in generateMetadata, manifest.json theme_color #1d9bf0 for PWA add-to-homescreen, JSON-LD Article schema embedded. Offline /record: SW registered via next-pwa (not device-testable in CI). Medical disclaimer present on both index and detail pages.
+- Decision: passing
+- Feedback for next session: Consider adding smooth-scroll (scroll-behavior: smooth on html element) for TOC anchor links. Per-article OGP image generation (e.g. @vercel/og) would strengthen social sharing. Move to F006 (必須ページと広告準備).
