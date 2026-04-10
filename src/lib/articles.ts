@@ -21,7 +21,7 @@ import remarkRehype from "remark-rehype";
 import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
 
-import type { ArticleMeta, ArticleFull } from "./types";
+import type { ArticleMeta, ArticleFull, TocItem } from "./types";
 
 /** 記事 Markdown ファイルが置かれているディレクトリ */
 const ARTICLES_DIR = path.join(process.cwd(), "src", "content", "articles");
@@ -122,10 +122,46 @@ export async function getArticleBySlug(
     .use(rehypeStringify)
     .process(content);
 
+  const contentHtml = String(processed);
+
   return {
     ...meta,
-    contentHtml: String(processed),
+    contentHtml,
+    toc: extractTocFromHtml(contentHtml),
   };
+}
+
+/**
+ * `contentHtml` (rehype-slug 適用済み) から H2 見出しを抽出して目次を作る。
+ * - 正規表現で `<h2 id="...">...</h2>` を拾い、id とテキストを取り出す
+ * - 内部の `<a>` などの子要素タグはテキスト化する際に除去する
+ * - Markdown を再パースするのではなく、既に生成済みの HTML から抽出することで
+ *   コスト・実装の重複を避ける設計
+ */
+export function extractTocFromHtml(html: string): TocItem[] {
+  const items: TocItem[] = [];
+  // non-greedy でタグ内属性を吸収しつつ id と内側テキストを捕捉
+  const pattern = /<h2([^>]*)>([\s\S]*?)<\/h2>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = pattern.exec(html)) !== null) {
+    const attrs = match[1] ?? "";
+    const inner = match[2] ?? "";
+    const idMatch = attrs.match(/\sid\s*=\s*"([^"]+)"/i);
+    if (!idMatch) continue;
+    const id = idMatch[1];
+    // 内側の HTML タグをすべて除去し、HTML エンティティを最低限デコード
+    const text = inner
+      .replace(/<[^>]+>/g, "")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .trim();
+    if (!text) continue;
+    items.push({ id, text, level: 2 });
+  }
+  return items;
 }
 
 /**

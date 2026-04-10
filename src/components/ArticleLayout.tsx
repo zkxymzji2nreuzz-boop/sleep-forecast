@@ -100,6 +100,36 @@ export function ArticleLayout({ article, related }: Props) {
         />
       </header>
 
+      {/* 目次 (H2 が 3 件以上あるときのみ表示) */}
+      {article.toc.length >= 3 && (
+        <nav
+          aria-label="目次"
+          className="mb-12 rounded-2xl border border-indigo-300/20 bg-gradient-to-br from-indigo-500/[0.06] via-purple-500/[0.04] to-transparent p-5 sm:p-6"
+        >
+          <div className="mb-3 flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-indigo-300" aria-hidden="true" />
+            <h2 className="text-sm font-semibold tracking-wide text-[#e6e8ee]">
+              目次
+            </h2>
+          </div>
+          <ol className="space-y-2 text-sm">
+            {article.toc.map((item, index) => (
+              <li key={item.id} className="leading-relaxed">
+                <Link
+                  href={`#${item.id}`}
+                  className="inline-flex gap-2 rounded-sm text-[#e6e8ee]/85 transition-colors hover:text-indigo-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1117]"
+                >
+                  <span className="mt-0.5 text-[11px] tabular-nums text-indigo-300/70">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span>{item.text}</span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
+
       {/* 本文 (remark 変換済み HTML) — prose-lg + leading-[1.9] の月夜文庫 */}
       <div
         className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-[#e6e8ee] prose-h2:mb-5 prose-h2:mt-14 prose-h2:border-l-[3px] prose-h2:border-indigo-400/70 prose-h2:pl-4 prose-h2:text-2xl prose-h2:leading-snug prose-h3:mt-10 prose-h3:text-xl prose-h3:text-[#e6e8ee] prose-p:leading-[1.9] prose-p:text-[#e6e8ee]/90 prose-a:text-indigo-300 prose-a:decoration-indigo-400/40 prose-a:underline-offset-4 hover:prose-a:decoration-indigo-300 prose-blockquote:rounded-r-xl prose-blockquote:border-l-indigo-400/60 prose-blockquote:bg-indigo-500/[0.04] prose-blockquote:py-2 prose-blockquote:pr-4 prose-blockquote:text-[#e6e8ee]/80 prose-strong:font-semibold prose-strong:text-[#e6e8ee] prose-code:rounded-md prose-code:bg-white/[0.06] prose-code:px-1.5 prose-code:py-0.5 prose-code:text-indigo-200 prose-code:before:content-none prose-code:after:content-none prose-li:my-1 prose-li:leading-[1.85] prose-li:text-[#e6e8ee]/90"

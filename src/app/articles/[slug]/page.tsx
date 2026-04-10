@@ -50,11 +50,27 @@ export async function generateMetadata({
       modifiedTime: article.updatedAt,
       tags: article.tags,
       locale: "ja_JP",
+      images: [
+        {
+          url: "/og-default.png",
+          width: 1200,
+          height: 630,
+          alt: article.title,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: article.title,
       description: article.description,
+      images: [
+        {
+          url: "/og-default.png",
+          width: 1200,
+          height: 630,
+          alt: article.title,
+        },
+      ],
     },
   };
 }

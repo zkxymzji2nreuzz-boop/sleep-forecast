@@ -162,6 +162,20 @@ export type ArticleMeta = {
 };
 
 /**
+ * 目次項目。記事本文の H2 見出しから抽出した最小構造。
+ * `id` は rehype-slug によって付与された見出し id、
+ * `text` は見出しのプレーンテキスト。
+ */
+export type TocItem = {
+  /** rehype-slug が付与した見出し id (例: "kiatsu-to-zutsu") */
+  id: string;
+  /** 見出しのプレーンテキスト */
+  text: string;
+  /** 見出しレベル (現時点では 2 のみ使用) */
+  level: 2;
+};
+
+/**
  * 記事の本文付き完全体。
  * `contentHtml` は remark-rehype で HTML 文字列化したもの。
  * Server Component からのみ取得されるため、XSS の心配は相対的に低い
@@ -170,6 +184,8 @@ export type ArticleMeta = {
 export type ArticleFull = ArticleMeta & {
   /** remark → rehype 変換済みの HTML 文字列 */
   contentHtml: string;
+  /** contentHtml から抽出した H2 目次 (3 件未満なら UI は非表示) */
+  toc: TocItem[];
 };
 
 /**

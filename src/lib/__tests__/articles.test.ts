@@ -8,17 +8,29 @@ import {
   getAllArticlesMeta,
   getArticleBySlug,
   getRelatedArticles,
+  extractTocFromHtml,
 } from "../articles";
 
-const EXPECTED_SLUGS = ["kiatsu-zutsu", "suimin-shitsu-up", "tsuki-to-suimin"];
+const EXPECTED_SLUGS = [
+  "kiatsu-zutsu",
+  "suimin-shitsu-up",
+  "tsuki-to-suimin",
+  "kandansa-hirou",
+  "fuminshou-sign",
+  "jiritsu-shinkei",
+  "suimin-fusai",
+  "blue-light",
+  "gaba-supplement",
+  "kisho-byo-check",
+];
 
 // ---------------------------------------------------------------------------
 // getAllArticleSlugs
 // ---------------------------------------------------------------------------
 describe("getAllArticleSlugs", () => {
-  it("happy: 3 件のスラッグを返す", () => {
+  it("happy: 10 件のスラッグを返す", () => {
     const slugs = getAllArticleSlugs();
-    expect(slugs).toHaveLength(3);
+    expect(slugs).toHaveLength(10);
     for (const slug of EXPECTED_SLUGS) {
       expect(slugs).toContain(slug);
     }
@@ -43,9 +55,9 @@ describe("getAllArticleSlugs", () => {
 // getAllArticlesMeta
 // ---------------------------------------------------------------------------
 describe("getAllArticlesMeta", () => {
-  it("happy: 3 件のメタデータを返す", () => {
+  it("happy: 10 件のメタデータを返す", () => {
     const metas = getAllArticlesMeta();
-    expect(metas).toHaveLength(3);
+    expect(metas).toHaveLength(10);
   });
 
   it("happy: publishedAt 降順でソートされている", () => {
@@ -108,6 +120,24 @@ describe("getArticleBySlug", () => {
     expect(article).not.toBeNull();
     expect(article!.slug).toBe("suimin-shitsu-up");
   });
+
+  it("happy: 新規記事 kandansa-hirou が取得できる", async () => {
+    const article = await getArticleBySlug("kandansa-hirou");
+    expect(article).not.toBeNull();
+    expect(article!.slug).toBe("kandansa-hirou");
+    expect(article!.toc.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it("happy: toc プロパティが存在し TocItem[] 型である", async () => {
+    const article = await getArticleBySlug("kiatsu-zutsu");
+    expect(article).not.toBeNull();
+    expect(Array.isArray(article!.toc)).toBe(true);
+    for (const item of article!.toc) {
+      expect(typeof item.id).toBe("string");
+      expect(typeof item.text).toBe("string");
+      expect(item.level).toBe(2);
+    }
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -135,5 +165,45 @@ describe("getRelatedArticles", () => {
   it("edge: 全スラッグが不正なら空配列を返す", () => {
     const related = getRelatedArticles(["bad-slug-1", "bad-slug-2"]);
     expect(related).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// extractTocFromHtml
+// ---------------------------------------------------------------------------
+describe("extractTocFromHtml", () => {
+  it("happy: H2 見出しを正しく抽出する", () => {
+    const html = `
+      <h2 id="first">最初の見出し</h2>
+      <p>段落</p>
+      <h2 id="second">2 番目の見出し</h2>
+      <h3 id="sub">サブ見出し</h3>
+      <h2 id="third">3 番目の見出し</h2>
+    `;
+    const toc = extractTocFromHtml(html);
+    expect(toc).toHaveLength(3);
+    expect(toc[0]).toEqual({ id: "first", text: "最初の見出し", level: 2 });
+    expect(toc[1]).toEqual({ id: "second", text: "2 番目の見出し", level: 2 });
+    expect(toc[2]).toEqual({ id: "third", text: "3 番目の見出し", level: 2 });
+  });
+
+  it("happy: 子タグを除去してテキストだけを抽出する", () => {
+    const html = `<h2 id="linked"><a href="#">リンク付き見出し</a></h2>`;
+    const toc = extractTocFromHtml(html);
+    expect(toc).toHaveLength(1);
+    expect(toc[0].text).toBe("リンク付き見出し");
+  });
+
+  it("edge: id 属性がない H2 はスキップする", () => {
+    const html = `<h2>id なし</h2><h2 id="valid">あり</h2>`;
+    const toc = extractTocFromHtml(html);
+    expect(toc).toHaveLength(1);
+    expect(toc[0].id).toBe("valid");
+  });
+
+  it("edge: H2 がない場合は空配列を返す", () => {
+    const html = `<h3 id="sub">見出し</h3><p>段落</p>`;
+    const toc = extractTocFromHtml(html);
+    expect(toc).toEqual([]);
   });
 });
