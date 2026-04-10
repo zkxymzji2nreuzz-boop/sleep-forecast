@@ -13,8 +13,9 @@ type Props = {
 
 /**
  * Google AdSense 広告バナー。
- * NEXT_PUBLIC_ADSENSE_CLIENT が未設定の場合は高さゼロの非表示 div を描画し、
- * レイアウトに影響を与えない。
+ * - ADSENSE_CLIENT 設定時: AdSense 広告を描画
+ * - 開発環境 + 未設定時: プレースホルダーを表示
+ * - 本番 + 未設定時: 高さゼロの非表示 div
  */
 export function AdBanner({ slot, format = "auto", className = "" }: Props) {
   const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
@@ -33,22 +34,35 @@ export function AdBanner({ slot, format = "auto", className = "" }: Props) {
     }
   }, [adsenseClient]);
 
-  // AdSense 未設定時: レイアウトに影響を与えない空要素
-  if (!adsenseClient) {
-    return <div aria-hidden="true" className="h-0 overflow-hidden" />;
+  // AdSense 設定済み: 広告を描画
+  if (adsenseClient) {
+    return (
+      <div className={`rounded-2xl overflow-hidden ${className}`}>
+        <ins
+          ref={adRef}
+          className="adsbygoogle block"
+          style={{ display: "block" }}
+          data-ad-client={adsenseClient}
+          data-ad-slot={slot}
+          data-ad-format={format}
+          data-full-width-responsive="true"
+        />
+      </div>
+    );
   }
 
-  return (
-    <div className={className}>
-      <ins
-        ref={adRef}
-        className="adsbygoogle block"
-        style={{ display: "block" }}
-        data-ad-client={adsenseClient}
-        data-ad-slot={slot}
-        data-ad-format={format}
-        data-full-width-responsive="true"
-      />
-    </div>
-  );
+  // 開発環境: プレースホルダー表示
+  if (process.env.NODE_ENV === "development") {
+    return (
+      <div
+        aria-hidden="true"
+        className="rounded-xl border border-dashed border-white/[0.06] bg-white/[0.02] py-6 flex items-center justify-center text-xs text-[#8b92a5]/50"
+      >
+        広告スペース
+      </div>
+    );
+  }
+
+  // 本番 + 未設定: レイアウトに影響を与えない空要素
+  return <div aria-hidden="true" className="h-0 overflow-hidden" />;
 }

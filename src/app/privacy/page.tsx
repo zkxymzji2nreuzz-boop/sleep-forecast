@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Shield, Calendar } from "lucide-react";
 import { Breadcrumb } from "@/components/Breadcrumb";
 
 export const metadata: Metadata = {
@@ -9,20 +10,32 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="container mx-auto max-w-[680px] px-5 pb-20 pt-10 sm:pt-14">
+    <div className="container mx-auto max-w-[680px] px-5 pb-20">
+      {/* グラデーション・ミニヒーロー */}
+      <div className="relative mb-10 rounded-b-[2rem] bg-gradient-to-b from-indigo-500/[0.06] via-purple-500/[0.03] to-transparent pb-8 pt-10 sm:pt-14 px-5">
+        <div className="mb-3 flex justify-center">
+          <Shield className="h-8 w-8 text-indigo-300/60" aria-hidden="true" />
+        </div>
+        <h1 className="text-center text-2xl font-bold tracking-tight text-[#e6e8ee] sm:text-3xl">
+          プライバシーポリシー
+        </h1>
+        <div className="mt-6 h-px bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent" />
+      </div>
+
       <Breadcrumb
         items={[{ name: "ホーム", href: "/" }, { name: "プライバシーポリシー" }]}
       />
 
-      <h1 className="mb-4 text-2xl font-bold tracking-tight text-[#e6e8ee] sm:text-3xl">
-        プライバシーポリシー
-      </h1>
-      <p className="mb-10 text-sm text-[#8b92a5]">最終更新日: 2026年4月10日</p>
+      {/* 更新日表示 */}
+      <div className="mb-10 flex items-center gap-1.5 text-sm text-[#8b92a5]">
+        <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
+        最終更新日: 2026年4月10日
+      </div>
 
-      <div className="space-y-10 text-sm leading-relaxed text-[#e6e8ee]/90">
+      <div className="space-y-14 text-sm leading-[1.85] text-[#e6e8ee]/85">
         {/* 基本方針 */}
-        <section>
-          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             1. 基本方針
           </h2>
           <p>
@@ -33,8 +46,8 @@ export default function PrivacyPage() {
         </section>
 
         {/* 収集する情報 */}
-        <section>
-          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             2. 収集する情報
           </h2>
           <p className="mb-3">
@@ -50,8 +63,8 @@ export default function PrivacyPage() {
         </section>
 
         {/* データ保存 */}
-        <section>
-          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             3. データの保存について（localStorage）
           </h2>
           <p>
@@ -65,8 +78,8 @@ export default function PrivacyPage() {
         </section>
 
         {/* アクセス解析 */}
-        <section>
-          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             4. アクセス解析（Google Analytics 4）
           </h2>
           <p>
@@ -90,8 +103,8 @@ export default function PrivacyPage() {
         </section>
 
         {/* 広告 */}
-        <section>
-          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             5. 広告配信（Google AdSense）
           </h2>
           <p>
@@ -113,8 +126,8 @@ export default function PrivacyPage() {
         </section>
 
         {/* 位置情報 */}
-        <section>
-          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             6. 位置情報の取り扱い
           </h2>
           <p>
@@ -125,8 +138,8 @@ export default function PrivacyPage() {
         </section>
 
         {/* 第三者への提供 */}
-        <section>
-          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             7. 第三者への情報提供
           </h2>
           <p>
@@ -135,8 +148,8 @@ export default function PrivacyPage() {
         </section>
 
         {/* 改定 */}
-        <section>
-          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             8. プライバシーポリシーの変更
           </h2>
           <p>
@@ -146,8 +159,8 @@ export default function PrivacyPage() {
         </section>
 
         {/* お問い合わせ */}
-        <section>
-          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             9. お問い合わせ
           </h2>
           <p>

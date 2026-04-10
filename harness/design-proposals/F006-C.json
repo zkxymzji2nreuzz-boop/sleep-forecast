@@ -1,0 +1,105 @@
+{
+  "proposal": "C",
+  "feature": "F006",
+  "title": "Data-Scientific Document System",
+  "designPhilosophy": "Structured, numbered, clinical precision. Treat legal/info pages like scientific documentation with clear taxonomy, table-format data summaries, and monospaced section identifiers for scanability.",
+  "tokens": {
+    "bg": "#0f1117",
+    "card": "#1a1f2e",
+    "accent": "#1d9bf0",
+    "text": "#e6e8ee",
+    "muted": "#8b92a5",
+    "maxWidth": "max-w-[680px]"
+  },
+  "components": {
+    "breadcrumb": {
+      "changes": [
+        "Replace plain text breadcrumb with badge-style segments: each item gets bg-[#1a1f2e] rounded-md px-2.5 py-1 border border-white/[0.06]",
+        "Active (last) item uses bg-[#1d9bf0]/10 text-[#1d9bf0] border-[#1d9bf0]/20 font-medium",
+        "Separator: ChevronRight replaced with a small slash '/' in text-[#8b92a5]/40 font-mono to evoke file-path / taxonomy feel",
+        "Home item prefixed with a tiny Database or FileText icon from lucide-react (h-3 w-3) for visual anchor"
+      ],
+      "codeSample": "<nav aria-label=\"パンくずリスト\" className=\"mb-6 flex flex-wrap items-center gap-1.5 text-xs\">\n  {items.map((item, index) => {\n    const isLast = index === items.length - 1;\n    return (\n      <span key={item.name} className=\"inline-flex items-center gap-1.5\">\n        {index > 0 && <span className=\"font-mono text-[#8b92a5]/40\">/</span>}\n        {item.href && !isLast ? (\n          <Link href={item.href} className=\"rounded-md border border-white/[0.06] bg-[#1a1f2e] px-2.5 py-1 text-[#8b92a5] transition-colors hover:border-[#1d9bf0]/30 hover:text-[#e6e8ee]\">{item.name}</Link>\n        ) : (\n          <span className=\"rounded-md border border-[#1d9bf0]/20 bg-[#1d9bf0]/10 px-2.5 py-1 font-medium text-[#1d9bf0]\">{item.name}</span>\n        )}\n      </span>\n    );\n  })}\n</nav>"
+    },
+    "sectionHeadings": {
+      "changes": [
+        "Replace border-l-[3px] border-indigo-400/70 with a monospaced section number badge + teal accent",
+        "Section number: font-mono text-xs bg-[#1d9bf0]/10 text-[#1d9bf0] rounded px-1.5 py-0.5 mr-2 inline-block",
+        "Heading text: text-base font-bold text-[#e6e8ee] (slightly smaller than current lg for density)",
+        "Add a subtle bottom border: border-b border-white/[0.06] pb-3 mb-4 to each heading for separation"
+      ],
+      "codeSample": "<h2 className=\"mb-4 flex items-center gap-2 border-b border-white/[0.06] pb-3 text-base font-bold text-[#e6e8ee]\">\n  <span className=\"inline-block rounded bg-[#1d9bf0]/10 px-1.5 py-0.5 font-mono text-xs text-[#1d9bf0]\">01</span>\n  基本方針\n</h2>"
+    },
+    "privacyDataTable": {
+      "changes": [
+        "Convert the 'collected data' list in privacy page into a structured table with columns: Data Type | Storage | Sent to Server",
+        "Table styled with: border border-white/[0.06] rounded-lg overflow-hidden, header row bg-[#1a1f2e], body rows bg-transparent",
+        "Server column shows a green Shield icon for 'no' (data stays local) to reinforce trust",
+        "This replaces the simple <ul> bullet list with a more scientific, precise format"
+      ],
+      "codeSample": "<div className=\"overflow-hidden rounded-lg border border-white/[0.06]\">\n  <table className=\"w-full text-left text-sm\">\n    <thead className=\"bg-[#1a1f2e] text-xs uppercase tracking-wider text-[#8b92a5]\">\n      <tr>\n        <th className=\"px-4 py-2.5\">データ種別</th>\n        <th className=\"px-4 py-2.5\">保存先</th>\n        <th className=\"px-4 py-2.5\">外部送信</th>\n      </tr>\n    </thead>\n    <tbody className=\"divide-y divide-white/[0.04] text-[#e6e8ee]/90\">\n      <tr><td className=\"px-4 py-2.5\">睡眠品質 (5段階)</td><td className=\"px-4 py-2.5\">localStorage</td><td className=\"px-4 py-2.5 text-emerald-400\">なし</td></tr>\n      <tr><td className=\"px-4 py-2.5\">都道府県</td><td className=\"px-4 py-2.5\">localStorage</td><td className=\"px-4 py-2.5 text-emerald-400\">なし</td></tr>\n      <tr><td className=\"px-4 py-2.5\">気象データ</td><td className=\"px-4 py-2.5\">localStorage</td><td className=\"px-4 py-2.5 text-[#8b92a5]\">API取得のみ</td></tr>\n    </tbody>\n  </table>\n</div>"
+    },
+    "aboutOperatorInfo": {
+      "changes": [
+        "Convert dl/dd list into a card with grid layout: grid grid-cols-[100px_1fr] gap-y-3 gap-x-4",
+        "Labels (dt) styled as: font-mono text-xs uppercase tracking-wider text-[#8b92a5]",
+        "Card wrapper: rounded-lg border border-white/[0.06] bg-[#1a1f2e] p-5",
+        "This gives a structured, database-record feel to operator information"
+      ],
+      "codeSample": "<div className=\"rounded-lg border border-white/[0.06] bg-[#1a1f2e] p-5\">\n  <div className=\"grid grid-cols-[100px_1fr] gap-x-4 gap-y-3 text-sm\">\n    <span className=\"font-mono text-xs uppercase tracking-wider text-[#8b92a5]\">運営者名</span>\n    <span className=\"text-[#e6e8ee]\">SleepForecast 運営者</span>\n    <span className=\"font-mono text-xs uppercase tracking-wider text-[#8b92a5]\">サービス</span>\n    <span className=\"text-[#e6e8ee]\">SleepForecast（眠れる明日予報）</span>\n  </div>\n</div>"
+    },
+    "medicalDisclaimer": {
+      "changes": [
+        "Keep amber styling for terms page medical disclaimer section (good contrast, important content)",
+        "Change border-amber to border-[#f59e0b]/30 and bg to bg-[#f59e0b]/5 for consistency with teal-first palette",
+        "Add a ShieldAlert icon (lucide-react) before the h2 for visual emphasis",
+        "Font size remains unchanged per constraints"
+      ],
+      "codeSample": "<section className=\"rounded-xl border border-[#f59e0b]/30 bg-[#f59e0b]/5 p-5\">\n  <h2 className=\"mb-4 flex items-center gap-2 text-base font-bold text-[#e6e8ee]\">\n    <ShieldAlert className=\"h-5 w-5 text-[#f59e0b]\" />\n    <span className=\"inline-block rounded bg-[#f59e0b]/10 px-1.5 py-0.5 font-mono text-xs text-[#f59e0b]\">02</span>\n    医療免責\n  </h2>\n</section>"
+    },
+    "contactCard": {
+      "changes": [
+        "Change icon background from bg-indigo-500/15 to bg-[#1d9bf0]/10, icon color to text-[#1d9bf0]",
+        "Email button: border-[#1d9bf0]/20 bg-[#1d9bf0]/10 text-[#1d9bf0] hover:border-[#1d9bf0]/40 hover:bg-[#1d9bf0]/20",
+        "Focus ring: focus-visible:ring-[#1d9bf0]"
+      ]
+    },
+    "adBanner": {
+      "changes": [
+        "No visual changes needed - AdBanner correctly renders nothing when ADSENSE_CLIENT is unset",
+        "Ensure placeholder div remains aria-hidden and h-0 for zero layout impact",
+        "When active, wrapper className should include: my-8 rounded-lg border border-white/[0.06] bg-[#1a1f2e] p-2 text-center",
+        "Add a tiny 'Ad' label: text-[10px] uppercase tracking-widest text-[#8b92a5]/50 mb-1"
+      ]
+    },
+    "links": {
+      "changes": [
+        "All internal/external links: replace text-indigo-300 with text-[#1d9bf0]",
+        "Underline: decoration-[#1d9bf0]/30 hover:decoration-[#1d9bf0]/70",
+        "Consistent across all 4 pages"
+      ]
+    },
+    "pageTitle": {
+      "changes": [
+        "Add a subtle page-type badge above h1: text-[10px] uppercase tracking-[0.15em] text-[#1d9bf0] font-mono mb-2",
+        "Badge text per page: 'ABOUT' / 'PRIVACY POLICY' / 'TERMS OF SERVICE' / 'CONTACT'",
+        "This gives a document-classification feel, like a scientific paper header"
+      ],
+      "codeSample": "<div className=\"mb-2 font-mono text-[10px] uppercase tracking-[0.15em] text-[#1d9bf0]\">PRIVACY POLICY</div>\n<h1 className=\"mb-4 text-2xl font-bold tracking-tight text-[#e6e8ee] sm:text-3xl\">プライバシーポリシー</h1>"
+    },
+    "updateDate": {
+      "changes": [
+        "Wrap update date in a badge-style element: inline-flex items-center gap-1.5 rounded-md bg-[#1a1f2e] border border-white/[0.06] px-3 py-1 text-xs text-[#8b92a5]",
+        "Prefix with Calendar icon (lucide-react, h-3 w-3) for visual clarity"
+      ],
+      "codeSample": "<div className=\"mb-10 inline-flex items-center gap-1.5 rounded-md border border-white/[0.06] bg-[#1a1f2e] px-3 py-1 text-xs text-[#8b92a5]\">\n  <Calendar className=\"h-3 w-3\" />\n  最終更新日: 2026年4月10日\n</div>"
+    }
+  },
+  "expectedEffects": [
+    "Monospaced section numbers and badge breadcrumbs create a structured, taxonomy-driven reading experience",
+    "Privacy data table provides at-a-glance clarity on what data is collected and where it stays",
+    "Teal (#1d9bf0) accent unifies all pages under the scientific/data-visualization brand identity",
+    "Document-classification labels (ABOUT, PRIVACY POLICY, etc.) reinforce authority and professionalism",
+    "Operator info grid layout looks like a structured database record, enhancing trust"
+  ]
+}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Moon, Info } from "lucide-react";
 import { Breadcrumb } from "@/components/Breadcrumb";
 
 export const metadata: Metadata = {
@@ -9,17 +10,24 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="container mx-auto max-w-[680px] px-5 pb-20 pt-10 sm:pt-14">
+    <div className="container mx-auto max-w-[680px] px-5 pb-20">
+      {/* グラデーション・ミニヒーロー */}
+      <div className="relative mb-10 rounded-b-[2rem] bg-gradient-to-b from-indigo-500/[0.06] via-purple-500/[0.03] to-transparent pb-8 pt-10 sm:pt-14 px-5">
+        <div className="mb-3 flex justify-center">
+          <Moon className="h-8 w-8 text-indigo-300/60" aria-hidden="true" />
+        </div>
+        <h1 className="text-center text-2xl font-bold tracking-tight text-[#e6e8ee] sm:text-3xl">
+          運営者情報
+        </h1>
+        <div className="mt-6 h-px bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent" />
+      </div>
+
       <Breadcrumb items={[{ name: "ホーム", href: "/" }, { name: "運営者情報" }]} />
 
-      <h1 className="mb-8 text-2xl font-bold tracking-tight text-[#e6e8ee] sm:text-3xl">
-        運営者情報
-      </h1>
-
-      <div className="space-y-10 text-sm leading-relaxed text-[#e6e8ee]/90">
+      <div className="space-y-14 text-sm leading-[1.85] text-[#e6e8ee]/85">
         {/* SleepForecast について */}
-        <section>
-          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             SleepForecast について
           </h2>
           <p>
@@ -34,8 +42,9 @@ export default function AboutPage() {
         </section>
 
         {/* 開発ストーリー */}
-        <section>
-          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        <section className="rounded-3xl border border-white/[0.08] bg-gradient-to-br from-indigo-500/[0.06] via-purple-500/[0.03] to-transparent p-6 sm:p-8">
+          <h2 className="mb-4 flex items-center gap-2 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
+            <Moon className="h-5 w-5 text-indigo-300/70" aria-hidden="true" />
             開発ストーリー
           </h2>
           <p>
@@ -51,8 +60,8 @@ export default function AboutPage() {
         </section>
 
         {/* 運営者情報 */}
-        <section>
-          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             運営者情報
           </h2>
           <dl className="space-y-3">
@@ -80,8 +89,8 @@ export default function AboutPage() {
         </section>
 
         {/* 目的 */}
-        <section>
-          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             サービスの目的
           </h2>
           <ul className="list-inside list-disc space-y-2 text-[#e6e8ee]/85">
@@ -92,10 +101,15 @@ export default function AboutPage() {
         </section>
 
         {/* 医療免責 */}
-        <p className="mt-6 text-xs leading-relaxed text-[#8b92a5]">
-          ※ 本サービスは医療行為・診断を目的としたものではありません。
-          体調に不安がある場合は医療機関にご相談ください。
-        </p>
+        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+          <p className="flex items-start gap-2 text-xs leading-relaxed text-[#8b92a5]">
+            <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#8b92a5]" aria-hidden="true" />
+            <span>
+              本サービスは医療行為・診断を目的としたものではありません。
+              体調に不安がある場合は医療機関にご相談ください。
+            </span>
+          </p>
+        </div>
       </div>
     </div>
   );

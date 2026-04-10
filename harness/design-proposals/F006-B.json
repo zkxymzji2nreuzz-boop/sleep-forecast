@@ -1,0 +1,141 @@
+{
+  "designer": "B",
+  "theme": "wellness-emotional",
+  "feature": "F006",
+  "philosophy": "法定ページや運営者情報は『堅い義務文書』になりがちだが、SleepForecast では『あなたの眠りを守るための約束ごと』として温かく包む。F003-F005 で確立した indigo-purple-rose グラデーション、rounded-3xl、Moon/Cloud アイコン、呼吸する余白を法的ページにも接続し、30-50 代女性が安心して読み進められる『月灯りの下の契約書』を目指す。",
+  "components": {
+    "SharedPageHero": {
+      "description": "全 4 ページ共通のミニヒーロー。ページ上部にグラデーション背景と lucide アイコンを配置し、文書ページにも情緒を持たせる。",
+      "tailwindClasses": "relative mb-10 rounded-b-[2rem] bg-gradient-to-b from-indigo-500/[0.06] via-purple-500/[0.03] to-transparent pb-8 pt-10 sm:pt-14 px-5",
+      "keyDecisions": [
+        "各ページに専用 lucide アイコンを配置: about=Moon, privacy=Shield, terms=FileText, contact=Mail",
+        "アイコンは h-8 w-8 text-indigo-300/60 で控えめに。下に h1 を配置",
+        "h1 は text-2xl sm:text-3xl font-bold tracking-tight text-[#e6e8ee]。現行と同サイズだがヒーロー文脈に配置",
+        "ヒーロー下端に h-px bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent のソフトセパレータ"
+      ]
+    },
+    "SectionHeading": {
+      "description": "h2 の border-l スタイルを F005-B の prose-h2 に合わせ、indigo-400/70 に統一。",
+      "tailwindClasses": "mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]",
+      "keyDecisions": [
+        "現行と同じスタイルだが、border 色を統一確認。indigo-400/70 で F005 と連続性を持たせる",
+        "leading-snug を追加し、2 行になった場合も美しく折り返す"
+      ]
+    },
+    "AboutPage": {
+      "description": "運営者情報を『ストーリーテリング』として温かく表現。開発ストーリーセクションを rounded-3xl カードで包む。",
+      "tailwindClasses": "container mx-auto max-w-[680px] px-5 pb-20",
+      "keyDecisions": [
+        "開発ストーリーセクションを rounded-3xl border border-white/[0.08] bg-gradient-to-br from-indigo-500/[0.06] via-purple-500/[0.03] to-transparent p-6 sm:p-8 でカード化し、感情的ハイライトに",
+        "開発ストーリー冒頭に Moon アイコン (h-5 w-5 text-indigo-300/70) を h2 横に添え、夜のエピソードを暗示",
+        "運営者情報 dl は rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 でカード化。dt は text-[#8b92a5] font-medium のまま",
+        "サービス目的 ul の各 li 前に小さな星マーク (text-indigo-300/50) を。list-disc を廃止し、カスタムマーカーとして Sparkles (h-3.5 w-3.5) を before 疑似要素的に flex で添える",
+        "医療免責文はサイズ text-xs を厳守。rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 で枠囲い。Info アイコン (h-3.5 w-3.5 text-[#8b92a5]) を左に配置"
+      ]
+    },
+    "PrivacyPage": {
+      "description": "条文が多いが、セクションごとにソフトなカードで区切り、読み疲れを軽減。",
+      "tailwindClasses": "container mx-auto max-w-[680px] px-5 pb-20",
+      "keyDecisions": [
+        "更新日を Calendar アイコン (h-3.5 w-3.5) + text-sm text-[#8b92a5] で表示。フォーマットは和暦風 '2026年4月10日'",
+        "全 section を rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6 でソフトカード化。space-y-6 で各セクション間に余白",
+        "外部リンク (Google, ads settings) のスタイルを text-indigo-300 underline decoration-indigo-400/40 underline-offset-4 hover:decoration-indigo-300 transition-colors のまま維持 (a11y)",
+        "ul の list-disc を維持。marker:text-indigo-400/50 で箇条書き色をブランドに寄せる"
+      ]
+    },
+    "TermsPage": {
+      "description": "医療免責条項を特別にハイライト。他条文はプライバシーと同じカードスタイル。",
+      "tailwindClasses": "container mx-auto max-w-[680px] px-5 pb-20",
+      "keyDecisions": [
+        "第2条（医療免責）は現行の amber-900/10 カードを維持・強化: rounded-2xl border border-amber-500/25 bg-gradient-to-br from-amber-900/15 via-amber-800/10 to-transparent p-5 sm:p-6。h2 の border-l は border-amber-400/70 のまま",
+        "医療免責の strong は font-bold text-amber-200 を維持。視認性最優先",
+        "他の条文セクションは PrivacyPage と同じ rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6 カード",
+        "更新日表示も PrivacyPage と同じ Calendar アイコン付き"
+      ]
+    },
+    "ContactPage": {
+      "description": "メールカードを温かい CTA スタイルに格上げ。安心感のある問い合わせ導線。",
+      "tailwindClasses": "container mx-auto max-w-[680px] px-5 pb-20",
+      "keyDecisions": [
+        "冒頭の挨拶文を少し温かいトーンに変更可能: 『いつも SleepForecast をお使いいただきありがとうございます。』",
+        "メールカードを rounded-3xl border border-indigo-300/20 bg-gradient-to-br from-indigo-500/10 via-purple-500/[0.06] to-transparent p-6 sm:p-8 に格上げ。F005-B の CTA カードと同じ温度感",
+        "Mail アイコン背景を rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-500/15 h-12 w-12 に拡大。アイコンは h-6 w-6 text-indigo-200",
+        "メールアドレスボタンを rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white px-5 py-2.5 shadow-lg shadow-indigo-500/20 に。グラデーションボタンで統一",
+        "回答について・お願いセクションは rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 カード化",
+        "医療免責は AboutPage と同じスタイル (rounded-2xl + Info アイコン)"
+      ]
+    },
+    "Breadcrumb": {
+      "description": "現行スタイルを維持。小さな改善のみ。",
+      "tailwindClasses": "mb-6 flex flex-wrap items-center gap-1.5 text-xs text-[#8b92a5]",
+      "keyDecisions": [
+        "gap-1 → gap-1.5 に微調整し、ゆとりを持たせる",
+        "ChevronRight を h-3 w-3 text-indigo-400/30 に。muted から indigo 系に揃え、ブランドの一貫性を強化",
+        "ホームリンクに Home アイコン (h-3 w-3) を添える選択肢もあるが、テキスト『ホーム』のままが日本語ユーザーに分かりやすいため維持",
+        "focus-visible リングは現行のまま (ring-indigo-300)"
+      ]
+    },
+    "AdBanner": {
+      "description": "AdSense 未設定時のプレースホルダーを少し見える形にし、レイアウト確認を容易にする案。本番では非表示のまま。",
+      "tailwindClasses": "rounded-2xl border border-dashed border-white/[0.06] bg-white/[0.01]",
+      "keyDecisions": [
+        "開発モードのみ: NODE_ENV=development 時に h-[90px] rounded-2xl border border-dashed border-white/[0.06] bg-white/[0.02] flex items-center justify-center text-xs text-[#8b92a5]/50 で『Ad Space』と表示",
+        "本番 (production) + ADSENSE_CLIENT 未設定時は現行通り h-0 overflow-hidden で非表示",
+        "ADSENSE_CLIENT 設定時は現行の ins タグをそのまま使用。外側 div に rounded-2xl overflow-hidden を追加し、角丸スタイルに",
+        "広告ラベル: 上部に text-[10px] text-[#8b92a5]/40 で『広告』と表記 (AdSense ポリシー準拠)"
+      ]
+    }
+  },
+  "microcopy": {
+    "about_hero_icon": "Moon",
+    "privacy_hero_icon": "Shield",
+    "terms_hero_icon": "FileText",
+    "contact_hero_icon": "Mail",
+    "disclaimer_prefix": "お知らせ",
+    "contact_greeting": "いつも SleepForecast をお使いいただきありがとうございます。ご質問やご要望がございましたら、お気軽にお問い合わせください。",
+    "ad_dev_placeholder": "Ad Space"
+  },
+  "tokens": {
+    "gradients": {
+      "hero_bg": "bg-gradient-to-b from-indigo-500/[0.06] via-purple-500/[0.03] to-transparent",
+      "story_card": "bg-gradient-to-br from-indigo-500/[0.06] via-purple-500/[0.03] to-transparent",
+      "contact_cta": "bg-gradient-to-br from-indigo-500/10 via-purple-500/[0.06] to-transparent",
+      "contact_button": "bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400",
+      "divider": "bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent",
+      "medical_disclaimer": "bg-gradient-to-br from-amber-900/15 via-amber-800/10 to-transparent"
+    },
+    "radius": {
+      "hero": "rounded-b-[2rem]",
+      "story_card": "rounded-3xl",
+      "section_card": "rounded-2xl",
+      "contact_cta": "rounded-3xl",
+      "button": "rounded-full",
+      "disclaimer": "rounded-2xl",
+      "ad_wrapper": "rounded-2xl"
+    },
+    "borders": {
+      "card": "border border-white/[0.06]",
+      "card_hover": "border-white/[0.08]",
+      "contact_cta": "border border-indigo-300/20",
+      "medical": "border border-amber-500/25",
+      "ad_dev": "border border-dashed border-white/[0.06]"
+    },
+    "shadows": {
+      "contact_button": "shadow-lg shadow-indigo-500/20"
+    }
+  },
+  "accessibility": [
+    "h1-h2 の見出し階層を全ページで維持。h2 は border-l 付きで視覚的にも階層を明示",
+    "text-[#e6e8ee]/90 vs bg #0f1117 = コントラスト比 約 13:1 (AAA)",
+    "text-[#8b92a5] vs bg #0f1117 = コントラスト比 約 5.2:1 (AA)",
+    "amber-200 vs amber-900/10+#0f1117 = コントラスト比 約 10:1 (AAA) - 医療免責 strong",
+    "indigo-300 リンク vs #0f1117/#1a1f2e = コントラスト比 約 6.5:1 (AA-AAA)",
+    "全 lucide アイコンに aria-hidden='true' 付与",
+    "メールリンクは href='mailto:' で支援技術に意味を伝える",
+    "focus-visible:ring-2 ring-indigo-300 ring-offset-2 ring-offset-[#0f1117] を全インタラクティブ要素に",
+    "医療免責文 text-xs は絶対に縮小しない。枠囲い + Info アイコンで視認性を向上",
+    "Breadcrumb の aria-label='パンくずリスト' と aria-current='page' を維持",
+    "AdBanner のプレースホルダーに aria-hidden='true' を維持"
+  ],
+  "rationale_summary": "法定・情報ページにも F003-F005 のウェルネス言語を接続する。各ページにミニヒーロー（グラデーション背景 + lucide アイコン）を配置し、文書の硬さを和らげる。セクションは rounded-2xl のソフトカードで包み、長文でも読み疲れしにくい構造に。医療免責は amber 系ハイライトを維持・強化。Contact はグラデーション CTA カードに格上げし、安心感のある問い合わせ体験を提供。Breadcrumb と AdBanner は小さな統一調整のみ。"
+}

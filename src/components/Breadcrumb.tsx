@@ -50,14 +50,14 @@ export function Breadcrumb({ items }: Props) {
       {/* 視覚的パンくず */}
       <nav
         aria-label="パンくずリスト"
-        className="mb-6 flex flex-wrap items-center gap-1 text-xs text-[#8b92a5]"
+        className="mb-6 flex flex-wrap items-center gap-1.5 text-xs text-[#8b92a5]"
       >
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
           return (
             <span key={`${item.name}-${index}`} className="inline-flex items-center gap-1">
               {index > 0 && (
-                <ChevronRight className="h-3 w-3 text-[#8b92a5]/50" aria-hidden="true" />
+                <ChevronRight className="h-3 w-3 text-indigo-400/30" aria-hidden="true" />
               )}
               {item.href && !isLast ? (
                 <Link

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FileText, Calendar } from "lucide-react";
 import { Breadcrumb } from "@/components/Breadcrumb";
 
 export const metadata: Metadata = {
@@ -9,18 +10,30 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="container mx-auto max-w-[680px] px-5 pb-20 pt-10 sm:pt-14">
+    <div className="container mx-auto max-w-[680px] px-5 pb-20">
+      {/* グラデーション・ミニヒーロー */}
+      <div className="relative mb-10 rounded-b-[2rem] bg-gradient-to-b from-indigo-500/[0.06] via-purple-500/[0.03] to-transparent pb-8 pt-10 sm:pt-14 px-5">
+        <div className="mb-3 flex justify-center">
+          <FileText className="h-8 w-8 text-indigo-300/60" aria-hidden="true" />
+        </div>
+        <h1 className="text-center text-2xl font-bold tracking-tight text-[#e6e8ee] sm:text-3xl">
+          利用規約
+        </h1>
+        <div className="mt-6 h-px bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent" />
+      </div>
+
       <Breadcrumb items={[{ name: "ホーム", href: "/" }, { name: "利用規約" }]} />
 
-      <h1 className="mb-4 text-2xl font-bold tracking-tight text-[#e6e8ee] sm:text-3xl">
-        利用規約
-      </h1>
-      <p className="mb-10 text-sm text-[#8b92a5]">最終更新日: 2026年4月10日</p>
+      {/* 更新日表示 */}
+      <div className="mb-10 flex items-center gap-1.5 text-sm text-[#8b92a5]">
+        <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
+        最終更新日: 2026年4月10日
+      </div>
 
-      <div className="space-y-10 text-sm leading-relaxed text-[#e6e8ee]/90">
+      <div className="space-y-14 text-sm leading-[1.85] text-[#e6e8ee]/85">
         {/* 第1条 適用 */}
-        <section>
-          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             第1条（適用）
           </h2>
           <p>
@@ -31,9 +44,9 @@ export default function TermsPage() {
           </p>
         </section>
 
-        {/* 第2条 医療免責 — 最も目立つ */}
-        <section className="rounded-xl border border-amber-700/30 bg-amber-900/10 p-5">
-          <h2 className="mb-4 border-l-[3px] border-amber-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        {/* 第2条 医療免責 — amber グラデーション背景 */}
+        <section className="rounded-2xl border border-amber-500/25 bg-gradient-to-br from-amber-900/15 via-amber-800/10 to-transparent p-5 sm:p-6">
+          <h2 className="mb-4 border-l-[3px] border-amber-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             第2条（医療免責）
           </h2>
           <ol className="list-inside list-decimal space-y-3">
@@ -59,8 +72,8 @@ export default function TermsPage() {
         </section>
 
         {/* 第3条 免責事項 */}
-        <section>
-          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             第3条（免責事項）
           </h2>
           <ol className="list-inside list-decimal space-y-3">
@@ -85,8 +98,8 @@ export default function TermsPage() {
         </section>
 
         {/* 第4条 知的財産 */}
-        <section>
-          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             第4条（知的財産権）
           </h2>
           <p>
@@ -97,8 +110,8 @@ export default function TermsPage() {
         </section>
 
         {/* 第5条 変更 */}
-        <section>
-          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             第5条（規約の変更）
           </h2>
           <p>
@@ -109,8 +122,8 @@ export default function TermsPage() {
         </section>
 
         {/* 第6条 準拠法 */}
-        <section>
-          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee]">
+        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
+          <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             第6条（準拠法・管轄）
           </h2>
           <p>
