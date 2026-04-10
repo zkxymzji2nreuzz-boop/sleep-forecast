@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Mail, Info } from "lucide-react";
+import { ExternalLink, Info } from "lucide-react";
 import { Breadcrumb } from "@/components/Breadcrumb";
 
 export const metadata: Metadata = {
@@ -14,7 +14,7 @@ export default function ContactPage() {
       {/* グラデーション・ミニヒーロー */}
       <div className="relative mb-10 rounded-b-[2rem] bg-gradient-to-b from-indigo-500/[0.06] via-purple-500/[0.03] to-transparent pb-8 pt-10 sm:pt-14 px-5">
         <div className="mb-3 flex justify-center">
-          <Mail className="h-8 w-8 text-indigo-300/60" aria-hidden="true" />
+          <ExternalLink className="h-8 w-8 text-indigo-300/60" aria-hidden="true" />
         </div>
         <h1 className="text-center text-2xl font-bold tracking-tight text-[#e6e8ee] sm:text-3xl">
           お問い合わせ
@@ -30,24 +30,25 @@ export default function ContactPage() {
           ご質問、ご要望、不具合のご報告などがございましたら、以下の方法でお気軽にお問い合わせください。
         </p>
 
-        {/* メール CTA カード */}
+        {/* Google フォーム CTA カード */}
         <section className="rounded-3xl border border-indigo-300/20 bg-gradient-to-br from-indigo-500/10 via-purple-500/[0.06] to-transparent p-6 sm:p-8">
           <div className="mb-4 flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-500/15 text-indigo-300">
-              <Mail className="h-5 w-5" aria-hidden="true" />
+              <ExternalLink className="h-5 w-5" aria-hidden="true" />
             </div>
-            <h2 className="text-base font-bold text-[#e6e8ee]">メールでのお問い合わせ</h2>
+            <h2 className="text-base font-bold text-[#e6e8ee]">フォームからお問い合わせ</h2>
           </div>
           <p className="mb-4">
-            以下のメールアドレスまでお問い合わせ内容をお送りください。
+            以下のフォームからお問い合わせ内容をお送りください。
           </p>
           <a
-            href="mailto:contact@sleep-forecast.example.com"
+            href="https://forms.gle/5FzeXL1QGFLCD9jZ8"
+            target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo-500/20 transition-colors hover:from-indigo-400 hover:to-purple-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1117]"
           >
-            <Mail className="h-4 w-4" aria-hidden="true" />
-            contact@sleep-forecast.example.com
+            <ExternalLink className="h-4 w-4" aria-hidden="true" />
+            お問い合わせフォームを開く
           </a>
         </section>
 
