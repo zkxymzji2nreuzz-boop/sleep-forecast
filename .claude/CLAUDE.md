@@ -38,6 +38,7 @@
 
 `/deploy-check` は SRE(Sonnet) を最終ゲートとして起動する。
 `/cleanup` は Refactorer(Sonnet) を起動して未使用コード・重複を掃除する。
+`/final-review` は 6 つの専門エージェントがプロダクト全体を横断的に監査する（/deploy-check の前に必ず実行）。
 
 | # | Agent | Model | Role | Trigger |
 |---|---|---|---|---|
@@ -56,6 +57,12 @@
 | +1 | SRE | Sonnet | 18 項目デプロイ前チェック | /deploy-check |
 | +2 | Refactorer | Sonnet | knip / ts-prune / jscpd による断捨離 | /cleanup |
 | +3 | File Integrity Agent | Sonnet | 破損検知・自動修復（単独起動も可） | /next-feature 先頭 / 手動 |
+| +4 | Content QA Agent | Sonnet | 全10記事の品質横断監査（禁止ワード・ペルソナ・免責） | /final-review Phase 1 |
+| +5 | UX Flow Agent | Sonnet | ユーザー導線・UI一貫性レビュー | /final-review Phase 2 |
+| +6 | SEO Audit Agent | Sonnet | 全ページSEO要素の整合性チェック | /final-review Phase 3 |
+| +7 | Monetization Agent | Sonnet | AdSense審査要件・景表法チェック | /final-review Phase 4 |
+| +8 | A11y Agent | Sonnet | WCAG 2.1 AA 簡易監査 | /final-review Phase 5 |
+| +9 | Performance Agent | Sonnet | バンドルサイズ・Core Web Vitals予測 | /final-review Phase 6 |
 
 差し戻しは最大 3 回まで。それ以上は feature を failing のまま次セッションへ引き継ぐ。
 Refactorer と SRE は削除や不可逆操作の前に必ず人間の y/n を取る。
