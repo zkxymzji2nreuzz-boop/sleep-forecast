@@ -14,7 +14,9 @@
  */
 
 import * as React from "react";
+import Link from "next/link";
 import {
+  BarChart3,
   MapPin,
   Loader2,
   RefreshCcw,
@@ -403,15 +405,26 @@ export function RecordForm(): JSX.Element {
                 </dd>
               </div>
             </dl>
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full text-[#8b92a5] hover:bg-transparent hover:text-[#1d9bf0]"
-              onClick={handleEditAgain}
-            >
-              <RefreshCcw className="mr-2 h-4 w-4" aria-hidden="true" />
-              今日の記録を修正する
-            </Button>
+            <div className="flex flex-col gap-2">
+              <Button
+                asChild
+                className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600"
+              >
+                <Link href="/dashboard">
+                  <BarChart3 className="mr-2 h-4 w-4" aria-hidden="true" />
+                  ダッシュボードを見る
+                </Link>
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-full text-[#8b92a5] hover:bg-transparent hover:text-[#1d9bf0]"
+                onClick={handleEditAgain}
+              >
+                <RefreshCcw className="mr-2 h-4 w-4" aria-hidden="true" />
+                今日の記録を修正する
+              </Button>
+            </div>
             <p className="pt-2 text-center text-xs text-[#8b92a5]">
               本サービスは医療行為・診断を目的としたものではありません。
               記録は健康管理の参考としてご利用ください。
