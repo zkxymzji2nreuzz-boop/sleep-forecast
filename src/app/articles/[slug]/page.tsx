@@ -6,6 +6,7 @@ import {
   getArticleBySlug,
   getRelatedArticles,
 } from "@/lib/articles";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { ArticleLayout } from "@/components/ArticleLayout";
 
 type Params = {
@@ -119,6 +120,15 @@ export default async function ArticlePage({ params }: Params) {
           __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
         }}
       />
+      <div className="container mx-auto max-w-[680px] px-5 pt-10 sm:pt-14">
+        <Breadcrumb
+          items={[
+            { name: "ホーム", href: "/" },
+            { name: "記事一覧", href: "/articles" },
+            { name: article.title },
+          ]}
+        />
+      </div>
       <ArticleLayout article={article} related={related} />
     </>
   );

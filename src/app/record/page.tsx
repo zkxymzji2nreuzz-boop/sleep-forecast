@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { RecordForm } from "@/components/RecordForm";
 
 export const metadata: Metadata = {
@@ -9,5 +10,12 @@ export const metadata: Metadata = {
 };
 
 export default function RecordPage(): JSX.Element {
-  return <RecordForm />;
+  return (
+    <>
+      <div className="container mx-auto max-w-screen-md px-4 pt-6 sm:pt-8">
+        <Breadcrumb items={[{ name: "ホーム", href: "/" }, { name: "記録" }]} />
+      </div>
+      <RecordForm />
+    </>
+  );
 }

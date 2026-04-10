@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import type { ArticleFull, ArticleMeta } from "@/lib/types";
+import { AdBanner } from "@/components/AdBanner";
 import { Button } from "@/components/ui/button";
 
 type Props = {
@@ -136,6 +137,9 @@ export function ArticleLayout({ article, related }: Props) {
         dangerouslySetInnerHTML={{ __html: article.contentHtml }}
       />
 
+      {/* 広告スロット: 記事中間〜末尾 */}
+      <AdBanner slot="article-mid" format="rectangle" className="mt-10" />
+
       {/* CTA: 記録を促す (ウェルネスグラデーション) */}
       <aside className="mt-14 rounded-3xl border border-indigo-300/25 bg-gradient-to-br from-indigo-500/15 via-purple-500/12 to-rose-500/8 p-7 shadow-[0_12px_40px_-16px_rgba(124,77,255,0.4)] sm:p-8">
         <div className="flex items-center gap-2">
@@ -186,6 +190,9 @@ export function ArticleLayout({ article, related }: Props) {
           </ul>
         </section>
       )}
+
+      {/* 広告スロット: 記事末尾 */}
+      <AdBanner slot="article-end" format="horizontal" className="mt-10" />
 
       {/* 医療免責 (必須・text-xs 固定) */}
       <div className="mt-14 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">

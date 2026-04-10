@@ -569,3 +569,18 @@ Format:
 - Functionality: 8/10 - All 7 acceptance criteria met: /articles/kiatsu-zutsu renders, 10 articles SSG'd, sitemap.xml contains all 10 article URLs, per-article OGP in generateMetadata, manifest.json theme_color #1d9bf0 for PWA add-to-homescreen, JSON-LD Article schema embedded. Offline /record: SW registered via next-pwa (not device-testable in CI). Medical disclaimer present on both index and detail pages.
 - Decision: passing
 - Feedback for next session: Consider adding smooth-scroll (scroll-behavior: smooth on html element) for TOC anchor links. Per-article OGP image generation (e.g. @vercel/og) would strengthen social sharing. Move to F006 (必須ページと広告準備).
+
+[2026-04-10 15:50] Generator session F006
+- Implemented: F006 "必須ページと広告準備" full implementation
+  1. Four legal pages (about, privacy, terms, contact) with full Japanese content replacing ComingSoon placeholders
+  2. GoogleAnalytics component (use client, gated on NEXT_PUBLIC_GA_ID, pageview tracking via usePathname)
+  3. AdBanner component (use client, gated on NEXT_PUBLIC_ADSENSE_CLIENT, empty div when disabled)
+  4. AdBanner placed at 4 locations: home (hero-bottom), dashboard (below charts), article (mid + end)
+  5. public/ads.txt with placeholder publisher ID
+  6. WebApplication JSON-LD on home page
+  7. Breadcrumb component with JSON-LD BreadcrumbList + visible nav
+  8. Breadcrumb added to: record, dashboard, settings, articles index, article detail, about, privacy, terms, contact
+- Files created: src/components/Breadcrumb.tsx, src/components/GoogleAnalytics.tsx, src/components/AdBanner.tsx, public/ads.txt
+- Files modified: src/app/about/page.tsx, src/app/privacy/page.tsx, src/app/terms/page.tsx, src/app/contact/page.tsx, src/app/layout.tsx, src/app/page.tsx, src/app/dashboard/page.tsx, src/app/record/page.tsx, src/app/settings/page.tsx, src/app/articles/page.tsx, src/app/articles/[slug]/page.tsx, src/components/ArticleLayout.tsx
+- Build: PASS, Tests: 69/69 PASS, Lint: 0 errors
+- Next action: Evaluator should run

@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { AdBanner } from "@/components/AdBanner";
 import { PredictionCard } from "@/components/PredictionCard";
 import { ContinuousRecordBadge } from "@/components/ContinuousRecordBadge";
 import { getRecords } from "@/lib/storage";
@@ -89,8 +90,27 @@ export default function HomePage() {
     loadPrediction();
   }, []);
 
+  /** WebApplication JSON-LD (SEO 構造化データ) */
+  const webAppJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "SleepForecast",
+    url: "https://sleep-forecast.vercel.app",
+    applicationCategory: "HealthApplication",
+    operatingSystem: "Web",
+    offers: { "@type": "Offer", price: "0" },
+  };
+
   return (
     <div className="container mx-auto max-w-screen-md px-4 py-10 sm:py-14">
+      {/* WebApplication 構造化データ */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(webAppJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
+
       {/* 連続記録バッジ + 予測カード */}
       {!loading && (
         <>
@@ -136,6 +156,9 @@ export default function HomePage() {
           </Button>
         </div>
       </section>
+
+      {/* 広告スロット: ヒーロー下 */}
+      <AdBanner slot="hero-bottom" format="horizontal" className="mb-8" />
 
       <section
         aria-labelledby="features-heading"

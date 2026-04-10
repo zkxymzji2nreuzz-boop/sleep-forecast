@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Moon, Cloud, Calendar, ArrowRight, Info } from "lucide-react";
 
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { getAllArticlesMeta } from "@/lib/articles";
 
 const SITE_URL =
@@ -36,7 +37,9 @@ export default function ArticlesIndexPage() {
   const articles = getAllArticlesMeta();
 
   return (
-    <div className="container mx-auto max-w-[680px] px-5 pb-20 pt-16 sm:pt-20">
+    <div className="container mx-auto max-w-[680px] px-5 pb-20 pt-10 sm:pt-14">
+      <Breadcrumb items={[{ name: "ホーム", href: "/" }, { name: "記事一覧" }]} />
+
       {/* ヒーロー: 月夜のような柔らかな導入 */}
       <div className="relative">
         <div

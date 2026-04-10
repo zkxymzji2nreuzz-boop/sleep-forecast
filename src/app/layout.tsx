@@ -3,6 +3,7 @@ import "./globals.css";
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { Toaster } from "@/components/ui/toaster";
 
 const SITE_URL =
@@ -81,6 +82,7 @@ export default function RootLayout({
           <main className="min-h-[calc(100vh-128px)] flex-1">{children}</main>
           <Footer />
         </div>
+        <GoogleAnalytics />
         <Toaster />
       </body>
     </html>

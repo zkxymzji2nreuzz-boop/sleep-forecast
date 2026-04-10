@@ -53,6 +53,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 
+import { AdBanner } from "@/components/AdBanner";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { CorrelationChart } from "@/components/CorrelationChart";
 import { PredictionCard } from "@/components/PredictionCard";
 import { Button } from "@/components/ui/button";
@@ -434,6 +436,8 @@ export default function DashboardPage() {
 
   return (
     <div className="container mx-auto max-w-screen-md px-4 py-8 pb-16 sm:py-12">
+      <Breadcrumb items={[{ name: "ホーム", href: "/" }, { name: "ダッシュボード" }]} />
+
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-[#e6e8ee]">睡眠ダッシュボード</h1>
         <p className="mt-1 text-sm text-[#8b92a5]">
@@ -544,6 +548,9 @@ export default function DashboardPage() {
           </TabsContent>
         </Tabs>
       </ChartCard>
+
+      {/* 広告スロット: チャートセクション下 */}
+      <AdBanner slot="dashboard-charts" format="horizontal" className="mb-6" />
 
       {/* 自然言語インサイト — B案: 感情別カラー */}
       {insights.length > 0 && (
