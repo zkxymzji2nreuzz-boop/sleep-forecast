@@ -232,34 +232,37 @@
     {
       "id": "F005b",
       "title": "SEO記事リライト：一次情報・体験談・ペルソナ強化",
-      "description": "10本の既存記事をAIっぽさゼロに。ペルソナ「Tさん（都内在住・40代・営業職）／SleepForecastモニターユーザー」の体験談・失敗談・あるあるネタを組み込み、稼いでいるブロガー手法でE-E-A-Tを強化する",
+      "description": "10本の既存記事をAIっぽさゼロに。7名のペルソナ（harness/personas.json）の体験談・失敗談・あるあるネタを組み込み、共感設計7層構造（article-writing-guide.md）でE-E-A-Tを強化する",
       "priority": 6,
       "status": "failing",
       "depends_on": "F005",
       "reference_files": [
-        "harness/persona-yuki.json",
+        "harness/personas.json",
         "harness/article-writing-guide.md",
         "harness/rewrite-instructions.json",
         "harness/prohibited-and-recommended-expressions.md"
       ],
       "steps": [
-        "harness/persona-yuki.json を読み、Tさん・Yさん・Mさんのプロフィール・失敗談・セリフを把握する",
-        "harness/article-writing-guide.md の禁止ワード・推奨パターンを確認する",
+        "harness/personas.json を読み、7名のペルソナプロフィール・article_fit・失敗談・セリフを把握する",
+        "harness/article-writing-guide.md の共感設計7層構造・禁止ワード・推奨パターンを確認する",
         "harness/rewrite-instructions.json の各記事への改善指示を確認する",
         "優先度HIGH（kiatsu-zutsu, tsuki-to-suimin, gaba-supplement, suimin-shitsu-up）の4記事から着手",
-        "各記事に：あるある導入・Tさんのモノローグ最低2箇所・失敗談1つ・季節気象の言及・著者クレジットを追加",
+        "各記事に：共感型書き出し・article_fit合致ペルソナのモノローグ2〜3名・失敗談・あるある5箇所・明日から使えるまとめ・著者クレジットを追加",
         "禁止ワードを全記事から除去し推奨表現に置き換える",
-        "残り6記事（MEDIUM優先度）もリライトする",
-        "全10記事のチェックリスト（article-writing-guide.md末尾）を通過させる"
+        "残り6記事（MEDIUM優先度）もリライトする（各ペルソナを均等に使用）",
+        "全10記事の共感設計チェックリスト（article-writing-guide.md）を通過させる"
       ],
       "acceptance_criteria": [
-        "全10記事にTさん（またはYさん・Mさん）のモノローグが最低2箇所ある",
-        "全10記事に失敗談が最低1つある",
+        "全10記事にペルソナのモノローグが最低2名分（2〜3箇所）ある",
+        "同一記事で同一ペルソナを重複使用していない",
+        "全10記事に失敗談が①商品名②期待③現実④学び の構成で最低1つある",
         "禁止ワード（いかがでしたでしょうか 等）が0件",
-        "各記事の冒頭がアルあるあ・誤解・問いかけのいずれかで始まる",
+        "各記事の冒頭が共感型・問いかけ型・状況描写型のいずれかで始まる",
+        "「自分のせいじゃない」という解放感を与えるパートが各記事にある",
         "著者クレジット（SleepForecast編集部）が全記事末尾にある",
         "医療免責文が全記事に含まれる",
-        "構造が記事ごとに異なる（全記事同一フォーマット禁止）"
+        "構造が記事ごとに異なる（全記事同一フォーマット禁止）",
+        "Tさん・Hさん・Kさん・Sさん・Aさん・Yさん・Nさん全員が最低1記事で使用されている"
       ]
     },
     {
