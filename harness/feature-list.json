@@ -257,6 +257,36 @@
       ]
     },
     {
+      "id": "F005b",
+      "title": "SEO記事リライト：一次情報・体験談・ペルソナ強化",
+      "description": "10本の既存記事をAIっぽさゼロに。ペルソナの体験談・失敗談・あるあるネタを組み込み、稼いでいるブロガー手法でE-E-A-Tを強化する",
+      "priority": 6,
+      "status": "failing",
+      "depends_on": "F005",
+      "reference_files": [
+        "harness/personas.json",
+        "harness/article-writing-guide.md"
+      ],
+      "steps": [
+        "harness/personas.json を読み、7名のペルソナのプロフィール・失敗談・セリフを把握する",
+        "harness/article-writing-guide.md の禁止ワード・推奨パターンを確認する",
+        "優先度HIGH（kiatsu-zutsu, tsuki-to-suimin, gaba-supplement, suimin-shitsu-up）の4記事から着手",
+        "各記事に：あるある導入・ペルソナのモノローグ最低2箇所・失敗談1つ・季節気象の言及・著者クレジットを追加",
+        "禁止ワードを全記事から除去し推奨表現に置き換える",
+        "残り6記事（MEDIUM優先度）もリライトする",
+        "全10記事のチェックリスト（article-writing-guide.md末尾）を通過させる"
+      ],
+      "acceptance_criteria": [
+        "全10記事にペルソナ（Tさん・Hさん・Yさん等）のモノローグが最低2箇所ある",
+        "全10記事に失敗談が最低1つある",
+        "禁止ワード（いかがでしたでしょうか 等）が0件",
+        "各記事の冒頭があるある・誤解・問いかけのいずれかで始まる",
+        "著者クレジット（SleepForecast編集部）が全記事末尾にある",
+        "医療免責文が全記事に含まれる",
+        "構造が記事ごとに異なる（全記事同一フォーマット禁止）"
+      ]
+    },
+    {
       "id": "F007",
       "title": "デプロイ前チェックと README 整備 (STEP 6-B)",
       "description": "Vercel デプロイ前の最終チェック。README・.env.example・Lighthouse スコア確認",
