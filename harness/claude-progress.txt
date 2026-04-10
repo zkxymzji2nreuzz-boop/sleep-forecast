@@ -609,3 +609,11 @@ Format:
 - google.com publisher 行を含む: YES
 
 ### 次ステップ: Design Judge に進む
+
+[2026-04-10 16:25] Evaluator - F006 "必須ページと広告準備 (STEP 6-A)"
+- Design Quality: 9/10 - 全4ページでグラデーションミニヒーロー・rounded-2xl section cards・indigo border-l headings が統一されており、ブランドのウェルネストーンに沿う。leading-[1.85] で日本語本文の可読性も良好。Breadcrumb の視覚 nav も目立たず機能的。マイナス: contact の mailto アドレスが example.com のまま（プレースホルダーとして許容範囲内）
+- Originality: 8/10 - 単なる shadcn デフォルトではなく amber グラデーションの医療免責第2条・メール CTA の gradient pill ボタンなど個性がある。ただし legal ページ全般の構成は典型的で突出したオリジナリティはない。MVP 法的ページとして十分
+- Craft: 8/10 - ARIA（aria-hidden・aria-label・aria-current）が適切に付与されており、focus-visible ring も全インタラクティブ要素に存在する。Breadcrumb の JSON-LD が "use client" Component 内にあり、コメントに "Server Component として使用する" と矛盾するが build・SEO 出力に影響なし。AdBanner は dev/prod/unconfigured の3ステートを正しくハンドリングし DOM 破綻なし。GA4 は env-gated かつ pageview tracking 付き。軽微なコメント矛盾でマイナス1
+- Functionality: 9/10 - 7/7 受け入れ基準を確認。/about /privacy /terms /contact 全表示OK (build 静的生成成功)。privacy に localStorage・GA4・AdSense・位置情報・個人情報保護法の記載あり。terms 第2条に amber ハイライトで医療免責明記。GA4 は NEXT_PUBLIC_GA_ID 未設定時に null return で安全に無効化。ads.txt 配置済み (pub ID はプレースホルダー、審査前として適切)。WebApplication JSON-LD をトップページに埋め込み確認。BreadcrumbList JSON-LD が全4ページに付与。82/82 テスト PASS・ビルドクリーン。マイナス: contact email が example.com ドメイン（deploy-check で要差し替え）
+- Decision: passing
+- Feedback for next session: (1) Breadcrumb.tsx の "use client" / "Server Component として使用する" コメントの矛盾を修正すること（機能的問題なし、ドキュメント品質のみ）。(2) contact ページの mailto を実際のアドレスに差し替えること（デプロイ前に必須）。(3) ads.txt のパブリッシャー ID を AdSense 審査通過後に更新すること。(4) Cookie 同意バナー（GA4 が Cookie を使用するため GDPR/改正電気通信事業法への対応）を将来 Feature として追加推奨 — Legal Agent が指摘済み

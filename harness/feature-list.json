@@ -229,7 +229,7 @@
       "title": "必須ページと広告準備 (STEP 6-A)",
       "description": "AdSense 審査に必要なページを整備し、GA4 と広告枠を準備する",
       "priority": 6,
-      "status": "failing",
+      "status": "passing",
       "mvp_refs": [
         "legal",
         "monetization"
