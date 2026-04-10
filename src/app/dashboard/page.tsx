@@ -13,9 +13,9 @@
  *
  * デモ/リアル切替:
  *   - localStorage 記録 0〜9 件: DEMO_RECORDS 表示 + サンプルバナー
- *   - 10 件以上:                 実データ表示
+ *   - 10 件以上: 実データ表示
  *   - SSR 対策: マウント前は DEMO_RECORDS を初期値として描画し、
- *     useEffect で実データに差し替える (hydration safe)
+ *               useEffect で実データに差し替える (hydration safe)
  */
 
 import * as React from "react";
@@ -52,7 +52,6 @@ import {
   Moon,
   TrendingUp,
 } from "lucide-react";
-
 import { AdBanner } from "@/components/AdBanner";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { CorrelationChart } from "@/components/CorrelationChart";
@@ -82,7 +81,6 @@ import type { SleepRecord, PredictionResult } from "@/lib/types";
 // ---------------------------------------------------------------------------
 // Chart.js グローバル設定 (モジュールスコープで 1 度だけ実行)
 // ---------------------------------------------------------------------------
-
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -96,7 +94,6 @@ ChartJS.register(
   Legend,
   Filler
 );
-
 ChartJS.defaults.color = "#8b92a5";
 ChartJS.defaults.borderColor = "rgba(139, 146, 165, 0.15)";
 ChartJS.defaults.font.family = "'Inter', sans-serif";
@@ -104,7 +101,6 @@ ChartJS.defaults.font.family = "'Inter', sans-serif";
 // ---------------------------------------------------------------------------
 // 定数
 // ---------------------------------------------------------------------------
-
 const DEMO_THRESHOLD = 10;
 
 const QUALITY_LABEL_MAP: Record<1 | 2 | 3 | 4 | 5, string> = {
@@ -281,8 +277,7 @@ function buildBarOptions(): ChartOptions<"bar"> {
         ...TOOLTIP_BASE,
         callbacks: {
           label: (ctx: TooltipItem<"bar">) => {
-            const counts =
-              (ctx.dataset as { _counts?: number[] })._counts ?? [];
+            const counts = (ctx.dataset as { _counts?: number[] })._counts ?? [];
             const count = counts[ctx.dataIndex] ?? 0;
             if (count === 0) return "データなし";
             const y = ctx.parsed.y ?? 0;
@@ -333,7 +328,6 @@ export default function DashboardPage() {
         try {
           const lastRecord = real[0];
           const prefecture = getPrefectureByCode(lastRecord.prefectureCode);
-
           if (prefecture) {
             const forecast = await fetchWeatherForecast(
               prefecture.latitude,
@@ -346,7 +340,6 @@ export default function DashboardPage() {
           console.error("予測計算エラー:", err);
         }
       };
-
       loadPrediction();
     }
   }, []);
@@ -577,7 +570,10 @@ export default function DashboardPage() {
       {/* 医療免責 — C案要素取り込み: AlertCircle + amber テキスト */}
       <div className="mt-6 rounded-md border border-amber-700/30 bg-amber-900/10 px-4 py-3">
         <div className="flex items-start gap-2 text-xs text-amber-200">
-          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" aria-hidden />
+          <AlertCircle
+            className="mt-0.5 h-4 w-4 shrink-0 text-amber-500"
+            aria-hidden
+          />
           <p className="leading-relaxed">
             本ダッシュボードの分析・インサイトは統計的な傾向の参考情報であり、
             医療行為・診断を目的としたものではありません。

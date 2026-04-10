@@ -29,13 +29,10 @@ export const metadata: Metadata = {
     "眠れる明日予報",
   ],
   robots: { index: true, follow: true },
-  verification: {
-    google: "gDinKJ13crkfTq30PqE_nPcTgcNMfVIs-OI7jqqrNoE",
-  },
   manifest: "/manifest.json",
-    verification: {
-          google: "EzjzqTWp3ICDwfnB8oYnEBX6seFRUwkVMWTzwGaNURU",
-    },
+  verification: {
+    google: "EzjzqTWp3ICDwfnB8oYnEBX6seFRUwkVMWTzwGaNURU",
+  },
   appleWebApp: {
     capable: true,
     title: "SleepForecast",
@@ -86,4 +83,10 @@ export default function RootLayout({
           <Header />
           <main className="min-h-[calc(100vh-128px)] flex-1">{children}</main>
           <Footer />
-    
+        </div>
+        <GoogleAnalytics />
+        <Toaster />
+      </body>
+    </html>
+  );
+}

@@ -59,8 +59,8 @@ export default function ContactPage() {
           </h2>
           <ul className="list-inside list-disc space-y-2 text-[#e6e8ee]/85">
             <li>
-              お問い合わせへの回答は、原則として
-              <strong className="font-semibold text-[#e6e8ee]">3 営業日以内</strong>
+              お問い合わせへの回答は、原則として{" "}
+              <strong className="font-semibold text-[#e6e8ee]">3 営業日以内</strong>{" "}
               に行います。
             </li>
             <li>

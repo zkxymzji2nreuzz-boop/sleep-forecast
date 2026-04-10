@@ -291,7 +291,7 @@
       "title": "デプロイ前チェックと README 整備 (STEP 6-B)",
       "description": "Vercel デプロイ前の最終チェック。README・.env.example・Lighthouse スコア確認",
       "priority": 7,
-      "status": "failing",
+      "status": "passing",
       "mvp_refs": [
         "deploy-prep"
       ],
@@ -314,7 +314,10 @@
         "README に必要な情報がすべて記載されている",
         ".env.local が git に含まれていない",
         "人間にデプロイ承認を求めるメッセージが表示される"
-      ]
+      ],
+      "completedAt": "2026-04-10",
+      "evaluatorScore": 9.0,
+      "notes": "build ✅ lint ✅ .env.example ✅ README ✅ .gitignore ✅ File Integrity repair (8 truncated files restored from GitHub). Evaluator 9.0/10"
     }
   ]
 }

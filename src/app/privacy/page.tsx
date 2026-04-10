@@ -22,9 +22,7 @@ export default function PrivacyPage() {
         <div className="mt-6 h-px bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent" />
       </div>
 
-      <Breadcrumb
-        items={[{ name: "ホーム", href: "/" }, { name: "プライバシーポリシー" }]}
-      />
+      <Breadcrumb items={[{ name: "ホーム", href: "/" }, { name: "プライバシーポリシー" }]} />
 
       {/* 更新日表示 */}
       <div className="mb-10 flex items-center gap-1.5 text-sm text-[#8b92a5]">
@@ -33,7 +31,6 @@ export default function PrivacyPage() {
       </div>
 
       <div className="space-y-14 text-sm leading-[1.85] text-[#e6e8ee]/85">
-        {/* 基本方針 */}
         <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
           <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             1. 基本方針
@@ -45,7 +42,6 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        {/* 収集する情報 */}
         <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
           <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             2. 収集する情報
@@ -62,7 +58,6 @@ export default function PrivacyPage() {
           </ul>
         </section>
 
-        {/* データ保存 */}
         <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
           <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             3. データの保存について（localStorage）
@@ -77,7 +72,6 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        {/* アクセス解析 */}
         <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
           <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             4. アクセス解析（Google Analytics 4）
@@ -98,11 +92,10 @@ export default function PrivacyPage() {
             >
               Google プライバシーポリシー
             </a>
-            をご覧ください。
+            {" "}をご覧ください。
           </p>
         </section>
 
-        {/* 広告 */}
         <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
           <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             5. 広告配信（Google AdSense）
@@ -125,7 +118,6 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        {/* 位置情報 */}
         <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
           <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             6. 位置情報の取り扱い
@@ -137,7 +129,6 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        {/* 第三者への提供 */}
         <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
           <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             7. 第三者への情報提供
@@ -147,7 +138,6 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        {/* 改定 */}
         <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
           <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             8. プライバシーポリシーの変更
@@ -158,7 +148,6 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        {/* お問い合わせ */}
         <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
           <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             9. お問い合わせ

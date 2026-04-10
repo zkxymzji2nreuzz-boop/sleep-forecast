@@ -625,3 +625,19 @@ Format:
 - Functionality: 9/10 - 7/7 受け入れ基準すべて確認済み。(1)全10記事にモノローグ2箇所以上 - blockquote行数で確認(4〜6行/記事)。(2)失敗談1つ以上 - 全10記事で確認（製品・通院・習慣の失敗談）。(3)禁止ワード0件。(4)冒頭が10記事全て異なる導入パターン。(5)著者クレジット全10記事末尾。(6)医療免責全10記事あり。(7)構造の多様性 - checklist/あるあるlist/stat-hook/sensory-opening等で差異化確認。ビルドクリーン・82/82テストPASS。-1: 記事間のペルソナの重複使用（Hさんが fuminshou-sign と kisho-byo-check で同一文言で登場）はペルソナの過剰使用ではないが、テキスト重複として若干の独自性を損なう。
 - Decision: passing
 - Feedback for next session: (1) Hさんのモノローグが fuminshou-sign と kisho-byo-check でほぼ同一文言になっているため、次回リライト機会があれば一方の表現を変えること。(2) suimin-shitsu-up はYさんの「Oura Ring」失敗談が明確な失敗話として機能しているが、導入をより問いかけ型に強化すると読者の引き込みが向上する。(3) 全体的に「SleepForecastで記録を始めたら解決した」という導線が多用されており、次フェーズでは記事のジャーナリズム的中立性を高めるとE-E-A-TのAuthoritativeness評価が向上する可能性がある。
+
+[2026-04-10 F007] File Integrity Agent + F007 完了
+- File Integrity: NTFS/WSL ファイルシステムの truncation 問題により 8 ファイルが破損していた。
+  修復対象: layout.tsx, dashboard/page.tsx, page.tsx, contact/page.tsx, privacy/page.tsx,
+            settings/page.tsx, articles/page.tsx, articles/[slug]/page.tsx,
+            components/RecordForm.tsx, components/ArticleLayout.tsx
+  全て GitHub (zkxymzji2nreuzz-boop/sleep-forecast/main) から復元。
+- F007 チェック結果:
+  ✅ npm run build — エラーなし (sitemap 生成含む)
+  ✅ npm run lint — ESLint 警告ゼロ
+  ✅ .env.example — 3キー (SITE_URL/GA_ID/ADSENSE_CLIENT) 記載済み
+  ✅ README.md — ロードマップ全7機能を passing に更新
+  ✅ .gitignore — .env.local/.env*.local 確認済み
+  ✅ feature-list.json F007 status → passing
+- feature-list.json F007: status=passing, evaluatorScore=9.0
+- 次のアクション: /final-review → /deploy-check → Vercel デプロイ（人間承認要）

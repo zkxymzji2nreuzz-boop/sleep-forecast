@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-
 import {
   getAllArticleSlugs,
   getArticleBySlug,
@@ -78,6 +77,7 @@ export async function generateMetadata({
 
 export default async function ArticlePage({ params }: Params) {
   const article = await getArticleBySlug(params.slug);
+
   if (!article) {
     notFound();
   }

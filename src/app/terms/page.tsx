@@ -31,7 +31,6 @@ export default function TermsPage() {
       </div>
 
       <div className="space-y-14 text-sm leading-[1.85] text-[#e6e8ee]/85">
-        {/* 第1条 適用 */}
         <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
           <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             第1条（適用）
@@ -44,7 +43,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        {/* 第2条 医療免責 — amber グラデーション背景 */}
+        {/* 第2条 医療免責 */}
         <section className="rounded-2xl border border-amber-500/25 bg-gradient-to-br from-amber-900/15 via-amber-800/10 to-transparent p-5 sm:p-6">
           <h2 className="mb-4 border-l-[3px] border-amber-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             第2条（医療免責）
@@ -71,7 +70,6 @@ export default function TermsPage() {
           </ol>
         </section>
 
-        {/* 第3条 免責事項 */}
         <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
           <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             第3条（免責事項）
@@ -97,7 +95,6 @@ export default function TermsPage() {
           </ol>
         </section>
 
-        {/* 第4条 知的財産 */}
         <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
           <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             第4条（知的財産権）
@@ -109,7 +106,6 @@ export default function TermsPage() {
           </p>
         </section>
 
-        {/* 第5条 変更 */}
         <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
           <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             第5条（規約の変更）
@@ -121,7 +117,6 @@ export default function TermsPage() {
           </p>
         </section>
 
-        {/* 第6条 準拠法 */}
         <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
           <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-lg font-bold text-[#e6e8ee] leading-snug">
             第6条（準拠法・管轄）

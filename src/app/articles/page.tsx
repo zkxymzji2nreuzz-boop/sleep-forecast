@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Moon, Cloud, Calendar, ArrowRight, Info } from "lucide-react";
-
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { getAllArticlesMeta } from "@/lib/articles";
 
@@ -91,12 +90,14 @@ export default function ArticlesIndexPage() {
                     {formatJpDate(a.publishedAt)}
                   </time>
                 </div>
+
                 <h2 className="text-lg font-semibold text-[#e6e8ee] sm:text-xl">
                   {a.title}
                 </h2>
                 <p className="mt-1.5 line-clamp-2 text-sm text-[#8b92a5]">
                   {a.description}
                 </p>
+
                 <div className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-indigo-300 transition-transform group-hover:translate-x-1">
                   続きを読む
                   <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />

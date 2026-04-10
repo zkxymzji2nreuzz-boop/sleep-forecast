@@ -9,7 +9,6 @@ import {
   Sparkles,
   Info,
 } from "lucide-react";
-
 import type { ArticleFull, ArticleMeta } from "@/lib/types";
 import { AdBanner } from "@/components/AdBanner";
 import { Button } from "@/components/ui/button";
@@ -28,9 +27,9 @@ type Props = {
  * - 医療免責文 (法務要件)
  *
  * デザイン方針 (F005 Design B + A ハイブリッド):
- * - 読み幅は 680px (≒ 60〜75ch) に絞り、prose-lg + leading-[1.9] で長文を読みやすく
- * - F003/F004 と揃えた indigo→purple→rose のウェルネスグラデーションを継承
- * - 境界線は border ではなくグラデーションディバイダーで柔らかく表現
+ *   - 読み幅は 680px (≒ 60〜75ch) に絞り、prose-lg + leading-[1.9] で長文を読みやすく
+ *   - F003/F004 と揃えた indigo→purple→rose のウェルネスグラデーションを継承
+ *   - 境界線は border ではなくグラデーションディバイダーで柔らかく表現
  */
 export function ArticleLayout({ article, related }: Props) {
   const publishedLabel = formatJpDate(article.publishedAt);
@@ -63,7 +62,6 @@ export function ArticleLayout({ article, related }: Props) {
         <h1 className="text-[28px] font-bold leading-[1.35] tracking-tight text-[#e6e8ee] sm:text-[34px]">
           {article.title}
         </h1>
-
         <p className="mt-3 text-sm text-[#8b92a5] sm:text-base">
           {article.description}
         </p>

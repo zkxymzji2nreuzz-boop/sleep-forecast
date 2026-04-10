@@ -9,13 +9,18 @@ export const metadata: Metadata = {
     "毎朝 30 秒で昨晩の眠りを記録します。気象データは自動取得されます。",
 };
 
-export default function RecordPage(): JSX.Element {
+export default function RecordPage() {
   return (
-    <>
-      <div className="container mx-auto max-w-screen-md px-4 pt-6 sm:pt-8">
-        <Breadcrumb items={[{ name: "ホーム", href: "/" }, { name: "記録" }]} />
+    <main className="min-h-screen bg-[#0d1117] text-white">
+      <div className="max-w-2xl mx-auto px-4 py-6">
+        <Breadcrumb
+          items={[
+            { name: "ホーム", href: "/" },
+            { name: "記録する" },
+          ]}
+        />
+        <RecordForm />
       </div>
-      <RecordForm />
-    </>
+    </main>
   );
 }

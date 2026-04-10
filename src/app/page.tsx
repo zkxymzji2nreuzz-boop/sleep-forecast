@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Activity, Moon, Timer, Watch } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -70,7 +69,6 @@ export default function HomePage() {
         if (records.length > 0) {
           const lastRecord = records[0];
           const prefecture = getPrefectureByCode(lastRecord.prefectureCode);
-
           if (prefecture) {
             const forecast = await fetchWeatherForecast(
               prefecture.latitude,
@@ -119,7 +117,6 @@ export default function HomePage() {
               <ContinuousRecordBadge badge={badge} />
             </div>
           )}
-
           {prediction && (
             <div className="mb-12">
               <PredictionCard prediction={prediction} variant="compact" />
@@ -138,7 +135,6 @@ export default function HomePage() {
         <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed text-[#8b92a5] sm:text-base">
           気圧・気温・月齢からあなたの睡眠を読み解く
         </p>
-
         <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row">
           <Button asChild size="lg" className="h-12 text-base">
             <Link href="/record">
