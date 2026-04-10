@@ -97,8 +97,11 @@ export default async function ArticlePage({ params }: Params) {
     <>
       <script
         type="application/ld+json"
-        // Server Component なので XSS リスクは極小。信頼できるソース (リポ内の MD) のみ
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        // Server Component なので XSS リスクは極小。信頼できるソース (リポ内の MD) のみ。
+        // 追加防御: </script> 早期終端を防ぐため "<" を \u003c にエスケープ。
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
       />
       <ArticleLayout article={article} related={related} />
     </>

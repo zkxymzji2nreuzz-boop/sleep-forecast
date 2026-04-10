@@ -102,6 +102,9 @@ export function getAllArticlesMeta(): ArticleMeta[] {
 export async function getArticleBySlug(
   slug: string
 ): Promise<ArticleFull | null> {
+  // Defense-in-depth: reject any slug that isn't lowercase alphanumerics/hyphen
+  // to prevent path traversal if this is ever called from dynamic (non-SSG) code.
+  if (!/^[a-z0-9-]+$/.test(slug)) return null;
   const filePath = path.join(ARTICLES_DIR, `${slug}.md`);
   if (!fs.existsSync(filePath)) {
     return null;
