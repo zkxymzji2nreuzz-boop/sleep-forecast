@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
   manifest: "/manifest.json",
     verification: {
-          google: "gDinKJ13crkfTq30PqE_nPcTgcNMfVIs-OI7jqqrNoE",
+          google: "EzjzqTWp3ICDwfnB8oYnEBX6seFRUwkVMWTzwGaNURU",
     },
   appleWebApp: {
     capable: true,
