@@ -519,3 +519,12 @@ Format:
 
 【次のタスク】
 - F005: SEO記事システム + PWA化
+
+---
+[2026-04-10] F005 Test Engineer — PASS
+- tsc --noEmit: clean (0 errors)
+- npm run build: success — /articles, /articles/kiatsu-zutsu, /articles/suimin-shitsu-up, /articles/tsuki-to-suimin all static-rendered
+- postbuild sitemap: all 3 article URLs present in sitemap-0.xml
+- Vitest existing: 47/47 PASS (5 test files)
+- Vitest F005 new: 16/16 PASS (src/lib/__tests__/articles.test.ts)
+- npm run lint: clean
