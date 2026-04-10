@@ -261,7 +261,7 @@
       "title": "SEO記事リライト：一次情報・体験談・ペルソナ強化",
       "description": "10本の既存記事をAIっぽさゼロに。ペルソナの体験談・失敗談・あるあるネタを組み込み、稼いでいるブロガー手法でE-E-A-Tを強化する",
       "priority": 6,
-      "status": "failing",
+      "status": "passing",
       "depends_on": "F005",
       "reference_files": [
         "harness/personas.json",
