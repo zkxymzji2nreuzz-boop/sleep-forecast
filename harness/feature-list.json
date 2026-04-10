@@ -196,7 +196,7 @@
       "title": "SEO 記事システムと PWA 化 (STEP 5)",
       "description": "Markdown 記事システムを構築し、10 本の初期記事を執筆。PWA 化して iOS/Android ホーム画面対応",
       "priority": 5,
-      "status": "failing",
+      "status": "passing",
       "mvp_refs": [
         "F07"
       ],
@@ -221,8 +221,46 @@
         "オフラインでも /record が動作する",
         "JSON-LD 構造化データが埋め込まれている"
       ],
-      "evaluatorScore": null,
-      "notes": "Evaluator 2026-04-10: failing — 3/10 articles only (blocker), manifest theme_color #0f1117 vs required #1d9bf0, no per-article OGP image in generateMetadata. Design/Craft/Originality all strong (8-9/10). Completeness 5/10 breaks threshold. See claude-progress.txt for full feedback."
+      "evaluatorScore": {
+        "designQuality": 9,
+        "originality": 9,
+        "craft": 8,
+        "functionality": 8
+      },
+      "notes": "Evaluator 2026-04-10 retry2: passing — 10 articles, manifest theme_color #1d9bf0, per-article OGP, TOC with extractTocFromHtml, JSON-LD, sitemap 10 URLs, 69/69 tests, 0 tsc errors, clean build. All 4 axes >= 8."
+    },
+    {
+      "id": "F005b",
+      "title": "SEO記事リライト：一次情報・体験談・ペルソナ強化",
+      "description": "10本の既存記事をAIっぽさゼロに。ペルソナ「Tさん（都内在住・40代・営業職）／SleepForecastモニターユーザー」の体験談・失敗談・あるあるネタを組み込み、稼いでいるブロガー手法でE-E-A-Tを強化する",
+      "priority": 6,
+      "status": "failing",
+      "depends_on": "F005",
+      "reference_files": [
+        "harness/persona-yuki.json",
+        "harness/article-writing-guide.md",
+        "harness/rewrite-instructions.json",
+        "harness/prohibited-and-recommended-expressions.md"
+      ],
+      "steps": [
+        "harness/persona-yuki.json を読み、Tさん・Yさん・Mさんのプロフィール・失敗談・セリフを把握する",
+        "harness/article-writing-guide.md の禁止ワード・推奨パターンを確認する",
+        "harness/rewrite-instructions.json の各記事への改善指示を確認する",
+        "優先度HIGH（kiatsu-zutsu, tsuki-to-suimin, gaba-supplement, suimin-shitsu-up）の4記事から着手",
+        "各記事に：あるある導入・Tさんのモノローグ最低2箇所・失敗談1つ・季節気象の言及・著者クレジットを追加",
+        "禁止ワードを全記事から除去し推奨表現に置き換える",
+        "残り6記事（MEDIUM優先度）もリライトする",
+        "全10記事のチェックリスト（article-writing-guide.md末尾）を通過させる"
+      ],
+      "acceptance_criteria": [
+        "全10記事にTさん（またはYさん・Mさん）のモノローグが最低2箇所ある",
+        "全10記事に失敗談が最低1つある",
+        "禁止ワード（いかがでしたでしょうか 等）が0件",
+        "各記事の冒頭がアルあるあ・誤解・問いかけのいずれかで始まる",
+        "著者クレジット（SleepForecast編集部）が全記事末尾にある",
+        "医療免責文が全記事に含まれる",
+        "構造が記事ごとに異なる（全記事同一フォーマット禁止）"
+      ]
     },
     {
       "id": "F006",
@@ -278,13 +316,4 @@
       ],
       "acceptance_criteria": [
         "npm run build がエラーなく完了する",
-        "npm run lint に警告がない",
-        "Lighthouse 4 軸すべて 90 以上",
-        "/deploy-check の全 10 項目が passing",
-        "README に必要な情報がすべて記載されている",
-        ".env.local が git に含まれていない",
-        "人間にデプロイ承認を求めるメッセージが表示される"
-      ]
-    }
-  ]
-}
+   
