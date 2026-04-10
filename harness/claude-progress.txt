@@ -528,3 +528,11 @@ Format:
 - Vitest existing: 47/47 PASS (5 test files)
 - Vitest F005 new: 16/16 PASS (src/lib/__tests__/articles.test.ts)
 - npm run lint: clean
+
+[2026-04-10 13:48] Generator session F005 (design application)
+- Implemented: Applied F005 Design B (wellness) + A hybrid tweaks to articles index and detail
+- Files modified: src/app/articles/page.tsx, src/components/ArticleLayout.tsx
+- Build: PASS (npm run build clean)
+- Lint: PASS (0 warnings/errors)
+- Tests: PASS (63/63)
+- Next action: Security Reviewer, Legal, Evaluator should run
