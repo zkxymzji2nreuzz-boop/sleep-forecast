@@ -7,8 +7,7 @@ import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { Toaster } from "@/components/ui/toaster";
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://sleep-forecast.vercel.app";h
-
+  process.env.NEXT_PUBLIC_SITE_URL || "https://sleep-forecast.vercel.app";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
