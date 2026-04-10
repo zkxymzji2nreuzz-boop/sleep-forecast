@@ -29,7 +29,7 @@
     --secondary-foreground: 225 18% 91%;
 
     --muted: 223 20% 22%;
-    --muted-foreground: 218 13% 60%; /* #8b92a5 */
+    --muted-foreground: 218 13% 65%; /* #9aa0b2 — contrast ratio ≥4.5:1 */
 
     --accent: 205 89% 53%; /* #1d9bf0 */
     --accent-foreground: 0 0% 100%;
@@ -80,5 +80,16 @@
 
   body {
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

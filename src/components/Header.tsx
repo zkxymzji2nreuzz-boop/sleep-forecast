@@ -21,6 +21,7 @@ const NAV_ITEMS = [
   { label: "ホーム", href: "/" },
   { label: "記録", href: "/record" },
   { label: "ダッシュボード", href: "/dashboard" },
+  { label: "記事", href: "/articles" },
   { label: "設定", href: "/settings" },
 ] as const;
 

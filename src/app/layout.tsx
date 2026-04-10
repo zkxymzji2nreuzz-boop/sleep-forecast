@@ -79,9 +79,15 @@ export default function RootLayout({
   return (
     <html lang="ja" className="dark">
       <body className="bg-[#0f1117] text-[#e6e8ee] antialiased">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-[#1d9bf0] focus:px-4 focus:py-2 focus:text-white focus:outline-none"
+        >
+          メインコンテンツへスキップ
+        </a>
         <div className="flex min-h-screen flex-col">
           <Header />
-          <main className="min-h-[calc(100vh-128px)] flex-1">{children}</main>
+          <main id="main-content" className="min-h-[calc(100vh-128px)] flex-1">{children}</main>
           <Footer />
         </div>
         <GoogleAnalytics />
