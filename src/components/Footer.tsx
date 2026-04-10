@@ -5,6 +5,7 @@ import Link from "next/link";
  * 医療免責文を必ず含める (10 Core Principles #10)。
  */
 const FOOTER_LINKS = [
+  { label: "Articles", href: "/articles" },
   { label: "About", href: "/about" },
   { label: "Privacy", href: "/privacy" },
   { label: "Terms", href: "/terms" },

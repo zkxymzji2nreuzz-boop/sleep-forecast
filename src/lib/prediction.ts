@@ -61,11 +61,7 @@ export function predictTomorrow(
 
   if (confidence !== "low" && useLinearRegression) {
     // 線形回帰で予測
-    predictedQuality = predictByRegression(
-      validRecords,
-      forecastData,
-      confidence
-    );
+    predictedQuality = predictByRegression(validRecords, forecastData);
     isSample = false;
   } else {
     // サンプル予測
@@ -116,8 +112,7 @@ export function predictTomorrow(
  */
 function predictByRegression(
   records: SleepRecord[],
-  forecast: WeatherData,
-  confidence: "low" | "medium" | "high"
+  forecast: WeatherData
 ): number {
   const pressureDelta = records.map((r) => r.weather.pressureDeltaHpa);
   const temperatures = records.map((r) => r.weather.temperatureC);

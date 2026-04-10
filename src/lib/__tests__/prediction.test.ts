@@ -93,7 +93,7 @@ describe("predictTomorrow", () => {
   });
 
   it("気圧が -5hPa で気圧低下を identify する", () => {
-    const records = Array.from({ length: 7 }, (_, i) =>
+    const records = Array.from({ length: 7 }, () =>
       createSleepRecord(
         { quality: 3 },
         { pressureDeltaHpa: 0 }
@@ -107,7 +107,7 @@ describe("predictTomorrow", () => {
   });
 
   it("moonPhase=0.5 で満月を identify する", () => {
-    const records = Array.from({ length: 7 }, (_, i) =>
+    const records = Array.from({ length: 7 }, () =>
       createSleepRecord(
         { quality: 3 },
         { moonPhase: 0.25 }

@@ -137,6 +137,42 @@ export type PredictionResult = {
 };
 
 /**
+ * SEO 記事のフロントマターから抽出するメタデータ。
+ * 記事一覧ページ・JSON-LD 構造化データ・sitemap 用に使用する。
+ */
+export type ArticleMeta = {
+  /** ファイル名から導出する識別子 (例: "kiatsu-zutsu") */
+  slug: string;
+  /** 記事タイトル (日本語可, 最大 70 字) */
+  title: string;
+  /** SEO 用説明文 (日本語可, 120-160 字推奨) */
+  description: string;
+  /** 初出公開日 (YYYY-MM-DD) */
+  publishedAt: string;
+  /** 最終更新日 (YYYY-MM-DD) */
+  updatedAt: string;
+  /** カテゴリー (例: "気象病", "睡眠改善") */
+  category: string;
+  /** タグ配列 */
+  tags: string[];
+  /** 関連記事のスラッグ配列 */
+  relatedSlugs: string[];
+  /** おおよその文字数 (任意) */
+  wordCount?: number;
+};
+
+/**
+ * 記事の本文付き完全体。
+ * `contentHtml` は remark-rehype で HTML 文字列化したもの。
+ * Server Component からのみ取得されるため、XSS の心配は相対的に低い
+ * (ソースは信頼できるリポジトリ内の Markdown ファイル)。
+ */
+export type ArticleFull = ArticleMeta & {
+  /** remark → rehype 変換済みの HTML 文字列 */
+  contentHtml: string;
+};
+
+/**
  * トップページに表示する連続記録バッジ。
  * 最長連続日数に応じた 4 段階バッジ。
  */
