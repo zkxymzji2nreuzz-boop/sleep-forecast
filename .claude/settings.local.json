@@ -55,7 +55,8 @@
       "Bash(find src/content/articles -type f -name \"*.md\" -exec wc -l {} \\\\;)",
       "Bash(wc -c /mnt/c/Users/nonog/Desktop/sleep-forecast/src/content/articles/*.md)",
       "Bash(wc -l /mnt/c/Users/nonog/Desktop/sleep-forecast/src/content/articles/*.md)",
-      "Bash(npx next:*)"
+      "Bash(npx next:*)",
+      "Bash(git:*)"
     ]
   }
 }
