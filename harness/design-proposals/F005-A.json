@@ -1,0 +1,105 @@
+{
+  "designer": "A",
+  "theme": "minimalist-modern",
+  "philosophy": "Editorial-grade reading experience. Strip decorative borders, let whitespace carry hierarchy, and reserve the accent blue for a single focal element per screen. Typography (not chrome) defines the design. Think Stripe Press + Medium, transposed into the SleepForecast dark palette.",
+  "components": {
+    "ArticleIndex": {
+      "layout": "Single-column editorial. Hero header with generous vertical rhythm (pt-16 pb-10), then an unbordered divided list where each article is separated only by a thin hairline (border-t border-white/5) instead of individual cards. No card backgrounds, no hover fills — only text color shift and a subtle arrow translate on hover.",
+      "cardStyle": "borderless-row",
+      "tailwindClasses": {
+        "container": "container mx-auto max-w-2xl px-5 pb-20 pt-16 sm:pt-20",
+        "eyebrow": "mb-3 text-[11px] font-medium uppercase tracking-[0.18em] text-[#1d9bf0]",
+        "h1": "text-3xl font-bold tracking-tight text-[#e6e8ee] sm:text-4xl",
+        "lede": "mt-3 max-w-xl text-[15px] leading-relaxed text-[#8b92a5]",
+        "list": "mt-12 divide-y divide-white/5 border-t border-white/5",
+        "row": "group block py-8 transition-colors duration-200 min-h-[44px]",
+        "rowMeta": "mb-2 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em] text-[#8b92a5]",
+        "rowCategory": "text-[#1d9bf0]",
+        "rowTitle": "text-[19px] font-semibold leading-snug text-[#e6e8ee] transition-colors group-hover:text-[#1d9bf0] sm:text-xl",
+        "rowDesc": "mt-2 line-clamp-2 text-[14px] leading-relaxed text-[#8b92a5]",
+        "rowCta": "mt-3 inline-flex items-center gap-1 text-[12px] font-medium text-[#1d9bf0] opacity-70 transition-all group-hover:opacity-100 group-hover:translate-x-0.5",
+        "disclaimer": "mt-20 border-t border-white/5 pt-6 text-[12px] leading-relaxed text-[#8b92a5]"
+      },
+      "keyDecisions": [
+        "Remove per-item card borders/backgrounds — replace with divide-y hairlines for a newspaper/magazine feel",
+        "Drop the BookOpen icon in the header — text-only eyebrow is cleaner and faster to scan",
+        "Tighten tracking on h1 (tracking-tight) and widen uppercase eyebrow letter-spacing to [0.18em] for editorial contrast",
+        "Disclaimer: drop the card chrome, use a simple top border instead (still readable, no font-size reduction)",
+        "Increase container top padding (pt-16/20) to give the index a calm 'landing' feel",
+        "Each row has min-h-[44px] + py-8 to guarantee mobile tap target compliance"
+      ]
+    },
+    "ArticleDetail": {
+      "layout": "Narrow editorial column (max-w-[680px]) with breathing room. Back link sits above the fold as a quiet muted link. Header uses a large tracking-tight title, removes the bottom border (replaced by spacing), and isolates meta into a single horizontal muted row. JSON-LD script remains untouched.",
+      "cardStyle": "typographic-editorial",
+      "tailwindClasses": {
+        "article": "container mx-auto max-w-[680px] px-5 pb-20 pt-10 sm:pt-14",
+        "backLink": "mb-10 inline-flex items-center gap-1.5 text-[13px] text-[#8b92a5] transition-colors hover:text-[#e6e8ee] min-h-[44px]",
+        "headerWrap": "mb-12",
+        "eyebrow": "mb-4 text-[11px] font-medium uppercase tracking-[0.18em] text-[#1d9bf0]",
+        "h1": "text-[28px] font-bold leading-[1.25] tracking-tight text-[#e6e8ee] sm:text-[34px] sm:leading-[1.2]",
+        "lede": "mt-5 text-[16px] leading-relaxed text-[#e6e8ee]/80 sm:text-[17px]",
+        "metaRow": "mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px] text-[#8b92a5]",
+        "tagPill": "rounded-full border border-white/10 px-2.5 py-0.5 text-[11px] text-[#8b92a5] transition-colors hover:border-white/20 hover:text-[#e6e8ee]/80",
+        "proseClasses": "prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-[#e6e8ee] prose-h2:mt-14 prose-h2:mb-4 prose-h2:text-[22px] prose-h2:border-l-0 prose-h2:pl-0 prose-h3:mt-10 prose-h3:text-[18px] prose-p:text-[15.5px] prose-p:leading-[1.85] prose-p:text-[#e6e8ee]/85 prose-a:text-[#1d9bf0] prose-a:no-underline prose-a:border-b prose-a:border-[#1d9bf0]/30 hover:prose-a:border-[#1d9bf0] prose-strong:text-[#e6e8ee] prose-strong:font-semibold prose-li:text-[#e6e8ee]/85 prose-li:leading-[1.8] prose-blockquote:border-l-2 prose-blockquote:border-[#1d9bf0] prose-blockquote:pl-5 prose-blockquote:text-[#e6e8ee]/70 prose-blockquote:not-italic prose-code:text-[#e6e8ee] prose-code:bg-white/5 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none",
+        "ctaWrap": "mt-16 border-t border-white/5 pt-10",
+        "ctaHeading": "text-[18px] font-semibold tracking-tight text-[#e6e8ee]",
+        "ctaBody": "mt-2 text-[14px] leading-relaxed text-[#8b92a5]",
+        "ctaButton": "mt-5 bg-[#1d9bf0] text-white hover:bg-[#1a8cd8] min-h-[44px] px-6",
+        "relatedWrap": "mt-16 border-t border-white/5 pt-10",
+        "relatedHeading": "mb-6 text-[11px] font-medium uppercase tracking-[0.18em] text-[#8b92a5]",
+        "relatedList": "divide-y divide-white/5",
+        "relatedRow": "group block py-5 min-h-[44px]",
+        "relatedCategory": "text-[10px] font-medium uppercase tracking-[0.14em] text-[#1d9bf0]",
+        "relatedTitle": "mt-1 text-[15px] font-semibold text-[#e6e8ee] transition-colors group-hover:text-[#1d9bf0]",
+        "relatedDesc": "mt-1 line-clamp-1 text-[12.5px] text-[#8b92a5]",
+        "disclaimer": "mt-16 border-t border-white/5 pt-6 text-[12px] leading-relaxed text-[#8b92a5]"
+      },
+      "keyDecisions": [
+        "Replace border-b header separator with whitespace (mb-12) — lets the title breathe",
+        "Prose upgrade: use prose-lg, tighter heading tracking, leading-[1.85] body, remove h2 left-border accent in favor of pure typographic weight",
+        "Links: underline via border-b (softer than native text-decoration), thicken on hover",
+        "Blockquotes: thin 2px left accent (not 4px), muted text — subtle not shouty",
+        "CTA card: drop the gradient + colored border + rounded-2xl — replace with a flat top-border section. Only the Button itself carries the accent color, keeping ONE focal blue per screen",
+        "Related articles: convert from 2-col grid of cards into a divided list (matches index page pattern — system consistency)",
+        "Disclaimer: match index page — top-border only, no card chrome",
+        "Back link / button / row targets all hit min-h-[44px] for mobile"
+      ]
+    },
+    "ArticleLayout": {
+      "role": "Reusable editorial frame. No visual chrome on the wrapper itself — all styling lives inside the sections (header / prose / cta / related / disclaimer). Consumes ArticleDetail tailwind classes above.",
+      "structuralNotes": [
+        "Keep component API unchanged: (article, related) props",
+        "Keep JSON-LD injection untouched (lives in the page, not here)",
+        "Keep formatJpDate helper as-is",
+        "Container swaps max-w-screen-md → max-w-[680px] for a tighter reading measure (~66ch)",
+        "Add a subtle fade-in on mount via Tailwind: animate-in fade-in duration-500 on the root article element"
+      ]
+    }
+  },
+  "tokens": {
+    "spacing": "Rhythm on a 4px grid. Section gaps: mt-12 / mt-16 (between semantic blocks). Paragraph leading: 1.85. Container top padding: pt-14/16/20 (generous landing).",
+    "radius": "Minimal. Buttons keep shadcn default. Tag pills: rounded-full. Code inline: rounded. NO rounded-2xl cards anywhere in F005.",
+    "typography": "Hierarchy via size + weight + tracking, not color or borders. Scale: eyebrow 11px uppercase tracking-[0.18em], h1 28-34px tracking-tight, lede 16-17px, body 15.5px leading-[1.85], meta 12px, disclaimer 12px. Font weights: 400 body / 500 meta / 600 titles / 700 h1.",
+    "color": "Single accent (#1d9bf0) used ONCE per screen as a focal point (the CTA button on detail, the hover state on index). Muted text always #8b92a5. No gradients. No colored backgrounds.",
+    "motion": "Duration 200ms for color transitions, 500ms fade-in on mount. No scale/translate beyond 2px. No bounces."
+  },
+  "accessibility": [
+    "Contrast: #e6e8ee on #0f1117 = 14.8:1 (AAA). #8b92a5 on #0f1117 = 5.9:1 (AA normal text passes). #1d9bf0 on #0f1117 = 6.4:1 (AA).",
+    "Tap targets: back link, article rows, related rows, CTA button all enforce min-h-[44px]",
+    "Reading measure: max-w-[680px] keeps line length at ~66ch for optimal readability",
+    "Underlines restored on body links (border-b) so links are distinguishable without relying on color alone",
+    "prose-li leading-[1.8] avoids cramped lists for users with dyslexia / low vision",
+    "Eyebrow labels use uppercase + letter-spacing — still readable (text-[11px] with tracking gives comfortable x-height)",
+    "Medical disclaimer font size unchanged (text-[12px]) per harness rule",
+    "Respects prefers-reduced-motion via Tailwind's built-in motion-safe handling on animate-in (Generator to add motion-reduce:animate-none if needed)",
+    "Back link has a visible focus-visible ring via shadcn defaults (Generator to ensure focus-visible:ring-2 focus-visible:ring-[#1d9bf0]/50 rounded-sm on link)",
+    "All interactive elements keep text color change on hover (not border-only) so color-blind users perceive the affordance"
+  ],
+  "rationale": {
+    "whyLessChrome": "The current WIP wraps every list item and CTA in a card with border + background. That creates visual noise on a long-form reading surface. Editorial design (NYT, The Verge, Stripe Press) strips chrome so the reader focuses on type. We follow that convention.",
+    "whyOneAccent": "SleepForecast's brand accent #1d9bf0 is most impactful when rare. Using it on every eyebrow + every hover + every card border + the CTA gradient dilutes it. Reserving it for ONE focal per screen (the CTA button) makes the CTA feel urgent without shouting.",
+    "whyNarrowerColumn": "max-w-screen-md (768px) is too wide for ~16px body text — lines run ~85-90 characters, hurting comprehension. max-w-[680px] lands on the research-backed 60-75 character sweet spot.",
+    "whyDivideY": "divide-y hairlines (border-white/5) visually group the list without boxing each item. This also improves scan-ability: the eye flows vertically without stopping at card edges."
+  }
+}

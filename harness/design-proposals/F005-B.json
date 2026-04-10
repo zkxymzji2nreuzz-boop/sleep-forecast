@@ -1,0 +1,112 @@
+{
+  "designer": "B",
+  "theme": "wellness-emotional",
+  "philosophy": "『眠れる明日予報』の読みものは、知識を詰め込む教科書ではなく、眠れない夜にそっと寄り添う“枕元の灯り”でありたい。F003/F004 で確立したウェルネス言語（indigo→purple→rose の柔らかなグラデーション、丸みのある角、呼吸する余白、共感的なマイクロコピー）を記事体験にも拡張し、30〜50 代女性が安心して読み進められる、月夜のような穏やかさを目指す。情報設計は崩さず、温度だけを上げるアプローチ。",
+  "components": {
+    "ArticleIndex": {
+      "layout": "ページ上部にウェルカム・ヒーロー（月アイコン＋柔らかな縦方向グラデーション背景）を配置し、その下にカード型リストを縦積み。カード間は gap-5 でゆったり。max-w-screen-md を維持。",
+      "cardStyle": "角丸 rounded-3xl、border は白 8% で細く。通常時は背景 bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent、ホバー時は from-indigo-500/10 via-purple-500/8 to-rose-500/5 に変化し、border が indigo-300/30 に。影は shadow-[0_8px_30px_-12px_rgba(124,77,255,0.25)] でふわり浮き上がる。カード左端に 3px の縦グラデーションバー（from-indigo-400 to-purple-400）を装飾として添える。",
+      "tailwindClasses": "group relative block overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent p-6 transition-all duration-500 ease-out hover:border-indigo-300/30 hover:from-indigo-500/10 hover:via-purple-500/[0.08] hover:to-rose-500/5 hover:shadow-[0_8px_30px_-12px_rgba(124,77,255,0.25)] hover:-translate-y-0.5",
+      "keyDecisions": [
+        "ヒーロー見出し上に月＋雲の lucide アイコン（Moon, Cloud）を横並びで小さく表示し、読みもの=夜の時間という情緒を示唆",
+        "ヒーロー背景に bg-gradient-to-b from-indigo-500/[0.06] via-purple-500/[0.03] to-transparent の縦グラデーションを敷き、上部に rounded-b-[3rem] でソフトな曲線を作る",
+        "カードのカテゴリラベルは uppercase を廃し、日本語そのまま（例: 気象病）で rounded-full の淡い indigo-300/15 ピル状バッジに",
+        "公開日は『2026年4月10日』の和暦風日本語表記で、Calendar アイコン＋text-muted で控えめに",
+        "『続きを読む』はカード右下に配置し、ホバーで ArrowRight が translate-x-1 でスッと右へ滑る（既存の 0.5 より大きく、情緒的に）",
+        "免責文は rounded-2xl + border-white/[0.06] + bg-white/[0.02] に。Info アイコン（lucide）を左に添えて『安心のためのお知らせ』感を出す。フォントサイズは text-xs を厳守"
+      ]
+    },
+    "ArticleDetail": {
+      "layout": "戻るリンク → ヘッダー（タイトル＋メタ）→ 本文 prose → CTA → 関連記事 → 免責、の縦構造を維持。max-w-screen-md。ヘッダー周辺に上下 py-4 追加の『呼吸』を入れる。",
+      "cardStyle": "ヘッダーの下線 border-b を廃し、代わりに水平グラデーションライン bg-gradient-to-r from-transparent via-indigo-400/40 to-transparent h-px で『優しい区切り』を表現。タグは rounded-full bg-indigo-500/10 text-indigo-200/80 border border-indigo-300/20 でピル化。",
+      "tailwindClasses": "article: container mx-auto max-w-screen-md px-4 pb-20 pt-10 | header: relative mb-10 | h1: text-3xl sm:text-4xl font-bold leading-[1.35] text-[#e6e8ee] tracking-tight",
+      "keyDecisions": [
+        "戻るリンクを『記事一覧に戻る』→『ほかの読みものを見る』に変更し、トーンを柔らかく",
+        "h1 の leading を leading-tight(1.25) → leading-[1.35] に広げ、視認性と落ち着きを両立",
+        "カテゴリバッジを BookOpen アイコン付きピル（rounded-full bg-indigo-500/10 px-3 py-1）に格上げ",
+        "メタ情報行（公開/更新/タグ）はアイコンを h-3.5 w-3.5 のまま維持し、gap-x-5 gap-y-3 でゆったり",
+        "ヘッダー下のセパレータは border-b ではなく、div（h-px bg-gradient-to-r from-transparent via-indigo-400/40 to-transparent）で美しく",
+        "本文 prose は prose-invert prose-lg（text-base→text-[17px] 相当）で行間 leading-[1.9] を確保、プラグインの prose-p:leading-[1.9] を適用"
+      ]
+    },
+    "ArticleLayout": {
+      "layout": "上記 ArticleDetail と同じ構造。特にヘッダー・prose・CTA・関連記事・免責の 5 ブロックをカード化ではなく『セクション化』し、間に mt-12 の呼吸を入れる。",
+      "cardStyle": "CTA: rounded-3xl bg-gradient-to-br from-indigo-500/15 via-purple-500/12 to-rose-500/8、border border-indigo-300/25、shadow-[0_12px_40px_-16px_rgba(124,77,255,0.4)]、内側 p-7 sm:p-8。左上に Moon アイコン（h-5 w-5 text-indigo-200）をタイトル横に配置。関連記事カードは rounded-2xl border border-white/[0.08] bg-white/[0.03] hover:bg-gradient-to-br hover:from-indigo-500/8 hover:to-purple-500/5 hover:border-indigo-300/25 transition-all duration-500。",
+      "tailwindClasses": "prose: prose prose-invert prose-lg max-w-none prose-headings:text-[#e6e8ee] prose-headings:font-bold prose-headings:tracking-tight prose-h2:mt-14 prose-h2:mb-5 prose-h2:text-2xl prose-h2:border-l-[3px] prose-h2:border-indigo-400/70 prose-h2:pl-4 prose-h2:leading-snug prose-h3:mt-10 prose-h3:text-xl prose-h3:text-[#e6e8ee] prose-p:text-[#e6e8ee]/90 prose-p:leading-[1.9] prose-li:text-[#e6e8ee]/90 prose-li:leading-[1.85] prose-li:my-1 prose-a:text-indigo-300 prose-a:underline-offset-4 prose-a:decoration-indigo-400/40 hover:prose-a:decoration-indigo-300 prose-strong:text-[#e6e8ee] prose-strong:font-semibold prose-blockquote:border-l-indigo-400/60 prose-blockquote:text-[#e6e8ee]/80 prose-blockquote:bg-indigo-500/[0.04] prose-blockquote:rounded-r-xl prose-blockquote:py-2 prose-blockquote:pr-4 prose-code:text-indigo-200 prose-code:bg-white/[0.06] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none",
+      "keyDecisions": [
+        "h2 の縦ボーダーを 4px → 3px に細くし、色を [#1d9bf0] → indigo-400/70 に変更（鋭さを和らげる）",
+        "prose-lg を採用し、本文を 17px 相当に。行間は leading-[1.9] で『月夜の文庫本』のような読み心地に",
+        "blockquote をふんわりカード化（rounded-r-xl + 淡い indigo 背景）、引用は『やさしい補助線』として機能",
+        "CTA のアイコンは Moon（lucide）に変更し、『明日への優しい招待』を表現。ボタンは rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 shadow-lg shadow-indigo-500/25 px-6 py-3 text-white font-medium",
+        "関連記事セクション見出しに Sparkles アイコン（h-4 w-4 text-indigo-300）を添え、『こちらの読みものもおすすめ』に変更",
+        "関連記事カードは grid sm:grid-cols-2 gap-4、角丸 rounded-2xl、ホバー時の translate-y-0.5 浮き上がり",
+        "免責文は変えない。rounded-2xl border-white/[0.06] bg-white/[0.02] p-5 text-xs leading-relaxed text-[#8b92a5]、Info アイコン（h-3.5 w-3.5）を左に配置。フォントサイズ text-xs は厳守",
+        "本文末尾から CTA までの間に mt-14、CTA から関連記事まで mt-14、関連から免責まで mt-14 で統一し、呼吸するリズムを作る"
+      ]
+    }
+  },
+  "microcopy": {
+    "index_intro": "気圧、気温、月のリズム。眠りの奥にある自然の声に、そっと耳を澄ませる読みものを集めました。",
+    "index_hero_kicker": "読みもの",
+    "index_empty": "今夜はまだ、新しい読みものは届いていません。",
+    "read_more": "続きを読む",
+    "back_to_index": "ほかの読みものを見る",
+    "cta_heading": "今夜の眠りを、明日の予報に。",
+    "cta_body": "毎朝たった 30 秒の記録から、気圧・気温・月齢があなたの眠りにどう響いているかを、やさしく見える化します。",
+    "cta_button": "今日の睡眠を記録する",
+    "related_heading": "こちらの読みものもおすすめ",
+    "meta_published": "公開",
+    "meta_updated": "更新",
+    "disclaimer_prefix": "お知らせ"
+  },
+  "tokens": {
+    "gradients": {
+      "hero_bg": "bg-gradient-to-b from-indigo-500/[0.06] via-purple-500/[0.03] to-transparent",
+      "card_hover": "hover:bg-gradient-to-br hover:from-indigo-500/10 hover:via-purple-500/[0.08] hover:to-rose-500/5",
+      "cta_bg": "bg-gradient-to-br from-indigo-500/15 via-purple-500/12 to-rose-500/8",
+      "cta_button": "bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400",
+      "divider": "bg-gradient-to-r from-transparent via-indigo-400/40 to-transparent",
+      "card_accent_bar": "bg-gradient-to-b from-indigo-400 to-purple-400"
+    },
+    "radius": {
+      "card": "rounded-3xl",
+      "related_card": "rounded-2xl",
+      "pill": "rounded-full",
+      "button": "rounded-full",
+      "code": "rounded-md",
+      "disclaimer": "rounded-2xl"
+    },
+    "typography": {
+      "h1": "text-3xl sm:text-4xl font-bold leading-[1.35] tracking-tight",
+      "h2_prose": "prose-h2:text-2xl prose-h2:leading-snug prose-h2:font-bold prose-h2:border-l-[3px] prose-h2:border-indigo-400/70 prose-h2:pl-4 prose-h2:mt-14 prose-h2:mb-5",
+      "body_prose": "prose-lg prose-p:leading-[1.9]",
+      "caption": "text-xs text-[#8b92a5]",
+      "cta_title": "text-xl font-bold",
+      "index_intro": "text-sm sm:text-base text-[#8b92a5] leading-relaxed"
+    },
+    "shadows": {
+      "card_hover": "shadow-[0_8px_30px_-12px_rgba(124,77,255,0.25)]",
+      "cta": "shadow-[0_12px_40px_-16px_rgba(124,77,255,0.4)]",
+      "button": "shadow-lg shadow-indigo-500/25"
+    },
+    "motion": {
+      "duration": "duration-500",
+      "easing": "ease-out",
+      "card_lift": "hover:-translate-y-0.5",
+      "arrow_slide": "group-hover:translate-x-1"
+    }
+  },
+  "accessibility": [
+    "見出し階層を h1 → h2 → h3 の順で崩さず、prose が自動付与する構造を維持",
+    "戻るリンク・『続きを読む』リンクに focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1117] を付与",
+    "カテゴリピルの背景 indigo-500/10 + 文字 indigo-200 はコントラスト比 4.5:1 以上を確保",
+    "本文 text-[#e6e8ee]/90 vs 背景 #0f1117 はコントラスト比 約 13:1 で AAA 基準を満たす",
+    "muted text-[#8b92a5] vs #0f1117 は約 5.2:1 で AA 通常テキスト基準を満たす（免責文サイズ text-xs で使用）",
+    "lucide アイコンすべてに aria-hidden='true' を付与、意味はテキストで伝える",
+    "prose-a のリンクは下線を常時表示（decoration-indigo-400/40）し、色だけに依存しない",
+    "CTA ボタンは Button コンポーネント経由で keyboard focus 対応、min-height 44px をキープ",
+    "医療免責文 text-xs は仕様固定。縮小・色弱化は一切行わない",
+    "prefers-reduced-motion 考慮: hover の translate/scale は transition-all かつ 500ms 以下で controlled、過度なアニメはなし"
+  ],
+  "rationale_summary": "F003 ダッシュボードと F004 予測カードで採用した『indigo→purple→rose の柔らかグラデ＋丸みのある角＋呼吸する余白＋共感的コピー』を読みもの体験にそのまま接続する。夜空を思わせる背景を維持しつつ、記事カードには温かい光のにじみを、本文には月夜の文庫本のような広い行間を、CTA には明日への優しい招待を配置。30〜50 代の女性が『眠れない夜に、そっと開ける一冊』と感じられる、安心と癒しのビジュアル言語を目指した。"
+}

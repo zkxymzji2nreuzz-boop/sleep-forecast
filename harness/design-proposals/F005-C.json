@@ -1,0 +1,60 @@
+{
+  "designer": "C",
+  "theme": "data-scientific",
+  "philosophy": "医療・学術論文ライクな『読めるエビデンス』を演出する。読了時間・文字数・カテゴリ・更新日をメタデータ帯として定量化し、読者に『この記事はどれだけの情報量か・いつの科学か』を一目で伝える。H2/H3/H4 の階層を番号付きセクション風に見せ、図表・引用ブロックを論文図版風に強調。色はダーク系を維持しつつ teal/cyan アクセントでクリニカルな信頼感を出す。",
+  "components": {
+    "ArticleIndex": {
+      "layout": "ダッシュボード風ヘッダー: タイトル左、右側に『全○記事・総○,○○○字・最終更新 YYYY/MM/DD』の統計バッジ3つを横並び。カードはリストではなくテーブル的なグリッド (1col mobile / 1col desktop でも情報密度は高い)。各カード左にカテゴリを色分けバーで縦表示、右上に読了時間バッジ、下部にタグチップ、ホバー時はborder-cyanに発光効果。",
+      "cardMeta": "category(色分けバッジ) / publishedAt(ISO表示 2026-04-10) / updatedAt(差分がある場合のみ Updated pill) / readingTime(Clock icon + '約5分で読了') / wordCount(BookOpen icon + '2,400字') / tags(最大3つ #chip)",
+      "tailwindClasses": "container: 'container mx-auto max-w-screen-lg px-4 pb-16 pt-10' / header: 'mb-10 border-b border-white/10 pb-6' / statsRow: 'mt-4 flex flex-wrap gap-3' / statBadge: 'inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/[0.02] px-3 py-1.5 text-xs text-[#8b92a5]' / cardWrap: 'grid gap-3' / card: 'group relative flex gap-4 overflow-hidden rounded-xl border border-white/10 bg-[#1a1f2e] p-5 transition-all hover:border-[#1d9bf0]/60 hover:shadow-[0_0_0_1px_rgba(29,155,240,0.3)]' / categoryBar: 'absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-[#1d9bf0] to-[#06b6d4]' / readingTimeChip: 'inline-flex items-center gap-1 rounded-full bg-[#0f1117] px-2.5 py-1 text-[10px] font-mono text-[#06b6d4] ring-1 ring-[#06b6d4]/20'",
+      "keyDecisions": [
+        "読了時間を本文文字数から概算 (400字/分) して cardMeta に表示し『時間を投資する価値のある記事』と感じさせる",
+        "カテゴリごとに色分け (気象病=#ef4444 rose / 睡眠の質=#1d9bf0 blue / 月齢=#06b6d4 cyan) し、左縦バーで一覧性を高める",
+        "統計バッジ3つ (記事数・総文字数・最終更新) で『運営されている・成長している』信頼感を出す",
+        "カードはホバーで border + box-shadow の二重リング発光。科学計測機器の UI を彷彿とさせる",
+        "font-mono を読了時間と日付に使い、データらしさを演出"
+      ]
+    },
+    "ArticleDetail": {
+      "headerMeta": "タイトル上に『Category · Reading time · Word count · Updated』を4項目の区切り付きメタ行で配置。タイトル下に description を lead 文として大きめに。さらに下に3カラムのメタデータグリッド (公開日/更新日/タグ) を枠線つきで。見出しは論文風に 'Section 1.' など番号付きに prose CSS で自動採番。",
+      "proseStyling": "prose-invert ベース。H2は border-l-4 border-cyan-500 + counter-increment による '1.' '2.' 自動採番 + text-2xl / H3 は text-lg + border-l-2 border-cyan-500/40 / blockquote は bg-[#0f1117] + border-l-4 border-[#1d9bf0] で論文引用風 / table は border-collapse + カラムヘッダーbg-[#1d9bf0]/10 / code は bg-black/60 + text-[#06b6d4] / figure は rounded-lg border border-white/10 + caption は text-xs text-[#8b92a5] italic で論文 Fig. 風 / hr は tracking-[1em] dots",
+      "relatedFooter": "関連記事セクションの上に『References (参考リンク)』風の区切り線 + 小見出し。関連記事カードはインデックスと同じ縦バー付きカードを2カラムで。下部にCTAカード (記録へ誘導) はサブ扱いで控えめに。最後に医療免責をアイコン付きの警告風ブロックで (text-xs はそのまま)。",
+      "tailwindClasses": "article: 'container mx-auto max-w-screen-md px-4 pb-16 pt-8' / metaLine: 'mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-mono uppercase tracking-wider text-[#06b6d4]' / metaSep: \"before:content-['·'] before:mr-3 before:text-white/20\" / title: 'text-3xl font-bold leading-tight text-[#e6e8ee] sm:text-4xl' / lead: 'mt-4 text-base leading-relaxed text-[#e6e8ee]/80 sm:text-lg' / metaGrid: 'mt-6 grid grid-cols-2 gap-3 rounded-lg border border-white/10 bg-[#1a1f2e] p-4 sm:grid-cols-3' / metaCell: 'flex flex-col gap-0.5' / metaLabel: 'text-[10px] uppercase tracking-wider text-[#8b92a5]' / metaValue: 'text-xs text-[#e6e8ee] font-mono'"
+    },
+    "ArticleLayout": {
+      "structure": "1. 戻るリンク (ArrowLeft + 'Back to Articles') 2. Category eyebrow (Tag icon + カテゴリ名を cyan + uppercase font-mono) 3. Title (H1 text-3xl→4xl) 4. Lead description 5. Meta Grid (公開日 | 更新日 | 読了時間 | 文字数 | タグ) 6. Divider 7. Prose 本文 8. CTA (控えめ) 9. References (関連記事) 10. 医療免責ブロック",
+      "headerStyle": "論文ヘッダー風。タイトル上にカテゴリラベル、タイトル下にlead、その下に枠線付きメタグリッド。font-mono を日付・読了時間・文字数に使い、科学論文のメタデータ表示を模倣。",
+      "proseWrapping": "prose prose-invert max-w-none を base にし、以下を追加で上書き: prose-headings:text-[#e6e8ee] prose-h2:mt-12 prose-h2:border-l-4 prose-h2:border-[#06b6d4] prose-h2:pl-4 prose-h2:text-2xl prose-h2:font-bold prose-h3:mt-8 prose-h3:text-lg prose-h3:text-[#e6e8ee] prose-h3:border-l-2 prose-h3:border-[#06b6d4]/50 prose-h3:pl-3 prose-p:text-[#e6e8ee]/85 prose-p:leading-[1.85] prose-a:text-[#06b6d4] prose-a:no-underline hover:prose-a:underline prose-strong:text-[#1d9bf0] prose-code:text-[#06b6d4] prose-code:bg-black/40 prose-code:px-1 prose-code:rounded prose-blockquote:border-l-4 prose-blockquote:border-[#1d9bf0] prose-blockquote:bg-[#0f1117]/60 prose-blockquote:py-2 prose-blockquote:not-italic prose-blockquote:text-[#e6e8ee]/90 prose-li:text-[#e6e8ee]/85 prose-table:text-sm prose-th:bg-[#1d9bf0]/10 prose-th:text-[#e6e8ee] prose-hr:border-white/10",
+      "ctaPlacement": "CTA は本文末尾に小さめのカードで配置 (border-dashed border-[#1d9bf0]/40)。強すぎず『関連アクション』としての位置づけ。",
+      "referencesSection": "関連記事を『References』というラベルで英字 font-mono uppercase 見出しにして論文風に。カードは左縦バー付きのミニカード、2カラム。",
+      "disclaimer": "AlertTriangle icon 付きの警告ブロック (border-l-4 border-amber-500/40 bg-amber-500/[0.03]) で、text-xs のまま leading-relaxed を維持してアクセシビリティ確保。"
+    }
+  },
+  "tokens": {
+    "primary": "#1d9bf0 (信頼のブルー・リンク・strong)",
+    "secondary": "#06b6d4 (cyan・データメタ・アクセント線・見出し)",
+    "background": "#0f1117 (深いダーク)",
+    "card": "#1a1f2e (やや明るいダーク)",
+    "border": "rgba(255,255,255,0.1)",
+    "textPrimary": "#e6e8ee",
+    "textMuted": "#8b92a5",
+    "accentTags": "カテゴリ別色分け: 気象病=border-rose-500/30 text-rose-400 bg-rose-500/5 / 睡眠の質=border-blue-500/30 text-[#1d9bf0] bg-blue-500/5 / 月齢=border-cyan-500/30 text-[#06b6d4] bg-cyan-500/5 / タグチップは rounded-full bg-white/[0.04] ring-1 ring-white/10 px-2 py-0.5 text-[10px] text-[#e6e8ee]/70",
+    "typography": "見出し: font-sans (Inter/Noto Sans JP) bold / 本文: font-sans leading-[1.85] / メタデータ: font-mono (JetBrains Mono / ui-monospace) uppercase tracking-wider / 数値・日付は必ず font-mono で『計測された事実』感を出す",
+    "codeBlockStyle": "bg-[#0a0d14] border border-[#1d9bf0]/20 rounded-lg p-4 font-mono text-[13px] text-[#e6e8ee]/90 overflow-x-auto / inline-code: bg-black/40 text-[#06b6d4] px-1.5 py-0.5 rounded text-[0.875em]",
+    "shadows": "ホバー時の発光: shadow-[0_0_0_1px_rgba(29,155,240,0.3),0_8px_24px_-8px_rgba(29,155,240,0.15)]",
+    "dividers": "セクション区切りは border-white/10 + 中央に小さな '· · ·' font-mono を配置可能"
+  },
+  "accessibility": [
+    "医療免責文は text-xs のまま維持、leading-relaxed で可読性確保 (仕様要件)",
+    "すべてのテキストコントラスト比を4.5:1以上に (textPrimary #e6e8ee on #0f1117 ≈ 13.5:1 / textMuted #8b92a5 on #0f1117 ≈ 5.1:1 OK / cyan #06b6d4 on #0f1117 ≈ 7.8:1 OK)",
+    "font-mono は最小でも 11px (text-[11px]) を下回らない (メタラベルは uppercase tracking-wider で可読性を補強)",
+    "H1-H4 は semantic に正しい順序で、prose 内の counter-reset は見た目のみで読み上げには影響しない",
+    "アイコン (Clock/Calendar/Tag/BookOpen/ExternalLink/AlertTriangle) はすべて aria-hidden='true' に設定し、隣接テキストで意味を伝える",
+    "リンクは hover 時だけでなく focus-visible でも border/ring 変化させる (focus-visible:ring-2 focus-visible:ring-[#06b6d4]/60)",
+    "カード全体をクリッカブルにする際は Link を wrap し、内部要素は tabIndex を重複させない",
+    "prose-blockquote の非italic化 (prose-blockquote:not-italic) で日本語の可読性を上げる",
+    "font-mono は日本語フォールバックが効くよう tailwind の font-mono を利用 (英数字のみ適用)",
+    "読了時間・文字数は視覚的アクセントだが、スクリーンリーダー向けに '約5分で読了、約2400字' と自然言語併記"
+  ],
+  "rationale": "このプロダクトの記事は『頭痛メカニズム・睡眠研究・月齢相関』という科学トピック。読者は『この情報は信頼できるか』を無意識に評価する。カードにカテゴリの色分け・読了時間・文字数・更新日を表示することで『運営されている・定量化されている』信頼感を与え、記事内では論文風の番号付きH2・引用ブロック・font-mono メタデータで『エビデンス感』を演出する。一方で情報過多を避けるため、メタはヘッダーに集約し、本文 prose は読みやすさ最優先。teal/cyan アクセントは医療計測機器の UI を想起させ、既存のブルーに奥行きを追加する。"
+}
