@@ -7,7 +7,7 @@ import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { Toaster } from "@/components/ui/toaster";
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://sleep-forecast.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://sleep-forecast.vercel.app";h
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -31,6 +31,9 @@ export const metadata: Metadata = {
   ],
   robots: { index: true, follow: true },
   manifest: "/manifest.json",
+    verification: {
+          google: "gDinKJ13crkfTq30PqE_nPcTgcNMfVIs-OI7jqqrNoE",
+    },
   appleWebApp: {
     capable: true,
     title: "SleepForecast",
