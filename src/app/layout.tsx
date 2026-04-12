@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { Toaster } from "@/components/ui/toaster";
+import { Analytics } from "@vercel/analytics/react";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://sleep-forecast.vercel.app";
@@ -92,6 +93,7 @@ export default function RootLayout({
         </div>
         <GoogleAnalytics />
         <Toaster />
+        <Analytics />
       </body>
     </html>
   );
