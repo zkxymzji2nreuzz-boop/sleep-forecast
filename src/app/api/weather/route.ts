@@ -151,10 +151,19 @@ async function handleFullMode(lat: number, lon: number): Promise<Response> {
 
   // ── グローバル daily から JMA 未収録かつ JMA 最終日より後の日を抽出 ──
   const globalTimes = globalData.daily?.time ?? [];
+  const globalTimeToIdx = new Map(globalTimes.map((t, i) => [t, i]));
   const extension = globalTimes
     .map((t, i) => ({ t, i }))
     .filter(({ t }) => !jmaDateSet.has(t) && t > jmaLastDate);
   const extIdx = extension.map((x) => x.i);
+
+  // JMA は precipitation_probability を提供しないため、JMA 日付分もグローバルから取る
+  const globalPrecipProbForJmaDates = jmaTimes.map((t) => {
+    const gi = globalTimeToIdx.get(t);
+    return gi !== undefined
+      ? (globalData.daily?.precipitation_probability_max?.[gi] ?? null)
+      : null;
+  });
 
   // ── daily データをマージ ──
   const mergedDaily = {
@@ -171,8 +180,9 @@ async function handleFullMode(lat: number, lon: number): Promise<Response> {
       ...(jmaData.daily?.relative_humidity_2m_max ?? []),
       ...pick(globalData.daily?.relative_humidity_2m_max, extIdx),
     ],
+    // JMA は precipitation_probability を持たないのでグローバル値を全日付で使用
     precipitation_probability_max: [
-      ...(jmaData.daily?.precipitation_probability_max ?? []),
+      ...globalPrecipProbForJmaDates,
       ...pick(globalData.daily?.precipitation_probability_max, extIdx),
     ],
     pressure_msl_min: [

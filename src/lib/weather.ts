@@ -221,6 +221,27 @@ export async function fetchWeatherForecast(
 }
 
 /**
+ * WMO weather code から降水確率 (%) を推定する。
+ * JMA モデルは precipitation_probability を提供しないため、hourly のフォールバックとして使用。
+ * 参考: https://open-meteo.com/en/docs#weathervariables
+ */
+function weatherCodeToPrecipProb(code: number | undefined | null): number {
+  if (code == null) return 0;
+  const c = Math.round(code);
+  if (c <= 1) return 0;   // 快晴〜晴れ
+  if (c <= 3) return 5;   // 曇りがち
+  if (c <= 19) return 10; // 地吹雪・霧などローカル現象
+  if (c <= 29) return 25; // 前1時間の降水現象
+  if (c <= 49) return 10; // 視程障害・砂嵐
+  if (c <= 59) return 70; // 霧雨 (drizzle) 50-59
+  if (c <= 69) return 90; // 雨 (rain) 60-69
+  if (c <= 79) return 90; // 雪 (snow) 70-79
+  if (c <= 84) return 80; // にわか雨 (showers) 80-84
+  if (c <= 94) return 85; // 強いにわか雨・ひょう 85-94
+  return 95;              // 雷雨 95+
+}
+
+/**
  * Open-Meteo の full レスポンス (current + hourly + daily) を
  * `FullWeatherData` に変換する。
  */
@@ -319,8 +340,15 @@ export function mapOpenMeteoFullResponse(
     ) {
       hwTimes.push(t);
       hwTemps.push(Math.round(numberOr(rawTemps[i], 0)));
-      hwCodes.push(Math.round(numberOr(rawCodes[i], 0)));
-      hwPrecipProbs.push(Math.round(numberOr(rawPrecipProbs[i], 0)));
+      const code = Math.round(numberOr(rawCodes[i], 0));
+      hwCodes.push(code);
+      // JMA は precipitation_probability を提供しないため、null の場合は weathercode から推定
+      const rawProb = rawPrecipProbs[i];
+      hwPrecipProbs.push(
+        typeof rawProb === "number" && Number.isFinite(rawProb)
+          ? Math.round(rawProb)
+          : weatherCodeToPrecipProb(code)
+      );
       hwPrecipMm.push(round1(numberOr(rawPrecip[i], 0)));
       hwHumidity.push(Math.round(numberOr(rawHumidity[i], 0)));
       hwPressures.push(Math.round(numberOr(rawPressures[i], 1013)));
