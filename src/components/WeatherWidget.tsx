@@ -1,15 +1,16 @@
 "use client";
 
 /**
- * WeatherWidget v2 — 完全リデザイン
+ * WeatherWidget v3 — レイアウト刷新
  *
- * レイアウト:
- * 1. 週間天気予報 (トップ・しっかり版)
- * 2. 今夜の睡眠スコア (ヒーロー, 0-100)
- * 3. 気象指標 3カード (気圧 / 体感気温 / 大気質)
- * 4. 気圧推移グラフ (カラーゾーン付き)
- * 5. 睡眠×気圧 相関グラフ
- * 6. ケアヒント
+ * レイアウト順:
+ * 1. 今日の天気（サマリー + 時間別横スクロール）← 新規
+ * 2. 週間天気予報（コンパクト版）
+ * 3. 今夜の睡眠スコア（ヒーロー）
+ * 4. 気象指標 3カード（気圧 / 体感気温 / 大気質）
+ * 5. 気圧推移グラフ（カラーゾーン付き）
+ * 6. 睡眠×気圧 相関グラフ
+ * 7. ケアヒント
  */
 
 import * as React from "react";
@@ -24,7 +25,12 @@ import {
 } from "@/lib/wsi";
 import { DEFAULT_PREFECTURE_KEY, getRecords } from "@/lib/storage";
 import { getPrefectureByCode } from "@/lib/prefectures";
-import type { FullWeatherData, DailyForecast, AQIData } from "@/lib/types";
+import type {
+  FullWeatherData,
+  DailyForecast,
+  AQIData,
+  HourlyWeatherData,
+} from "@/lib/types";
 import type { WSIScore, PressureZone } from "@/lib/wsi";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -65,10 +71,20 @@ function precipColor(prob: number): string {
   return "text-[#8b92a5]";
 }
 
-function weatherCodeToDisplay(code?: number): { emoji: string; label: string } {
+/**
+ * WMO 天気コードを絵文字＋ラベルに変換。
+ * hour を渡すと夜間（22時〜4時）の晴れ系を月アイコンに切り替える。
+ */
+function weatherCodeToDisplay(
+  code?: number,
+  hour?: number
+): { emoji: string; label: string } {
   if (code === undefined) return { emoji: "🌡", label: "不明" };
-  if (code === 0) return { emoji: "☀️", label: "快晴" };
-  if (code === 1) return { emoji: "🌤", label: "晴れ" };
+  const isNight =
+    hour !== undefined && (hour >= 22 || hour <= 4);
+
+  if (code === 0) return isNight ? { emoji: "🌕", label: "快晴" } : { emoji: "☀️", label: "快晴" };
+  if (code === 1) return isNight ? { emoji: "🌙", label: "晴れ" } : { emoji: "🌤", label: "晴れ" };
   if (code === 2) return { emoji: "⛅", label: "曇り時々晴" };
   if (code === 3) return { emoji: "☁️", label: "曇り" };
   if (code === 45 || code === 48) return { emoji: "🌫", label: "霧" };
@@ -83,7 +99,168 @@ function weatherCodeToDisplay(code?: number): { emoji: string; label: string } {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ① 週間天気予報
+// ① 今日の天気（サマリー + 時間別横スクロール）
+// ─────────────────────────────────────────────────────────────────────────────
+
+function TodayWeatherSection({
+  hourlyWeather,
+  todayForecast,
+}: {
+  hourlyWeather: HourlyWeatherData;
+  todayForecast: DailyForecast | undefined;
+}) {
+  // 現在時刻インデックスを特定（一番近いもの）
+  const nowMs = Date.now();
+  let currentIdx = 0;
+  let minDiff = Infinity;
+  for (let i = 0; i < hourlyWeather.times.length; i++) {
+    const diff = Math.abs(Date.parse(hourlyWeather.times[i]) - nowMs);
+    if (diff < minDiff) {
+      minDiff = diff;
+      currentIdx = i;
+    }
+  }
+
+  // サマリー用データ
+  const currentCode = hourlyWeather.weatherCodes[currentIdx];
+  const currentHour = hourlyWeather.times[currentIdx]
+    ? new Date(hourlyWeather.times[currentIdx]).getHours()
+    : undefined;
+  const summaryWeather = weatherCodeToDisplay(currentCode, currentHour);
+
+  // 今日の最大降水確率
+  const todayPrecipProb = todayForecast?.precipProbability ?? 0;
+  const tempMax = todayForecast?.tempMax;
+  const tempMin = todayForecast?.tempMin;
+
+  return (
+    <div className="px-4 pt-4 pb-4">
+      <p className="mb-3 text-xs font-semibold text-[#8b92a5] tracking-wide uppercase">
+        今日の天気
+      </p>
+      <div className="flex gap-3">
+        {/* 左: サマリーカード（固定幅 88px） */}
+        <div
+          className="flex-shrink-0 flex flex-col items-center justify-center gap-1.5 rounded-2xl px-2 py-3"
+          style={{
+            width: "88px",
+            minHeight: "120px",
+            background: "rgba(29,155,240,0.10)",
+            border: "1px solid rgba(29,155,240,0.35)",
+          }}
+        >
+          <span className="text-3xl leading-none">{summaryWeather.emoji}</span>
+          <span className="text-[10px] text-[#8b92a5] text-center leading-tight">
+            {summaryWeather.label}
+          </span>
+          <span className={`text-xs font-semibold ${precipColor(todayPrecipProb)}`}>
+            💧{todayPrecipProb}%
+          </span>
+          {tempMax !== undefined && tempMin !== undefined && (
+            <div className="flex items-baseline gap-1">
+              <span className="text-xs font-bold" style={{ color: "#fb923c" }}>
+                {tempMax}°
+              </span>
+              <span className="text-xs" style={{ color: "#93c5fd" }}>
+                {tempMin}°
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* 右: 時間別横スクロール */}
+        <div className="flex-1 overflow-x-auto -mx-0">
+          <div className="flex gap-2 pb-2 snap-x snap-mandatory">
+            {hourlyWeather.times.map((time, i) => {
+              const hour = new Date(time).getHours();
+              const wc = hourlyWeather.weatherCodes[i];
+              const w = weatherCodeToDisplay(wc, hour);
+              const temp = hourlyWeather.temps[i];
+              const precipProb = hourlyWeather.precipProbs[i];
+              const precipMm = hourlyWeather.precipMm[i];
+              const humid = hourlyWeather.humidity[i];
+              const pres = hourlyWeather.pressures[i];
+              const isCurrent = i === currentIdx;
+
+              return (
+                <div
+                  key={time}
+                  className="flex-shrink-0 snap-start flex flex-col items-center gap-1 rounded-xl px-2.5 py-2"
+                  style={{
+                    minWidth: "54px",
+                    background: isCurrent
+                      ? "rgba(167,139,250,0.15)"
+                      : "rgba(18,23,42,0.8)",
+                    border: isCurrent
+                      ? "1px solid rgba(167,139,250,0.50)"
+                      : "1px solid rgba(255,255,255,0.06)",
+                  }}
+                >
+                  {/* 時刻 */}
+                  <span
+                    className="text-[10px] font-semibold"
+                    style={{ color: isCurrent ? "#a78bfa" : "#8b92a5" }}
+                  >
+                    {hour}時
+                  </span>
+
+                  {/* 天気アイコン */}
+                  <span className="text-lg leading-none">{w.emoji}</span>
+
+                  {/* 気温（整数） */}
+                  <span className="text-xs font-bold text-[#e6e8ee]">
+                    {Math.round(temp)}°
+                  </span>
+
+                  {/* 降水確率 */}
+                  <span className={`text-[10px] ${precipColor(precipProb)}`}>
+                    {precipProb}%
+                  </span>
+
+                  {/* 降水量（小数1桁） */}
+                  <span className="text-[10px] text-[#8b92a5]">
+                    {precipMm.toFixed(1)}mm
+                  </span>
+
+                  {/* 湿度 */}
+                  <span className="text-[10px] text-[#8b92a5]">
+                    {humid}%
+                  </span>
+
+                  {/* 気圧 */}
+                  <span className="text-[10px] text-[#8b92a5]">
+                    {pres}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* 凡例 */}
+          <div className="flex gap-3 mt-0.5">
+            {[
+              { label: "降水確率", color: "#93c5fd" },
+              { label: "降水量(mm)", color: "#8b92a5" },
+              { label: "湿度%", color: "#8b92a5" },
+              { label: "気圧(hPa)", color: "#8b92a5" },
+            ].map(({ label, color }) => (
+              <span
+                key={label}
+                className="text-[9px]"
+                style={{ color }}
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ② 週間天気予報（コンパクト版）
 // ─────────────────────────────────────────────────────────────────────────────
 
 function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
@@ -99,20 +276,20 @@ function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
         return (
           <div
             key={day.date}
-            className="flex-shrink-0 snap-start flex flex-col items-center gap-2 rounded-2xl px-4 py-4 text-center"
+            className="flex-shrink-0 snap-start flex flex-col items-center gap-1.5 rounded-xl px-3 py-2.5 text-center"
             style={{
-              minWidth: "100px",
+              minWidth: "72px",
               background: isCurrentDay
-                ? "rgba(29,155,240,0.12)"
+                ? "rgba(29,155,240,0.10)"
                 : "rgba(18,23,42,0.8)",
               border: isCurrentDay
-                ? "1px solid rgba(29,155,240,0.45)"
+                ? "1px solid rgba(29,155,240,0.40)"
                 : "1px solid rgba(255,255,255,0.06)",
             }}
           >
             {/* 日付 */}
             <span
-              className={`text-xs font-semibold ${
+              className={`text-[10px] font-semibold ${
                 isCurrentDay ? "text-[#1d9bf0]" : "text-[#8b92a5]"
               }`}
             >
@@ -120,40 +297,29 @@ function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
             </span>
 
             {/* 天気アイコン */}
-            <span className="text-3xl leading-none">{weather.emoji}</span>
-            <span className="text-[10px] text-[#8b92a5] -mt-1">{weather.label}</span>
+            <span className="text-2xl leading-none">{weather.emoji}</span>
 
-            {/* 気温 */}
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-base font-bold text-[#e6e8ee]">
+            {/* 最高/最低気温（暖色/寒色） */}
+            <div className="flex items-baseline gap-1">
+              <span className="text-xs font-bold" style={{ color: "#fb923c" }}>
                 {day.tempMax}°
               </span>
-              <span className="text-xs text-[#8b92a5]">{day.tempMin}°</span>
+              <span className="text-[10px]" style={{ color: "#93c5fd" }}>
+                {day.tempMin}°
+              </span>
             </div>
 
             {/* 降水確率 */}
-            <div className="flex flex-col items-center gap-0.5">
-              <span className="text-[10px] text-[#8b92a5]">💧 降水</span>
-              <span
-                className={`text-sm font-semibold ${precipColor(day.precipProbability)}`}
-              >
-                {day.precipProbability}%
-              </span>
-            </div>
+            <span className={`text-[10px] font-semibold ${precipColor(day.precipProbability)}`}>
+              {day.precipProbability}%
+            </span>
 
             {/* 気圧ゾーンバッジ */}
             <div
-              className="rounded-full px-2.5 py-0.5 text-[10px] font-semibold"
+              className="rounded-full px-2 py-0.5 text-[9px] font-semibold"
               style={{ color: zoneConfig.color, background: zoneConfig.bg }}
             >
               {zoneConfig.label}
-            </div>
-
-            {/* 気圧数値 + トレンド */}
-            <div className="flex items-center gap-0.5 text-[11px] text-[#8b92a5]">
-              <span>{pressureAvg}</span>
-              <span className="text-[9px]">hPa</span>
-              <span className="ml-0.5">{pressureTrendIcon(day.pressureDelta)}</span>
             </div>
           </div>
         );
@@ -163,7 +329,7 @@ function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ② 今夜の睡眠スコア（ヒーロー）
+// ③ 今夜の睡眠スコア（ヒーロー）
 // ─────────────────────────────────────────────────────────────────────────────
 
 function SleepScoreHero({
@@ -235,7 +401,7 @@ function SleepScoreHero({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ③ 気象指標 3カード
+// ④ 気象指標 3カード
 // ─────────────────────────────────────────────────────────────────────────────
 
 function PressureCard({ hPa, delta }: { hPa: number; delta: number }) {
@@ -388,7 +554,7 @@ function AQICard({ aqi }: { aqi?: AQIData }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ④ 気圧推移グラフ（カラーゾーン付き）
+// ⑤ 気圧推移グラフ（カラーゾーン付き）
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface PressureChartProps {
@@ -645,7 +811,7 @@ function PressureChart({ times, values }: PressureChartProps) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ⑤ 睡眠×気圧 相関グラフ
+// ⑥ 睡眠×気圧 相関グラフ
 // ─────────────────────────────────────────────────────────────────────────────
 
 const SAMPLE_CORRELATION_DATA = [
@@ -892,7 +1058,7 @@ function CorrelationChart() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ケアヒント
+// ⑦ ケアヒント
 // ─────────────────────────────────────────────────────────────────────────────
 
 function CareHintList({ hints }: { hints: string[] }) {
@@ -990,9 +1156,19 @@ export function WeatherWidget() {
     return (
       <div className="animate-pulse space-y-4 rounded-2xl border border-white/5 bg-[#1a1f2e] p-5">
         <div className="h-4 w-28 rounded bg-[#2a3045]" />
+        {/* 今日の天気スケルトン */}
+        <div className="flex gap-3">
+          <div className="h-32 w-22 rounded-2xl bg-[#2a3045] flex-shrink-0" style={{ width: "88px" }} />
+          <div className="flex gap-2 flex-1 overflow-hidden">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-32 w-14 rounded-xl bg-[#2a3045] flex-shrink-0" />
+            ))}
+          </div>
+        </div>
+        {/* 週間天気スケルトン */}
         <div className="flex gap-2">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-40 flex-1 rounded-2xl bg-[#2a3045]" />
+          {[...Array(7)].map((_, i) => (
+            <div key={i} className="h-28 w-18 rounded-xl bg-[#2a3045] flex-shrink-0" />
           ))}
         </div>
         <div className="h-28 rounded-2xl bg-[#2a3045]" />
@@ -1019,6 +1195,9 @@ export function WeatherWidget() {
   const apparent =
     data.current.apparentTemperatureC ?? data.current.temperatureC;
 
+  // 今日の予報（forecast[0] が今日 or forecast から today を探す）
+  const todayForecast = data.forecast.find((d) => isToday(d.date)) ?? data.forecast[0];
+
   return (
     <section
       aria-labelledby="weather-widget-heading"
@@ -1035,7 +1214,16 @@ export function WeatherWidget() {
         <span className="text-xs text-[#8b92a5]">📍 {locationName}</span>
       </div>
 
-      {/* ── ① 週間天気予報 ── */}
+      {/* ── ① 今日の天気（サマリー + 時間別スクロール）── */}
+      <TodayWeatherSection
+        hourlyWeather={data.hourlyWeather}
+        todayForecast={todayForecast}
+      />
+
+      {/* 区切り */}
+      <div className="mx-5 border-t border-white/5" />
+
+      {/* ── ② 週間天気予報（コンパクト） ── */}
       <div className="px-5 pt-4 pb-5">
         <p className="mb-3 text-xs font-semibold text-[#8b92a5] tracking-wide uppercase">
           週間天気予報
@@ -1046,12 +1234,12 @@ export function WeatherWidget() {
       {/* 区切り */}
       <div className="mx-5 border-t border-white/5" />
 
-      {/* ── ② 今夜の睡眠スコア ── */}
+      {/* ── ③ 今夜の睡眠スコア ── */}
       <div className="px-5 pt-5 pb-4">
         <SleepScoreHero score100={score100} wsiScore={wsiScore} />
       </div>
 
-      {/* ── ③ 気象指標 3カード ── */}
+      {/* ── ④ 気象指標 3カード ── */}
       <div className="px-5 pb-5 grid grid-cols-3 gap-3">
         <PressureCard
           hPa={data.current.pressureHpa}
@@ -1067,7 +1255,7 @@ export function WeatherWidget() {
       {/* 区切り */}
       <div className="mx-5 border-t border-white/5" />
 
-      {/* ── ④ 気圧推移グラフ ── */}
+      {/* ── ⑤ 気圧推移グラフ ── */}
       {data.hourlyPressure.values.length > 1 && (
         <div className="px-5 pt-5 pb-4">
           <div className="flex items-center justify-between mb-3">
@@ -1100,7 +1288,7 @@ export function WeatherWidget() {
       {/* 区切り */}
       <div className="mx-5 border-t border-white/5" />
 
-      {/* ── ⑤ 睡眠×気圧 相関グラフ ── */}
+      {/* ── ⑥ 睡眠×気圧 相関グラフ ── */}
       <div className="px-5 pt-5 pb-4">
         <p className="mb-3 text-xs font-semibold text-[#8b92a5] tracking-wide uppercase">
           睡眠 × 気圧 相関
@@ -1108,7 +1296,7 @@ export function WeatherWidget() {
         <CorrelationChart />
       </div>
 
-      {/* ── ケアヒント ── */}
+      {/* ── ⑦ ケアヒント ── */}
       {careHints.length > 0 && (
         <>
           <div className="mx-5 border-t border-white/5" />

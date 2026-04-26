@@ -201,6 +201,27 @@ export type HourlyPressureData = {
 };
 
 /**
+ * 時間別天気データ（今日〜翌日早朝、1時間ごと）
+ * WeatherWidget の時間別天気セクションに使用。
+ */
+export type HourlyWeatherData = {
+  /** ISO 8601 タイムスタンプ配列 */
+  times: string[];
+  /** 気温 (°C, 整数) */
+  temps: number[];
+  /** WMO 天気コード */
+  weatherCodes: number[];
+  /** 降水確率 (%) */
+  precipProbs: number[];
+  /** 降水量 (mm, 小数1桁) */
+  precipMm: number[];
+  /** 相対湿度 (%) */
+  humidity: number[];
+  /** 海面更正気圧 (hPa, 整数) */
+  pressures: number[];
+};
+
+/**
  * 1日分の天気予報データ
  */
 export type DailyForecast = {
@@ -250,8 +271,10 @@ export type AQIData = {
 export type FullWeatherData = {
   /** 現在の気象スナップショット */
   current: WeatherData;
-  /** 72時間の気圧推移 */
+  /** 72時間の気圧推移 (グラフ用) */
   hourlyPressure: HourlyPressureData;
+  /** 時間別天気データ (今日〜翌日早朝) */
+  hourlyWeather: HourlyWeatherData;
   /** 7日分の天気予報 */
   forecast: DailyForecast[];
   /** 大気質データ (取得失敗時は undefined) */

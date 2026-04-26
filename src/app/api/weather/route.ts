@@ -80,7 +80,10 @@ async function handleFullMode(lat: number, lon: number): Promise<Response> {
     "current",
     "temperature_2m,relative_humidity_2m,surface_pressure,pressure_msl,apparent_temperature"
   );
-  jmaUrl.searchParams.set("hourly", "pressure_msl");
+  jmaUrl.searchParams.set(
+    "hourly",
+    "pressure_msl,temperature_2m,weathercode,precipitation_probability,precipitation,relative_humidity_2m"
+  );
   jmaUrl.searchParams.set("daily", DAILY_VARS);
   jmaUrl.searchParams.set("past_days", "1");
   jmaUrl.searchParams.set("forecast_days", "4");

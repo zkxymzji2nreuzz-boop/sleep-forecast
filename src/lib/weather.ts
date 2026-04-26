@@ -8,7 +8,7 @@
 
 import SunCalc from "suncalc";
 
-import type { WeatherData, FullWeatherData, HourlyPressureData, DailyForecast, AQIData } from "./types";
+import type { WeatherData, FullWeatherData, HourlyPressureData, HourlyWeatherData, DailyForecast, AQIData } from "./types";
 
 /** Open-Meteo API ベース URL (認証不要、非商用無料) */
 export const OPEN_METEO_BASE_URL = "https://api.open-meteo.com/v1/forecast";
@@ -44,6 +44,11 @@ type OpenMeteoCurrent = {
 type OpenMeteoHourly = {
   time?: string[];
   pressure_msl?: number[];
+  temperature_2m?: number[];
+  weathercode?: number[];
+  precipitation_probability?: number[];
+  precipitation?: number[];
+  relative_humidity_2m?: number[];
 };
 
 /** Open-Meteo の `daily` レスポンス部分の型 (必要なフィールドのみ) */
@@ -221,7 +226,15 @@ export async function fetchWeatherForecast(
  */
 export function mapOpenMeteoFullResponse(
   data: OpenMeteoResponse & {
-    hourly?: { time?: string[]; pressure_msl?: number[] };
+    hourly?: {
+      time?: string[];
+      pressure_msl?: number[];
+      temperature_2m?: number[];
+      weathercode?: number[];
+      precipitation_probability?: number[];
+      precipitation?: number[];
+      relative_humidity_2m?: number[];
+    };
     daily?: {
       time?: string[];
       temperature_2m_max?: number[];
@@ -238,9 +251,13 @@ export function mapOpenMeteoFullResponse(
   // 現在の気象
   const current = mapOpenMeteoResponse(data, now);
 
-  // hourly 気圧 (72h 分)
   const rawTimes = data.hourly?.time ?? [];
-  const rawValues = data.hourly?.pressure_msl ?? [];
+  const rawPressures = data.hourly?.pressure_msl ?? [];
+  const rawTemps = data.hourly?.temperature_2m ?? [];
+  const rawCodes = data.hourly?.weathercode ?? [];
+  const rawPrecipProbs = data.hourly?.precipitation_probability ?? [];
+  const rawPrecip = data.hourly?.precipitation ?? [];
+  const rawHumidity = data.hourly?.relative_humidity_2m ?? [];
 
   // 現在時刻以降 72 エントリのみ抽出 (past_days=1 で過去分も入る)
   const nowMs = now.getTime();
@@ -253,17 +270,61 @@ export function mapOpenMeteoFullResponse(
       Number.isFinite(tMs) &&
       tMs >= nowMs - 3600 * 1000 && // 1h 前まで含める (グラフのアンカー用)
       filteredTimes.length < 73 &&
-      typeof rawValues[i] === "number" &&
-      Number.isFinite(rawValues[i])
+      typeof rawPressures[i] === "number" &&
+      Number.isFinite(rawPressures[i])
     ) {
       filteredTimes.push(t);
-      filteredValues.push(round1(rawValues[i] as number));
+      filteredValues.push(round1(rawPressures[i] as number));
     }
   });
 
   const hourlyPressure: HourlyPressureData = {
     times: filteredTimes,
     values: filteredValues,
+  };
+
+  // 時間別天気データ: 現在時刻から翌日 3時まで (最大 28h)
+  const tomorrowEarlyMs = (() => {
+    const d = new Date(now);
+    d.setDate(d.getDate() + 1);
+    d.setHours(3, 0, 0, 0);
+    return d.getTime();
+  })();
+
+  const hwTimes: string[] = [];
+  const hwTemps: number[] = [];
+  const hwCodes: number[] = [];
+  const hwPrecipProbs: number[] = [];
+  const hwPrecipMm: number[] = [];
+  const hwHumidity: number[] = [];
+  const hwPressures: number[] = [];
+
+  rawTimes.forEach((t, i) => {
+    const tMs = Date.parse(t);
+    if (
+      Number.isFinite(tMs) &&
+      tMs >= nowMs - 1800 * 1000 && // 30min 前から
+      tMs <= tomorrowEarlyMs &&
+      hwTimes.length < 30
+    ) {
+      hwTimes.push(t);
+      hwTemps.push(Math.round(numberOr(rawTemps[i], 0)));
+      hwCodes.push(Math.round(numberOr(rawCodes[i], 0)));
+      hwPrecipProbs.push(Math.round(numberOr(rawPrecipProbs[i], 0)));
+      hwPrecipMm.push(round1(numberOr(rawPrecip[i], 0)));
+      hwHumidity.push(Math.round(numberOr(rawHumidity[i], 0)));
+      hwPressures.push(Math.round(numberOr(rawPressures[i], 1013)));
+    }
+  });
+
+  const hourlyWeather: HourlyWeatherData = {
+    times: hwTimes,
+    temps: hwTemps,
+    weatherCodes: hwCodes,
+    precipProbs: hwPrecipProbs,
+    precipMm: hwPrecipMm,
+    humidity: hwHumidity,
+    pressures: hwPressures,
   };
 
   // daily 予報 (7 日分)
@@ -304,7 +365,7 @@ export function mapOpenMeteoFullResponse(
     };
   });
 
-  return { current, hourlyPressure, forecast };
+  return { current, hourlyPressure, hourlyWeather, forecast };
 }
 
 /**
