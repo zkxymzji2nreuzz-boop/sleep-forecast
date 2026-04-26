@@ -203,6 +203,7 @@ async function handleFullMode(lat: number, lon: number): Promise<Response> {
     status: 200,
     headers: {
       "Cache-Control": "public, s-maxage=600, stale-while-revalidate=1800",
+      "X-Code-Version": "parseJstMs-v1",
     },
   });
 }
