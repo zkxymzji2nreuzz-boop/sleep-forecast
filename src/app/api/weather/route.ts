@@ -4,11 +4,12 @@
  * - ブラウザ直叩きを避けて CORS を回避
  * - Vercel Edge でキャッシュ (s-maxage=600)
  * - lat/lon バリデーションを一元化
- * - 将来 Open-Meteo 以外の API へ差し替えるときの窓口
+ * - full モード: JMA (気象庁MSMモデル, 4日・高精度) + グローバル (5〜7日・延長) のハイブリッド
  */
 
 import {
   OPEN_METEO_BASE_URL,
+  OPEN_METEO_JMA_URL,
   mapOpenMeteoResponse,
   mapOpenMeteoDailyToWeather,
   mapOpenMeteoFullResponse,
@@ -43,7 +44,6 @@ function parseLatLon(searchParams: URLSearchParams):
   return { ok: true, lat, lon };
 }
 
-
 /** type パラメータの解析 */
 function parseType(searchParams: URLSearchParams): "default" | "forecast" | "full" {
   const val = searchParams.get("type");
@@ -51,6 +51,138 @@ function parseType(searchParams: URLSearchParams): "default" | "forecast" | "ful
   // 後方互換: forecast=true も受け付ける
   if (searchParams.get("forecast") === "true") return "forecast";
   return "default";
+}
+
+/** daily フィールドを配列インデックスで抽出するヘルパ */
+function pick<T>(arr: T[] | undefined, indices: number[]): T[] {
+  return indices.map((i) => arr?.[i] as T);
+}
+
+/**
+ * full モード専用ハンドラ。
+ * - JMA エンドポイントで current + hourly + daily (4日, 高精度) を取得
+ * - グローバルエンドポイントで daily (7日) を取得し JMA 未収録の日を補完
+ * - 並列フェッチしてマージしたデータを mapOpenMeteoFullResponse に渡す
+ */
+async function handleFullMode(lat: number, lon: number): Promise<Response> {
+  const DAILY_VARS =
+    "temperature_2m_max,temperature_2m_min,relative_humidity_2m_max," +
+    "precipitation_probability_max,pressure_msl_min,pressure_msl_max,weathercode";
+
+  // ── JMA リクエスト (current + hourly + 4日 daily) ──
+  const jmaUrl = new URL(OPEN_METEO_JMA_URL);
+  jmaUrl.searchParams.set("latitude", lat.toString());
+  jmaUrl.searchParams.set("longitude", lon.toString());
+  jmaUrl.searchParams.set(
+    "current",
+    "temperature_2m,relative_humidity_2m,surface_pressure,pressure_msl"
+  );
+  jmaUrl.searchParams.set("hourly", "pressure_msl");
+  jmaUrl.searchParams.set("daily", DAILY_VARS);
+  jmaUrl.searchParams.set("past_days", "1");
+  jmaUrl.searchParams.set("forecast_days", "4");
+  jmaUrl.searchParams.set("timezone", "Asia/Tokyo");
+
+  // ── グローバルリクエスト (daily のみ, 7日・延長用) ──
+  const globalUrl = new URL(OPEN_METEO_BASE_URL);
+  globalUrl.searchParams.set("latitude", lat.toString());
+  globalUrl.searchParams.set("longitude", lon.toString());
+  globalUrl.searchParams.set("daily", DAILY_VARS);
+  globalUrl.searchParams.set("forecast_days", "7");
+  globalUrl.searchParams.set("timezone", "Asia/Tokyo");
+
+  let jmaData: OpenMeteoResponse;
+  let globalData: OpenMeteoResponse;
+
+  try {
+    const [jmaRes, globalRes] = await Promise.all([
+      fetch(jmaUrl.toString(), { next: { revalidate: 600 } }),
+      fetch(globalUrl.toString(), { next: { revalidate: 1800 } }),
+    ]);
+
+    if (!jmaRes.ok) {
+      return Response.json(
+        { error: `JMA upstream error (status=${jmaRes.status})` },
+        { status: 502 }
+      );
+    }
+
+    jmaData = (await jmaRes.json()) as OpenMeteoResponse;
+    // グローバルが失敗しても JMA だけで続行
+    globalData = globalRes.ok
+      ? ((await globalRes.json()) as OpenMeteoResponse)
+      : {};
+  } catch (err) {
+    return Response.json(
+      {
+        error: "気象データの取得に失敗しました",
+        detail: (err as Error).message,
+      },
+      { status: 502 }
+    );
+  }
+
+  // ── JMA daily の日付セットと最終日を取得 ──
+  const jmaTimes = jmaData.daily?.time ?? [];
+  const jmaDateSet = new Set(jmaTimes);
+  const jmaLastDate = [...jmaTimes].sort().at(-1) ?? "";
+
+  // ── グローバル daily から JMA 未収録かつ JMA 最終日より後の日を抽出 ──
+  const globalTimes = globalData.daily?.time ?? [];
+  const extension = globalTimes
+    .map((t, i) => ({ t, i }))
+    .filter(({ t }) => !jmaDateSet.has(t) && t > jmaLastDate);
+  const extIdx = extension.map((x) => x.i);
+
+  // ── daily データをマージ ──
+  const mergedDaily = {
+    time: [...jmaTimes, ...extension.map((x) => x.t)],
+    temperature_2m_max: [
+      ...(jmaData.daily?.temperature_2m_max ?? []),
+      ...pick(globalData.daily?.temperature_2m_max, extIdx),
+    ],
+    temperature_2m_min: [
+      ...(jmaData.daily?.temperature_2m_min ?? []),
+      ...pick(globalData.daily?.temperature_2m_min, extIdx),
+    ],
+    relative_humidity_2m_max: [
+      ...(jmaData.daily?.relative_humidity_2m_max ?? []),
+      ...pick(globalData.daily?.relative_humidity_2m_max, extIdx),
+    ],
+    precipitation_probability_max: [
+      ...(jmaData.daily?.precipitation_probability_max ?? []),
+      ...pick(globalData.daily?.precipitation_probability_max, extIdx),
+    ],
+    pressure_msl_min: [
+      ...(jmaData.daily?.pressure_msl_min ?? []),
+      ...pick(globalData.daily?.pressure_msl_min, extIdx),
+    ],
+    pressure_msl_max: [
+      ...(jmaData.daily?.pressure_msl_max ?? []),
+      ...pick(globalData.daily?.pressure_msl_max, extIdx),
+    ],
+    weathercode: [
+      ...(jmaData.daily?.weathercode ?? []),
+      ...pick(globalData.daily?.weathercode, extIdx),
+    ],
+  };
+
+  const mergedData = {
+    ...jmaData,
+    daily: mergedDaily,
+  };
+
+  const fullData = mapOpenMeteoFullResponse(
+    mergedData as Parameters<typeof mapOpenMeteoFullResponse>[0],
+    new Date()
+  );
+
+  return Response.json(fullData, {
+    status: 200,
+    headers: {
+      "Cache-Control": "public, s-maxage=600, stale-while-revalidate=1800",
+    },
+  });
 }
 
 export async function GET(request: Request): Promise<Response> {
@@ -62,26 +194,17 @@ export async function GET(request: Request): Promise<Response> {
 
   const mode = parseType(searchParams);
 
-  // Open-Meteo へ渡すクエリ
+  // full モードはハイブリッド専用ハンドラへ
+  if (mode === "full") {
+    return handleFullMode(parsed.lat, parsed.lon);
+  }
+
+  // ── それ以外は通常エンドポイント ──
   const upstream = new URL(OPEN_METEO_BASE_URL);
   upstream.searchParams.set("latitude", parsed.lat.toString());
   upstream.searchParams.set("longitude", parsed.lon.toString());
 
-  if (mode === "full") {
-    // 現在値 + hourly 72h + daily 5日分
-    upstream.searchParams.set(
-      "current",
-      "temperature_2m,relative_humidity_2m,surface_pressure,pressure_msl"
-    );
-    upstream.searchParams.set("hourly", "pressure_msl");
-    upstream.searchParams.set(
-      "daily",
-      "temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,precipitation_probability_max,pressure_msl_min,pressure_msl_max,weathercode"
-    );
-    upstream.searchParams.set("past_days", "1");
-    upstream.searchParams.set("forecast_days", "7");
-    upstream.searchParams.set("timezone", "Asia/Tokyo");
-  } else if (mode === "forecast") {
+  if (mode === "forecast") {
     // 明日の予報を取得 (後方互換)
     upstream.searchParams.set(
       "daily",
@@ -105,7 +228,6 @@ export async function GET(request: Request): Promise<Response> {
   let upstreamRes: Response;
   try {
     upstreamRes = await fetch(upstream.toString(), {
-      // Next.js の fetch キャッシュ: 10 分。SWR は 30 分
       next: { revalidate: 600 },
     });
   } catch (err) {
@@ -138,16 +260,7 @@ export async function GET(request: Request): Promise<Response> {
     );
   }
 
-  if (mode === "full") {
-    // 現在値 + hourly + daily をまとめてマッピング
-    const fullData = mapOpenMeteoFullResponse(json, new Date());
-    return Response.json(fullData, {
-      status: 200,
-      headers: {
-        "Cache-Control": "public, s-maxage=600, stale-while-revalidate=1800",
-      },
-    });
-  } else if (mode === "forecast") {
+  if (mode === "forecast") {
     // daily[1] をマッピング (後方互換)
     const daily = json.daily;
     if (!daily || !daily.time || daily.time.length < 2) {

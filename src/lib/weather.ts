@@ -13,6 +13,9 @@ import type { WeatherData, FullWeatherData, HourlyPressureData, DailyForecast } 
 /** Open-Meteo API ベース URL (認証不要、非商用無料) */
 export const OPEN_METEO_BASE_URL = "https://api.open-meteo.com/v1/forecast";
 
+/** Open-Meteo JMA (気象庁MSMモデル) エンドポイント — 日本向け高精度 */
+export const OPEN_METEO_JMA_URL = "https://api.open-meteo.com/v1/jma";
+
 /** /api/weather が失敗した場合に throw するエラー型 */
 export class WeatherFetchError extends Error {
   constructor(
@@ -45,7 +48,10 @@ type OpenMeteoDaily = {
   temperature_2m_max?: number[];
   temperature_2m_min?: number[];
   relative_humidity_2m_max?: number[];
+  /** forecast モード (後方互換) */
   precipitation_probability?: number[];
+  /** full / JMA モード */
+  precipitation_probability_max?: number[];
   pressure_msl_min?: number[];
   pressure_msl_max?: number[];
   weathercode?: number[];
