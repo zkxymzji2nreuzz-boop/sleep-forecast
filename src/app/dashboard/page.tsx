@@ -311,9 +311,6 @@ export default function DashboardPage() {
   const [isLoaded, setIsLoaded] = React.useState<boolean>(false);
   const [prediction, setPrediction] = React.useState<PredictionResult | null>(null);
 
-  // isDemo は使わないが互換性のため残す
-  const isDemo = false;
-
   React.useEffect(() => {
     const real = getRecords();
     setRecords(real);
@@ -634,31 +631,6 @@ export default function DashboardPage() {
 // ---------------------------------------------------------------------------
 // 部品コンポーネント
 // ---------------------------------------------------------------------------
-
-function DemoBanner() {
-  return (
-    // B案: グラデーション from-violet-500/10 to-sky-500/10
-    <div
-      role="status"
-      className="mb-6 flex flex-col gap-3 rounded-lg border border-violet-400/30 bg-gradient-to-r from-violet-500/10 to-sky-500/10 p-3 sm:flex-row sm:items-center sm:justify-between"
-    >
-      <p className="text-sm text-gray-200">
-        📊 サンプルデータを表示しています。10 日以上記録するとあなた専用の分析に切り替わります。
-      </p>
-      <Button
-        asChild
-        variant="outline"
-        size="sm"
-        className="border-violet-400/50 bg-transparent text-violet-400 hover:bg-violet-500/10 hover:text-violet-300 focus-visible:ring-2 focus-visible:ring-violet-400"
-      >
-        <Link href="/record">
-          今日を記録する
-          <ArrowRight className="ml-1 h-4 w-4" aria-hidden />
-        </Link>
-      </Button>
-    </div>
-  );
-}
 
 type KpiCardProps = {
   icon: React.ReactNode;

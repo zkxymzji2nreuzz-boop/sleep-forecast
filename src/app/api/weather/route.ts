@@ -43,11 +43,6 @@ function parseLatLon(searchParams: URLSearchParams):
   return { ok: true, lat, lon };
 }
 
-/** forecast パラメータの解析 */
-function parseForecast(searchParams: URLSearchParams): boolean {
-  const val = searchParams.get("forecast");
-  return val === "true";
-}
 
 /** type パラメータの解析 */
 function parseType(searchParams: URLSearchParams): "default" | "forecast" | "full" {
