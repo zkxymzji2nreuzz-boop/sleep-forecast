@@ -46,12 +46,6 @@ function formatTime(iso: string): string {
   }
 }
 
-function formatDate(dateStr: string): string {
-  const d = new Date(`${dateStr}T00:00:00+09:00`);
-  const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
-  return `${d.getMonth() + 1}/${d.getDate()}(${weekdays[d.getDay()]})`;
-}
-
 function isToday(dateStr: string): boolean {
   const now = new Date();
   const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
