@@ -57,14 +57,6 @@ function isToday(dateStr: string): boolean {
   return dateStr === today;
 }
 
-function pressureTrendIcon(delta: number): string {
-  if (delta <= -3) return "↘️";
-  if (delta <= -1) return "↙";
-  if (delta >= 3) return "↗️";
-  if (delta >= 1) return "↑";
-  return "→";
-}
-
 function precipColor(prob: number): string {
   if (prob >= 70) return "text-blue-400";
   if (prob >= 40) return "text-blue-300";
