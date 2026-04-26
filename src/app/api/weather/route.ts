@@ -11,6 +11,7 @@ import {
   OPEN_METEO_BASE_URL,
   mapOpenMeteoResponse,
   mapOpenMeteoDailyToWeather,
+  mapOpenMeteoFullResponse,
   type OpenMeteoResponse,
 } from "@/lib/weather";
 
@@ -48,6 +49,15 @@ function parseForecast(searchParams: URLSearchParams): boolean {
   return val === "true";
 }
 
+/** type パラメータの解析 */
+function parseType(searchParams: URLSearchParams): "default" | "forecast" | "full" {
+  const val = searchParams.get("type");
+  if (val === "full") return "full";
+  // 後方互換: forecast=true も受け付ける
+  if (searchParams.get("forecast") === "true") return "forecast";
+  return "default";
+}
+
 export async function GET(request: Request): Promise<Response> {
   const { searchParams } = new URL(request.url);
   const parsed = parseLatLon(searchParams);
@@ -55,15 +65,29 @@ export async function GET(request: Request): Promise<Response> {
     return Response.json({ error: parsed.reason }, { status: 400 });
   }
 
-  const isForecast = parseForecast(searchParams);
+  const mode = parseType(searchParams);
 
   // Open-Meteo へ渡すクエリ
   const upstream = new URL(OPEN_METEO_BASE_URL);
   upstream.searchParams.set("latitude", parsed.lat.toString());
   upstream.searchParams.set("longitude", parsed.lon.toString());
 
-  if (isForecast) {
-    // 明日の予報を取得
+  if (mode === "full") {
+    // 現在値 + hourly 72h + daily 5日分
+    upstream.searchParams.set(
+      "current",
+      "temperature_2m,relative_humidity_2m,surface_pressure,pressure_msl"
+    );
+    upstream.searchParams.set("hourly", "pressure_msl");
+    upstream.searchParams.set(
+      "daily",
+      "temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,precipitation_probability_max,pressure_msl_min,pressure_msl_max"
+    );
+    upstream.searchParams.set("past_days", "1");
+    upstream.searchParams.set("forecast_days", "5");
+    upstream.searchParams.set("timezone", "Asia/Tokyo");
+  } else if (mode === "forecast") {
+    // 明日の予報を取得 (後方互換)
     upstream.searchParams.set(
       "daily",
       "temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,precipitation_probability,pressure_msl_min,pressure_msl_max"
@@ -119,8 +143,17 @@ export async function GET(request: Request): Promise<Response> {
     );
   }
 
-  if (isForecast) {
-    // daily[1] をマッピング
+  if (mode === "full") {
+    // 現在値 + hourly + daily をまとめてマッピング
+    const fullData = mapOpenMeteoFullResponse(json, new Date());
+    return Response.json(fullData, {
+      status: 200,
+      headers: {
+        "Cache-Control": "public, s-maxage=600, stale-while-revalidate=1800",
+      },
+    });
+  } else if (mode === "forecast") {
+    // daily[1] をマッピング (後方互換)
     const daily = json.daily;
     if (!daily || !daily.time || daily.time.length < 2) {
       return Response.json(

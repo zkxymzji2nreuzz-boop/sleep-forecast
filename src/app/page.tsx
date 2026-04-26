@@ -14,6 +14,7 @@ import {
 import { AdBanner } from "@/components/AdBanner";
 import { PredictionCard } from "@/components/PredictionCard";
 import { ContinuousRecordBadge } from "@/components/ContinuousRecordBadge";
+import { WeatherWidget } from "@/components/WeatherWidget";
 import { getRecords } from "@/lib/storage";
 import {
   predictTomorrow,
@@ -155,6 +156,11 @@ export default function HomePage() {
 
       {/* 広告スロット: ヒーロー下 */}
       <AdBanner slot="hero-bottom" format="horizontal" className="mb-8" />
+
+      {/* 気象・睡眠ウィジェット: 今夜の睡眠予報 + 気圧グラフ + 5日間予報 */}
+      <div className="mb-12">
+        <WeatherWidget />
+      </div>
 
       <section
         aria-labelledby="features-heading"

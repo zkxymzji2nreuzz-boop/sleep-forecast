@@ -74,7 +74,6 @@ import {
 } from "@/lib/prediction";
 import { fetchWeatherForecast } from "@/lib/weather";
 import { getPrefectureByCode } from "@/lib/prefectures";
-import { DEMO_RECORDS } from "@/lib/demoData";
 import { getRecords } from "@/lib/storage";
 import type { SleepRecord, PredictionResult } from "@/lib/types";
 
@@ -307,20 +306,18 @@ function buildBarOptions(): ChartOptions<"bar"> {
 
 export default function DashboardPage() {
   // SSR/CSR 間のハイドレーション不整合を避けるため、
-  // 初期値は常に DEMO_RECORDS にしてマウント後に差し替える。
-  const [records, setRecords] = React.useState<SleepRecord[]>(DEMO_RECORDS);
-  const [isDemo, setIsDemo] = React.useState<boolean>(true);
+  // 初期値は空配列にしてマウント後に実データを読み込む。
+  const [records, setRecords] = React.useState<SleepRecord[]>([]);
+  const [isLoaded, setIsLoaded] = React.useState<boolean>(false);
   const [prediction, setPrediction] = React.useState<PredictionResult | null>(null);
+
+  // isDemo は使わないが互換性のため残す
+  const isDemo = false;
 
   React.useEffect(() => {
     const real = getRecords();
-    if (real.length >= DEMO_THRESHOLD) {
-      setRecords(real);
-      setIsDemo(false);
-    } else {
-      setRecords(DEMO_RECORDS);
-      setIsDemo(true);
-    }
+    setRecords(real);
+    setIsLoaded(true);
 
     // 予測を計算
     if (real.length > 0) {
@@ -427,6 +424,37 @@ export default function DashboardPage() {
   const lineOptions = React.useMemo(() => buildLineOptions(), []);
   const barOptions = React.useMemo(() => buildBarOptions(), []);
 
+  // 記録がない場合の空状態
+  if (isLoaded && records.length === 0) {
+    return (
+      <div className="container mx-auto max-w-screen-md px-4 py-8 pb-16 sm:py-12">
+        <Breadcrumb items={[{ name: "ホーム", href: "/" }, { name: "ダッシュボード" }]} />
+        <header className="mb-6">
+          <h1 className="text-2xl font-bold text-[#e6e8ee]">睡眠ダッシュボード</h1>
+          <p className="mt-1 text-sm text-[#8b92a5]">
+            過去 30 日の記録から、気象と睡眠品質の関係を分析します。
+          </p>
+        </header>
+        <div className="flex flex-col items-center justify-center gap-6 rounded-xl border border-gray-700/50 bg-[#1a1f2e] px-6 py-16 text-center">
+          <Moon className="h-12 w-12 text-violet-400 opacity-60" aria-hidden />
+          <div>
+            <h2 className="text-lg font-semibold text-[#e6e8ee]">まだ記録がありません</h2>
+            <p className="mt-2 text-sm text-[#8b92a5]">
+              毎日の睡眠を記録すると、気圧との関係やあなただけのパターンが見えてきます。<br />
+              まずは今日の眠りを記録してみましょう。
+            </p>
+          </div>
+          <Button asChild size="lg" className="bg-[#1d9bf0] text-white hover:bg-[#1a8cd8]">
+            <Link href="/record">
+              今日を記録する
+              <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
+            </Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto max-w-screen-md px-4 py-8 pb-16 sm:py-12">
       <Breadcrumb items={[{ name: "ホーム", href: "/" }, { name: "ダッシュボード" }]} />
@@ -438,7 +466,25 @@ export default function DashboardPage() {
         </p>
       </header>
 
-      {isDemo && <DemoBanner />}
+      {/* 記録が少ない場合の促進バナー */}
+      {records.length < DEMO_THRESHOLD && records.length > 0 && (
+        <div className="mb-6 flex flex-col gap-3 rounded-lg border border-sky-400/30 bg-sky-500/5 p-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-gray-200">
+            📈 あと <span className="font-bold text-sky-400">{DEMO_THRESHOLD - records.length} 日</span> 記録するとフル分析が見られます。
+          </p>
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="border-sky-400/50 bg-transparent text-sky-400 hover:bg-sky-500/10 hover:text-sky-300"
+          >
+            <Link href="/record">
+              今日を記録する
+              <ArrowRight className="ml-1 h-4 w-4" aria-hidden />
+            </Link>
+          </Button>
+        </div>
+      )}
 
       {/* 予測カード */}
       {prediction && (

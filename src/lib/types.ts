@@ -189,6 +189,51 @@ export type ArticleFull = ArticleMeta & {
 };
 
 /**
+ * 72時間の気圧hourlyデータ (WeatherWidget 用)
+ */
+export type HourlyPressureData = {
+  /** ISO 8601 タイムスタンプ配列 */
+  times: string[];
+  /** 各時刻の海面更正気圧 (hPa) */
+  values: number[];
+};
+
+/**
+ * 1日分の天気予報データ
+ */
+export type DailyForecast = {
+  /** YYYY-MM-DD */
+  date: string;
+  /** 最高気温 (°C) */
+  tempMax: number;
+  /** 最低気温 (°C) */
+  tempMin: number;
+  /** 最大湿度 (%) */
+  humidity: number;
+  /** 降水確率 (%) */
+  precipProbability: number;
+  /** 最低海面更正気圧 (hPa) */
+  pressureMin: number;
+  /** 最高海面更正気圧 (hPa) */
+  pressureMax: number;
+  /** 前日比気圧差 (hPa) */
+  pressureDelta: number;
+};
+
+/**
+ * WeatherWidget 用の完全な気象データ。
+ * /api/weather?type=full で取得。
+ */
+export type FullWeatherData = {
+  /** 現在の気象スナップショット */
+  current: WeatherData;
+  /** 72時間の気圧推移 */
+  hourlyPressure: HourlyPressureData;
+  /** 5日分の天気予報 */
+  forecast: DailyForecast[];
+};
+
+/**
  * トップページに表示する連続記録バッジ。
  * 最長連続日数に応じた 4 段階バッジ。
  */

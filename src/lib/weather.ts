@@ -8,7 +8,7 @@
 
 import SunCalc from "suncalc";
 
-import type { WeatherData } from "./types";
+import type { WeatherData, FullWeatherData, HourlyPressureData, DailyForecast } from "./types";
 
 /** Open-Meteo API ベース URL (認証不要、非商用無料) */
 export const OPEN_METEO_BASE_URL = "https://api.open-meteo.com/v1/forecast";
@@ -200,6 +200,123 @@ export async function fetchWeatherForecast(
     );
   }
   const json = (await res.json()) as WeatherData;
+  return json;
+}
+
+/**
+ * Open-Meteo の full レスポンス (current + hourly + daily) を
+ * `FullWeatherData` に変換する。
+ */
+export function mapOpenMeteoFullResponse(
+  data: OpenMeteoResponse & {
+    hourly?: { time?: string[]; pressure_msl?: number[] };
+    daily?: {
+      time?: string[];
+      temperature_2m_max?: number[];
+      temperature_2m_min?: number[];
+      relative_humidity_2m_max?: number[];
+      precipitation_probability_max?: number[];
+      pressure_msl_min?: number[];
+      pressure_msl_max?: number[];
+    };
+  },
+  now: Date = new Date()
+): FullWeatherData {
+  // 現在の気象
+  const current = mapOpenMeteoResponse(data, now);
+
+  // hourly 気圧 (72h 分)
+  const rawTimes = data.hourly?.time ?? [];
+  const rawValues = data.hourly?.pressure_msl ?? [];
+
+  // 現在時刻以降 72 エントリのみ抽出 (past_days=1 で過去分も入る)
+  const nowMs = now.getTime();
+  const filteredTimes: string[] = [];
+  const filteredValues: number[] = [];
+
+  rawTimes.forEach((t, i) => {
+    const tMs = Date.parse(t);
+    if (
+      Number.isFinite(tMs) &&
+      tMs >= nowMs - 3600 * 1000 && // 1h 前まで含める (グラフのアンカー用)
+      filteredTimes.length < 73 &&
+      typeof rawValues[i] === "number" &&
+      Number.isFinite(rawValues[i])
+    ) {
+      filteredTimes.push(t);
+      filteredValues.push(round1(rawValues[i] as number));
+    }
+  });
+
+  const hourlyPressure: HourlyPressureData = {
+    times: filteredTimes,
+    values: filteredValues,
+  };
+
+  // daily 予報 (5 日分)
+  const daily = data.daily ?? {};
+  const dailyTimes = daily.time ?? [];
+  const forecast: DailyForecast[] = dailyTimes.slice(0, 5).map((date, i) => {
+    const tempMax = round1(daily.temperature_2m_max?.[i] ?? 0);
+    const tempMin = round1(daily.temperature_2m_min?.[i] ?? 0);
+    const humidity = Math.round(daily.relative_humidity_2m_max?.[i] ?? 50);
+    const precipProbability = Math.round(
+      daily.precipitation_probability_max?.[i] ?? 0
+    );
+    const pressureMin = round1(daily.pressure_msl_min?.[i] ?? 1013);
+    const pressureMax = round1(daily.pressure_msl_max?.[i] ?? 1013);
+
+    // 前日比気圧差: 今日は current.pressureDeltaHpa、それ以降は前日 max → 当日 min で近似
+    let pressureDelta = 0;
+    if (i === 0) {
+      pressureDelta = current.pressureDeltaHpa;
+    } else {
+      const prevMax = daily.pressure_msl_max?.[i - 1];
+      if (typeof prevMax === "number" && Number.isFinite(prevMax)) {
+        pressureDelta = round1(pressureMin - prevMax);
+      }
+    }
+
+    return {
+      date,
+      tempMax,
+      tempMin,
+      humidity,
+      precipProbability,
+      pressureMin,
+      pressureMax,
+      pressureDelta,
+    };
+  });
+
+  return { current, hourlyPressure, forecast };
+}
+
+/**
+ * `/api/weather?type=full` 経由で完全な気象データを取得する。
+ */
+export async function fetchFullWeather(
+  latitude: number,
+  longitude: number
+): Promise<FullWeatherData> {
+  const url = `/api/weather?lat=${encodeURIComponent(
+    latitude
+  )}&lon=${encodeURIComponent(longitude)}&type=full`;
+  let res: Response;
+  try {
+    res = await fetch(url, { method: "GET", cache: "no-store" });
+  } catch (err) {
+    throw new WeatherFetchError(
+      `ネットワークエラー (full): ${(err as Error).message}`
+    );
+  }
+  if (!res.ok) {
+    throw new WeatherFetchError(
+      `完全気象データの取得に失敗しました (status=${res.status})`,
+      res.status
+    );
+  }
+  const json = (await res.json()) as FullWeatherData;
   return json;
 }
 
