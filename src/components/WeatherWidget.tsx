@@ -1215,10 +1215,12 @@ export function WeatherWidget() {
       </div>
 
       {/* ── ① 今日の天気（サマリー + 時間別スクロール）── */}
-      <TodayWeatherSection
-        hourlyWeather={data.hourlyWeather}
-        todayForecast={todayForecast}
-      />
+      {data.hourlyWeather?.times?.length > 0 && (
+        <TodayWeatherSection
+          hourlyWeather={data.hourlyWeather}
+          todayForecast={todayForecast}
+        />
+      )}
 
       {/* 区切り */}
       <div className="mx-5 border-t border-white/5" />
