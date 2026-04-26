@@ -259,8 +259,14 @@ export function mapOpenMeteoFullResponse(
   const rawPrecip = data.hourly?.precipitation ?? [];
   const rawHumidity = data.hourly?.relative_humidity_2m ?? [];
 
-  // 現在時刻以降 72 エントリのみ抽出 (past_days=1 で過去分も入る)
+  // Open-Meteo は timezone=Asia/Tokyo を指定すると "2026-04-27T08:00" 形式で
+  // タイムゾーンなしの JST 時刻を返す。サーバ (UTC) で Date.parse すると
+  // UTC として解釈され 9h ずれるため、比較閾値を JST 基準に調整する。
+  const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
   const nowMs = now.getTime();
+  // 「パース済みタイムスタンプ空間」での現在時刻 (JST の時刻値を UTC と同じ ms 単位で扱う)
+  const nowJstMs = nowMs + JST_OFFSET_MS;
+
   const filteredTimes: string[] = [];
   const filteredValues: number[] = [];
 
@@ -268,7 +274,7 @@ export function mapOpenMeteoFullResponse(
     const tMs = Date.parse(t);
     if (
       Number.isFinite(tMs) &&
-      tMs >= nowMs - 3600 * 1000 && // 1h 前まで含める (グラフのアンカー用)
+      tMs >= nowJstMs - 3600 * 1000 && // 1h 前まで含める (グラフのアンカー用)
       filteredTimes.length < 73 &&
       typeof rawPressures[i] === "number" &&
       Number.isFinite(rawPressures[i])
@@ -283,11 +289,12 @@ export function mapOpenMeteoFullResponse(
     values: filteredValues,
   };
 
-  // 時間別天気データ: 現在時刻から翌日 3時まで (最大 28h)
+  // 時間別天気データ: 現在 JST 時刻から翌日 3時 (JST) まで (最大 28h)
+  // tomorrowEarlyMs もパース済みタイムスタンプ空間 (JST 時刻値) で計算する
   const tomorrowEarlyMs = (() => {
-    const d = new Date(now);
-    d.setDate(d.getDate() + 1);
-    d.setHours(3, 0, 0, 0);
+    const d = new Date(nowJstMs); // JST 時刻を UTC フィールドで保持した Date
+    d.setUTCDate(d.getUTCDate() + 1);
+    d.setUTCHours(3, 0, 0, 0); // 翌日 3:00 JST
     return d.getTime();
   })();
 
@@ -303,7 +310,7 @@ export function mapOpenMeteoFullResponse(
     const tMs = Date.parse(t);
     if (
       Number.isFinite(tMs) &&
-      tMs >= nowMs - 1800 * 1000 && // 30min 前から
+      tMs >= nowJstMs - 1800 * 1000 && // 30min 前 (JST) から
       tMs <= tomorrowEarlyMs &&
       hwTimes.length < 30
     ) {
