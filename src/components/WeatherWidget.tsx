@@ -64,6 +64,24 @@ function precipColor(prob: number): string {
   return "text-[#8b92a5]";
 }
 
+/** WMO 天気コード → 絵文字と天気名を返す */
+function weatherCodeToDisplay(code?: number): { emoji: string; label: string } {
+  if (code === undefined) return { emoji: "🌡", label: "不明" };
+  if (code === 0) return { emoji: "☀️", label: "快晴" };
+  if (code === 1) return { emoji: "🌤", label: "晴れ" };
+  if (code === 2) return { emoji: "⛅", label: "曇り時々晴" };
+  if (code === 3) return { emoji: "☁️", label: "曇り" };
+  if (code === 45 || code === 48) return { emoji: "🌫", label: "霧" };
+  if (code >= 51 && code <= 55) return { emoji: "🌦", label: "小雨" };
+  if (code >= 61 && code <= 65) return { emoji: "🌧", label: "雨" };
+  if (code >= 71 && code <= 77) return { emoji: "❄️", label: "雪" };
+  if (code >= 80 && code <= 82) return { emoji: "🌦", label: "にわか雨" };
+  if (code >= 85 && code <= 86) return { emoji: "🌨", label: "にわか雪" };
+  if (code === 95) return { emoji: "⛈", label: "雷雨" };
+  if (code >= 96) return { emoji: "⛈", label: "激しい雷雨" };
+  return { emoji: "🌡", label: "不明" };
+}
+
 // ────────────────────────────────────────────────────────────────────────────
 // SVG 気圧グラフ
 // ────────────────────────────────────────────────────────────────────────────
@@ -119,8 +137,18 @@ function PressureChart({ times, values }: PressureChartProps) {
     } catch {}
   }
 
-  // 現在時刻のインデックス (最初のエントリが "1h 前" なので index=1 付近)
-  const nowIdx = Math.min(1, values.length - 1);
+  // 現在時刻に最も近いインデックスを計算
+  const nowMs = Date.now();
+  let nowIdx = 0;
+  let minDiff = Infinity;
+  for (let i = 0; i < times.length; i++) {
+    const diff = Math.abs(Date.parse(times[i]) - nowMs);
+    if (diff < minDiff) {
+      minDiff = diff;
+      nowIdx = i;
+    }
+  }
+  nowIdx = Math.min(nowIdx, values.length - 1);
 
   return (
     <svg
@@ -198,6 +226,28 @@ function PressureChart({ times, values }: PressureChartProps) {
         strokeLinecap="round"
       />
 
+      {/* 現在時刻の縦線 */}
+      <line
+        x1={toX(nowIdx)}
+        y1={PAD.top}
+        x2={toX(nowIdx)}
+        y2={PAD.top + chartH}
+        stroke="#f59e0b"
+        strokeWidth="1.5"
+        strokeDasharray="4 3"
+        opacity="0.8"
+      />
+      <text
+        x={toX(nowIdx)}
+        y={PAD.top - 2}
+        textAnchor="middle"
+        fill="#f59e0b"
+        fontSize="9"
+        fontWeight="bold"
+      >
+        現在
+      </text>
+
       {/* 現在時刻のドット */}
       <circle
         cx={toX(nowIdx)}
@@ -206,9 +256,9 @@ function PressureChart({ times, values }: PressureChartProps) {
         fill="#1d9bf0"
       />
       <text
-        x={toX(nowIdx)}
-        y={toY(values[nowIdx]) - 8}
-        textAnchor="middle"
+        x={toX(nowIdx) + 6}
+        y={toY(values[nowIdx]) - 6}
+        textAnchor="start"
         fill="#e6e8ee"
         fontSize="10"
         fontWeight="bold"
@@ -228,47 +278,65 @@ function DailyForecastRow({ forecast }: { forecast: DailyForecast[] }) {
     <div className="flex gap-2 overflow-x-auto pb-1">
       {forecast.map((day) => {
         const isCurrentDay = isToday(day.date);
+        const weather = weatherCodeToDisplay(day.weatherCode);
         return (
           <div
             key={day.date}
-            className={`flex min-w-[80px] flex-col items-center gap-1 rounded-lg px-3 py-3 text-center ${
+            className={`flex min-w-[90px] flex-col items-center gap-1 rounded-lg px-3 py-3 text-center ${
               isCurrentDay
                 ? "border border-[#1d9bf0]/40 bg-[#1d9bf0]/10"
                 : "border border-white/5 bg-[#12172a]"
             }`}
           >
+            {/* 日付 */}
             <span
               className={`text-xs font-medium ${isCurrentDay ? "text-[#1d9bf0]" : "text-[#8b92a5]"}`}
             >
               {isCurrentDay ? "今日" : formatDate(day.date)}
             </span>
 
-            {/* 気温 */}
-            <div className="flex flex-col">
-              <span className="text-sm font-bold text-[#e6e8ee]">
-                {day.tempMax}°
-              </span>
-              <span className="text-xs text-[#8b92a5]">{day.tempMin}°</span>
+            {/* 天気アイコン + ラベル */}
+            <div className="flex flex-col items-center gap-0.5">
+              <span className="text-xl leading-none">{weather.emoji}</span>
+              <span className="text-[9px] text-[#8b92a5]">{weather.label}</span>
+            </div>
+
+            {/* 気温 (最高/最低) */}
+            <div className="flex flex-col items-center gap-0">
+              <div className="flex items-center gap-0.5">
+                <span className="text-[9px] text-[#8b92a5]">高</span>
+                <span className="text-sm font-bold text-[#e6e8ee]">{day.tempMax}°</span>
+              </div>
+              <div className="flex items-center gap-0.5">
+                <span className="text-[9px] text-[#8b92a5]">低</span>
+                <span className="text-xs text-[#8b92a5]">{day.tempMin}°</span>
+              </div>
             </div>
 
             {/* 降水確率 */}
-            <span className={`text-xs font-medium ${precipColor(day.precipProbability)}`}>
-              {day.precipProbability}%
-            </span>
+            <div className="flex flex-col items-center gap-0">
+              <span className="text-[9px] text-[#8b92a5]">降水</span>
+              <span className={`text-xs font-medium ${precipColor(day.precipProbability)}`}>
+                {day.precipProbability}%
+              </span>
+            </div>
 
-            {/* 気圧トレンド */}
-            <span
-              className="text-sm"
-              title={`気圧差: ${day.pressureDelta > 0 ? "+" : ""}${day.pressureDelta}hPa`}
-            >
-              {pressureTrendIcon(day.pressureDelta)}
-            </span>
-
-            {/* 平均気圧 */}
-            <span className="text-[10px] text-[#8b92a5]">
-              {Math.round((day.pressureMin + day.pressureMax) / 2)}
-              <span className="text-[9px]">hPa</span>
-            </span>
+            {/* 気圧 + トレンド */}
+            <div className="flex flex-col items-center gap-0">
+              <span className="text-[9px] text-[#8b92a5]">気圧</span>
+              <div className="flex items-center gap-0.5">
+                <span className="text-[10px] text-[#8b92a5]">
+                  {Math.round((day.pressureMin + day.pressureMax) / 2)}
+                </span>
+                <span className="text-[8px] text-[#8b92a5]">hPa</span>
+              </div>
+              <span
+                className="text-xs"
+                title={`前日比: ${day.pressureDelta > 0 ? "+" : ""}${day.pressureDelta}hPa`}
+              >
+                {pressureTrendIcon(day.pressureDelta)}
+              </span>
+            </div>
           </div>
         );
       })}
@@ -507,7 +575,7 @@ export function WeatherWidget() {
       {data.forecast.length > 0 && (
         <div>
           <p className="mb-2 text-xs text-[#8b92a5]">
-            天気予報（降水確率 / 気圧トレンド）
+            週間天気予報（降水確率 / 気圧トレンド）
           </p>
           <DailyForecastRow forecast={data.forecast} />
         </div>

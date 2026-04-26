@@ -48,6 +48,7 @@ type OpenMeteoDaily = {
   precipitation_probability?: number[];
   pressure_msl_min?: number[];
   pressure_msl_max?: number[];
+  weathercode?: number[];
 };
 
 /** Open-Meteo レスポンス全体 (必要なフィールドのみ) */
@@ -218,6 +219,7 @@ export function mapOpenMeteoFullResponse(
       precipitation_probability_max?: number[];
       pressure_msl_min?: number[];
       pressure_msl_max?: number[];
+      weathercode?: number[];
     };
   },
   now: Date = new Date()
@@ -253,10 +255,10 @@ export function mapOpenMeteoFullResponse(
     values: filteredValues,
   };
 
-  // daily 予報 (5 日分)
+  // daily 予報 (7 日分)
   const daily = data.daily ?? {};
   const dailyTimes = daily.time ?? [];
-  const forecast: DailyForecast[] = dailyTimes.slice(0, 5).map((date, i) => {
+  const forecast: DailyForecast[] = dailyTimes.slice(0, 7).map((date, i) => {
     const tempMax = round1(daily.temperature_2m_max?.[i] ?? 0);
     const tempMin = round1(daily.temperature_2m_min?.[i] ?? 0);
     const humidity = Math.round(daily.relative_humidity_2m_max?.[i] ?? 50);
@@ -265,6 +267,7 @@ export function mapOpenMeteoFullResponse(
     );
     const pressureMin = round1(daily.pressure_msl_min?.[i] ?? 1013);
     const pressureMax = round1(daily.pressure_msl_max?.[i] ?? 1013);
+    const weatherCode = daily.weathercode?.[i];
 
     // 前日比気圧差: 今日は current.pressureDeltaHpa、それ以降は前日 max → 当日 min で近似
     let pressureDelta = 0;
@@ -286,6 +289,7 @@ export function mapOpenMeteoFullResponse(
       pressureMin,
       pressureMax,
       pressureDelta,
+      weatherCode,
     };
   });
 

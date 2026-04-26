@@ -218,6 +218,8 @@ export type DailyForecast = {
   pressureMax: number;
   /** 前日比気圧差 (hPa) */
   pressureDelta: number;
+  /** WMO 天気コード (0=快晴, 1=晴れ, 2=曇り時々晴れ, 3=曇り, 45/48=霧, 51-55=小雨, 61-65=雨, 71-75=雪, 80-82=にわか雨, 95=雷雨) */
+  weatherCode?: number;
 };
 
 /**

@@ -76,10 +76,10 @@ export async function GET(request: Request): Promise<Response> {
     upstream.searchParams.set("hourly", "pressure_msl");
     upstream.searchParams.set(
       "daily",
-      "temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,precipitation_probability_max,pressure_msl_min,pressure_msl_max"
+      "temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,precipitation_probability_max,pressure_msl_min,pressure_msl_max,weathercode"
     );
     upstream.searchParams.set("past_days", "1");
-    upstream.searchParams.set("forecast_days", "5");
+    upstream.searchParams.set("forecast_days", "7");
     upstream.searchParams.set("timezone", "Asia/Tokyo");
   } else if (mode === "forecast") {
     // 明日の予報を取得 (後方互換)
