@@ -112,7 +112,7 @@ export default function PrivacyPage() {
         <div className="bg-white/5 border border-white/10 rounded-xl p-5">
           <p className="text-sm font-bold text-gray-200 mb-1">SleepForecast サポート</p>
           <p className="text-sm text-gray-400">メール：support@sleep-forecast.jp</p>
-          <p className="text-sm text-gray-400">サポートページ：https://sleep-forecast.vercel.app</p>
+          <p className="text-sm text-gray-400">サポートページ：https://sleep-forecast.vercel.app/contact</p>
         </div>
       </section>
 
