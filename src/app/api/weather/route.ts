@@ -10,11 +10,14 @@
 import {
   OPEN_METEO_BASE_URL,
   OPEN_METEO_JMA_URL,
+  OPEN_METEO_AQI_URL,
   mapOpenMeteoResponse,
   mapOpenMeteoDailyToWeather,
   mapOpenMeteoFullResponse,
+  mapAQIResponse,
   type OpenMeteoResponse,
 } from "@/lib/weather";
+import type { AQIData } from "@/lib/types";
 
 export const runtime = "edge";
 
@@ -75,7 +78,7 @@ async function handleFullMode(lat: number, lon: number): Promise<Response> {
   jmaUrl.searchParams.set("longitude", lon.toString());
   jmaUrl.searchParams.set(
     "current",
-    "temperature_2m,relative_humidity_2m,surface_pressure,pressure_msl"
+    "temperature_2m,relative_humidity_2m,surface_pressure,pressure_msl,apparent_temperature"
   );
   jmaUrl.searchParams.set("hourly", "pressure_msl");
   jmaUrl.searchParams.set("daily", DAILY_VARS);
@@ -91,13 +94,21 @@ async function handleFullMode(lat: number, lon: number): Promise<Response> {
   globalUrl.searchParams.set("forecast_days", "7");
   globalUrl.searchParams.set("timezone", "Asia/Tokyo");
 
+  // ── AQI リクエスト ──
+  const aqiUrl = new URL(OPEN_METEO_AQI_URL);
+  aqiUrl.searchParams.set("latitude", lat.toString());
+  aqiUrl.searchParams.set("longitude", lon.toString());
+  aqiUrl.searchParams.set("current", "us_aqi,pm2_5");
+
   let jmaData: OpenMeteoResponse;
   let globalData: OpenMeteoResponse;
+  let aqiData: AQIData | undefined;
 
   try {
-    const [jmaRes, globalRes] = await Promise.all([
+    const [jmaRes, globalRes, aqiRes] = await Promise.all([
       fetch(jmaUrl.toString(), { next: { revalidate: 600 } }),
       fetch(globalUrl.toString(), { next: { revalidate: 1800 } }),
+      fetch(aqiUrl.toString(), { next: { revalidate: 1800 } }),
     ]);
 
     if (!jmaRes.ok) {
@@ -112,6 +123,14 @@ async function handleFullMode(lat: number, lon: number): Promise<Response> {
     globalData = globalRes.ok
       ? ((await globalRes.json()) as OpenMeteoResponse)
       : {};
+
+    // AQI が失敗しても続行
+    if (aqiRes.ok) {
+      try {
+        const aqiJson = await aqiRes.json() as { current?: { us_aqi?: number; pm2_5?: number } };
+        aqiData = mapAQIResponse(aqiJson);
+      } catch { /* ignore */ }
+    }
   } catch (err) {
     return Response.json(
       {
@@ -177,7 +196,7 @@ async function handleFullMode(lat: number, lon: number): Promise<Response> {
     new Date()
   );
 
-  return Response.json(fullData, {
+  return Response.json({ ...fullData, aqi: aqiData }, {
     status: 200,
     headers: {
       "Cache-Control": "public, s-maxage=600, stale-while-revalidate=1800",

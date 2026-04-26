@@ -128,6 +128,64 @@ export function wsiColor(level: WSILevel): string {
   return WSI_COLORS[level];
 }
 
+/** 気圧レベルゾーン（グラフの色分けに使う） */
+export type PressureZone = "safe" | "caution" | "warning" | "danger";
+
+/** 気圧ゾーン判定（hPaの絶対値ベース） */
+export function getPressureZone(hPa: number): PressureZone {
+  if (hPa >= 1016) return "safe";
+  if (hPa >= 1008) return "caution";
+  if (hPa >= 1000) return "warning";
+  return "danger";
+}
+
+/** 気圧ゾーンのラベル・色マップ */
+export const PRESSURE_ZONE_CONFIG: Record<PressureZone, { label: string; color: string; bg: string }> = {
+  safe:    { label: "安定",   color: "#4ade80", bg: "rgba(74,222,128,0.06)" },
+  caution: { label: "やや低", color: "#facc15", bg: "rgba(250,204,21,0.06)" },
+  warning: { label: "低気圧", color: "#fb923c", bg: "rgba(251,146,60,0.08)" },
+  danger:  { label: "警戒",   color: "#f87171", bg: "rgba(248,113,113,0.10)" },
+};
+
+/** ペナルティ合計を 0-100 スコアに変換 */
+function penaltyToScore100(totalPenalty: number): number {
+  return Math.max(0, Math.round(100 - totalPenalty));
+}
+
+/** 体感気温による不快ペナルティ（オプション） */
+function apparentTempPenalty(apparentTempC: number): number {
+  // 28°C超: 蒸し暑い / 5°C未満: 寒すぎ
+  if (apparentTempC >= 32) return 15;
+  if (apparentTempC >= 28) return 8;
+  if (apparentTempC <= 2)  return 12;
+  if (apparentTempC <= 8)  return 6;
+  return 0;
+}
+
+/** WSI スコア（0-100）— 大きいほど快眠しやすい */
+export function computeWSIScore100(
+  pressureDelta6h: number,
+  tempDelta: number,
+  humidity: number,
+  apparentTempC?: number
+): number {
+  const penalty =
+    pressurePenalty(pressureDelta6h) +
+    tempDeltaPenalty(tempDelta) +
+    humidityPenalty(humidity) +
+    (apparentTempC !== undefined ? apparentTempPenalty(apparentTempC) : 0);
+  return penaltyToScore100(penalty);
+}
+
+/** スコア100点満点に対応したラベル・色 */
+export function getScore100Display(score: number): { label: string; color: string } {
+  if (score >= 80) return { label: "快眠しやすい夜",   color: "#4ade80" };
+  if (score >= 60) return { label: "比較的良好",       color: "#86efac" };
+  if (score >= 40) return { label: "やや注意",         color: "#facc15" };
+  if (score >= 20) return { label: "影響が出やすい",   color: "#fb923c" };
+  return           { label: "難しい夜",                color: "#f87171" };
+}
+
 /** ケアヒントをWSIレベルと各要因から生成 */
 export function getCareHints(score: WSIScore): string[] {
   const hints: string[] = [];

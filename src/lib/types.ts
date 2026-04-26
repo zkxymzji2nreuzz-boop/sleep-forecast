@@ -31,6 +31,8 @@ export type WeatherData = {
   fetchedAt: string;
   /** データソース: API か手動入力か */
   source: "open-meteo" | "manual";
+  /** 体感気温 (°C, apparent_temperature。取得失敗時は undefined) */
+  apparentTemperatureC?: number;
 };
 
 /**
@@ -223,6 +225,25 @@ export type DailyForecast = {
 };
 
 /**
+ * 大気質（Air Quality Index）データ。
+ * Open-Meteo Air Quality API から取得。
+ */
+export type AQIData = {
+  /** US AQI 値 (0〜500+) */
+  usAqi: number;
+  /** PM2.5 濃度 (μg/m³) */
+  pm25: number;
+  /**
+   * AQI カテゴリ:
+   * "良好" (0-50) / "普通" (51-100) / "敏感な人に注意" (101-150) /
+   * "悪い" (151-200) / "とても悪い" (201+)
+   */
+  category: string;
+  /** カテゴリに対応するカラーコード */
+  color: string;
+};
+
+/**
  * WeatherWidget 用の完全な気象データ。
  * /api/weather?type=full で取得。
  */
@@ -231,8 +252,10 @@ export type FullWeatherData = {
   current: WeatherData;
   /** 72時間の気圧推移 */
   hourlyPressure: HourlyPressureData;
-  /** 5日分の天気予報 */
+  /** 7日分の天気予報 */
   forecast: DailyForecast[];
+  /** 大気質データ (取得失敗時は undefined) */
+  aqi?: AQIData;
 };
 
 /**

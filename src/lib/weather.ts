@@ -8,13 +8,16 @@
 
 import SunCalc from "suncalc";
 
-import type { WeatherData, FullWeatherData, HourlyPressureData, DailyForecast } from "./types";
+import type { WeatherData, FullWeatherData, HourlyPressureData, DailyForecast, AQIData } from "./types";
 
 /** Open-Meteo API ベース URL (認証不要、非商用無料) */
 export const OPEN_METEO_BASE_URL = "https://api.open-meteo.com/v1/forecast";
 
 /** Open-Meteo JMA (気象庁MSMモデル) エンドポイント — 日本向け高精度 */
 export const OPEN_METEO_JMA_URL = "https://api.open-meteo.com/v1/jma";
+
+/** Open-Meteo Air Quality API エンドポイント */
+export const OPEN_METEO_AQI_URL = "https://air-quality-api.open-meteo.com/v1/air-quality";
 
 /** /api/weather が失敗した場合に throw するエラー型 */
 export class WeatherFetchError extends Error {
@@ -34,6 +37,7 @@ type OpenMeteoCurrent = {
   relative_humidity_2m?: number;
   surface_pressure?: number;
   pressure_msl?: number;
+  apparent_temperature?: number;
 };
 
 /** Open-Meteo の `hourly` レスポンス部分の型 (必要なフィールドのみ) */
@@ -94,6 +98,7 @@ export function mapOpenMeteoResponse(
     moonIllumination: round4(moon.illumination),
     fetchedAt: now.toISOString(),
     source: "open-meteo",
+    apparentTemperatureC: round1(numberOr(current.apparent_temperature, temperatureC)),
   };
 }
 
@@ -328,6 +333,22 @@ export async function fetchFullWeather(
   }
   const json = (await res.json()) as FullWeatherData;
   return json;
+}
+
+/**
+ * Open-Meteo Air Quality API のレスポンスを `AQIData` に変換する。
+ */
+export function mapAQIResponse(data: { current?: { us_aqi?: number; pm2_5?: number } }): AQIData {
+  const usAqi = Math.round(data.current?.us_aqi ?? 0);
+  const pm25 = Math.round((data.current?.pm2_5 ?? 0) * 10) / 10;
+  let category: string;
+  let color: string;
+  if (usAqi <= 50) { category = "良好"; color = "#4ade80"; }
+  else if (usAqi <= 100) { category = "普通"; color = "#facc15"; }
+  else if (usAqi <= 150) { category = "敏感な人に注意"; color = "#fb923c"; }
+  else if (usAqi <= 200) { category = "悪い"; color = "#f87171"; }
+  else { category = "とても悪い"; color = "#c084fc"; }
+  return { usAqi, pm25, category, color };
 }
 
 /** 小数 1 桁で丸める */
