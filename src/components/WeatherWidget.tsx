@@ -42,7 +42,7 @@ import type {
   DailyForecast,
   HourlyWeatherData,
 } from "@/lib/types";
-import type { WSIScore, PressureZone } from "@/lib/wsi";
+import type { WSIScore } from "@/lib/wsi";
 
 // ChartJS 登録
 ChartJS.register(
@@ -386,11 +386,6 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
   const jstMonth = jstNow.getUTCMonth();
   const jstDate = jstNow.getUTCDate();
 
-  // 今日の18時 JST (UTC ms)
-  const tonight18Utc = Date.UTC(jstYear, jstMonth, jstDate, 18 - 9, 0, 0);
-  // 翌朝7時 JST (UTC ms)
-  const tomorrow7Utc = Date.UTC(jstYear, jstMonth, jstDate + 1, 7 - 9, 0, 0);
-
   // 対象時間帯のデータを抽出
   const targetPoints: { label: string; value: number; isNow: boolean; delta: number }[] = [];
 
@@ -401,12 +396,6 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
   }
 
   for (const h of targetHours) {
-    const hNormalized = h % 24;
-    const dayOffset = h >= 24 ? 1 : 0;
-    const targetUtcMs = Date.UTC(jstYear, jstMonth, jstDate + dayOffset, hNormalized - 9 + (hNormalized < 9 ? 24 : 0), 0, 0);
-    // JST 9時間オフセットを考慮した計算
-    // h=18 JST → UTC = JST - 9 = 9時 UTC
-    // h=24 JST（翌0時） → UTC = 15時 UTC
     const jstHour = h % 24;
     const utcHour = jstHour - 9 + (jstHour < 9 ? 24 : 0);
     const dOffset = h >= 24 ? (jstHour < 9 ? 1 : 1) : (jstHour < 9 ? 1 : 0);
@@ -639,15 +628,10 @@ function WakeupForecastCard({ hourlyPressureTimes, hourlyPressureValues, current
   const jstMonth = jstNow.getUTCMonth();
   const jstDate = jstNow.getUTCDate();
 
-  // 翌朝7時 JST = 翌日 UTC 22:00
-  const target7amJstUtcMs = Date.UTC(jstYear, jstMonth, jstDate + 1, 7 - 9 + 24, 0, 0) - 24 * 3600 * 1000;
-  // より簡潔に: 翌日 22:00 UTC = jstDate+1 の 22:00 UTC → jstDate の 22:00 UTC + 1日
-  // 翌朝7時 JST = (jstDate+1日目の07:00JST) = UTC jstDate+1 の -9+7 = -2 => 前日(UTC) 22:00
-  // 実際には: Date.UTC(year, month, date+1, 7, 0, 0) - 9*3600000
   const tomorrow7JstMs = Date.UTC(jstYear, jstMonth, jstDate + 1, 7, 0, 0) - 9 * 3600 * 1000;
 
   // 翌朝6〜8時の平均気圧を取得
-  let morningPressures: number[] = [];
+  const morningPressures: number[] = [];
   for (let i = 0; i < hourlyPressureTimes.length; i++) {
     const timeStr = hourlyPressureTimes[i];
     const tMs = timeStr.includes("+") || timeStr.includes("Z")
