@@ -655,7 +655,7 @@ function WakeupForecastCard({ hourlyPressureTimes, hourlyPressureValues, current
 
   // 翌朝のWSIスコアを算出
   const morningScore = computeWSIScore100(morningDelta, tempDelta, humidity, apparentTempC);
-  const { name, color, level } = getWakeupLevel(morningScore);
+  const { name, color } = getWakeupLevel(morningScore);
 
   return (
     <div
