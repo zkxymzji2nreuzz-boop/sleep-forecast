@@ -160,6 +160,20 @@ export default function HomePage() {
       {/* 気象・睡眠ウィジェット: 今夜の睡眠予報 + 気圧グラフ + 5日間予報 */}
       <div className="mb-12">
         <WeatherWidget />
+
+        {/* iOSバナー（Coming Soon状態） */}
+        <div className="mt-8 rounded-2xl border border-white/10 bg-[#1a1f2e] p-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-[#8b98a5]">近日公開</p>
+              <p className="mt-1 text-base font-semibold text-[#e6e8ee]">SleepForecast iOS アプリ</p>
+              <p className="mt-1 text-xs text-[#8b98a5]">通知・記録・個人分析がさらに使いやすく</p>
+            </div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#252b3b] text-2xl">
+              📱
+            </div>
+          </div>
+        </div>
       </div>
 
       <section

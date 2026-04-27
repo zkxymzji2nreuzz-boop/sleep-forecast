@@ -270,7 +270,7 @@ export function RecordForm(): JSX.Element {
       });
       toast({
         title: isUpdate ? "今日の記録を更新しました" : "今日の記録を保存しました",
-        description: `${pref.name} / 品質 ${form.quality}`,
+        description: "明日の予報と照らし合わせてみてね 🌙",
       });
       setSavedView(saved);
       setExistingRecord(saved);
