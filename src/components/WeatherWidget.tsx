@@ -397,9 +397,10 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
 
   for (const h of targetHours) {
     const jstHour = h % 24;
+    // JST→UTC変換: JST18〜23時 → UTC9〜14時(同日), JST翌0〜7時 → UTC15〜22時(同日)
+    // いずれも jstDate の UTC 時刻に収まるため dOffset は常に 0
     const utcHour = jstHour - 9 + (jstHour < 9 ? 24 : 0);
-    const dOffset = h >= 24 ? (jstHour < 9 ? 1 : 1) : (jstHour < 9 ? 1 : 0);
-    const correctedUtcMs = Date.UTC(jstYear, jstMonth, jstDate + dOffset, utcHour, 0, 0);
+    const correctedUtcMs = Date.UTC(jstYear, jstMonth, jstDate, utcHour, 0, 0);
 
     // 対応するhourlyデータを探す（±30分以内）
     let bestIdx = -1;
@@ -422,9 +423,9 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
 
     if (bestIdx >= 0) {
       const value = hourlyPressureValues[bestIdx];
-      const prevIdx = targetPoints.length > 0 ? bestIdx - 1 : bestIdx;
-      const delta = prevIdx >= 0 && prevIdx < hourlyPressureValues.length
-        ? value - hourlyPressureValues[prevIdx]
+      // 前のtargetPoint（1時間前）との差分でhPa/hを計算
+      const delta = targetPoints.length > 0
+        ? value - targetPoints[targetPoints.length - 1].value
         : 0;
       targetPoints.push({ label, value, isNow, delta });
     } else {
@@ -677,21 +678,20 @@ function WakeupForecastCard({ hourlyPressureTimes, hourlyPressureValues, current
             {name}
           </span>
           <p className="mt-1 text-xs text-[#8b92a5]">
-            翌朝の気圧予測からの推定
+            翌朝の気圧から算出
           </p>
         </div>
 
-        {/* レベルドット */}
-        <div className="flex flex-col gap-1 items-end">
-          {levelDots.map((dot) => (
+        {/* シグナルバー（左=低レベル / 右=高レベル） */}
+        <div className="flex items-end gap-[3px]">
+          {[1, 2, 3, 4, 5].map((bar) => (
             <div
-              key={dot}
-              className="rounded-full"
+              key={bar}
+              className="rounded-sm"
               style={{
-                width: dot === level ? "20px" : "8px",
-                height: "8px",
-                background: dot <= level ? color : "rgba(255,255,255,0.1)",
-                transition: "width 0.2s",
+                width: "6px",
+                height: `${bar * 5 + 8}px`,
+                background: bar <= level ? color : "rgba(255,255,255,0.12)",
               }}
             />
           ))}
