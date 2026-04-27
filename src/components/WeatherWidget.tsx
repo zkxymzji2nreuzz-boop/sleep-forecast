@@ -657,8 +657,6 @@ function WakeupForecastCard({ hourlyPressureTimes, hourlyPressureValues, current
   const morningScore = computeWSIScore100(morningDelta, tempDelta, humidity, apparentTempC);
   const { name, color, level } = getWakeupLevel(morningScore);
 
-  const levelDots = [5, 4, 3, 2, 1];
-
   return (
     <div
       className="rounded-2xl p-5"
@@ -669,34 +667,15 @@ function WakeupForecastCard({ hourlyPressureTimes, hourlyPressureValues, current
     >
       <p className="text-xs font-semibold text-[#8b92a5] mb-3">☀️ 明日の目覚め予報</p>
 
-      <div className="flex items-center justify-between">
-        <div>
-          <span
-            className="text-2xl font-black"
-            style={{ color }}
-          >
-            {name}
-          </span>
-          <p className="mt-1 text-xs text-[#8b92a5]">
-            翌朝の気圧から算出
-          </p>
-        </div>
-
-        {/* シグナルバー（左=低レベル / 右=高レベル） */}
-        <div className="flex items-end gap-[3px]">
-          {[1, 2, 3, 4, 5].map((bar) => (
-            <div
-              key={bar}
-              className="rounded-sm"
-              style={{
-                width: "6px",
-                height: `${bar * 5 + 8}px`,
-                background: bar <= level ? color : "rgba(255,255,255,0.12)",
-              }}
-            />
-          ))}
-        </div>
-      </div>
+      <span
+        className="text-2xl font-black"
+        style={{ color }}
+      >
+        {name}
+      </span>
+      <p className="mt-1 text-xs text-[#8b92a5]">
+        翌朝の気圧から算出
+      </p>
     </div>
   );
 }
