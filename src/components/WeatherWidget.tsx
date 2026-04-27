@@ -116,12 +116,8 @@ const TODAY_LABEL_ROWS: { label: string; h: number }[] = [
 
 function TodayWeatherSection({
   hourlyWeather,
-  pressureTimes,
-  pressureValues,
 }: {
   hourlyWeather: HourlyWeatherData;
-  pressureTimes: string[];
-  pressureValues: number[];
 }) {
   const nowMs = Date.now();
 
@@ -1212,8 +1208,6 @@ export function WeatherWidget() {
           </div>
           <TodayWeatherSection
             hourlyWeather={data.hourlyWeather}
-            pressureTimes={data.hourlyPressure.times}
-            pressureValues={data.hourlyPressure.values}
           />
         </>
       )}
