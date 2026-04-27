@@ -86,20 +86,15 @@ function weatherCodeToDisplay(
 }
 
 /**
- * 気圧傾向バッジ（前24時間比のデルタ値から判定）
- * 閾値：日本生気象学会ガイドライン参考 + SleepForecast 独自調整
- *   急落  : −6hPa 以上の下降
- *   下降  : −2〜−5hPa
- *   安定  : ±1hPa 以内
- *   上昇  : +2〜+5hPa
- *   急上昇: +6hPa 以上の上昇
+ * 気圧の前時間比矢印（1時間前との差分から方向を判定）
  */
-function trendBadge(delta: number): { label: string; bg: string; color: string } {
-  if (delta <= -6) return { label: "急落",   bg: "rgba(248,113,113,.15)", color: "#f87171" };
-  if (delta <= -2) return { label: "下降",   bg: "rgba(251,146,60,.15)",  color: "#fb923c" };
-  if (delta >= 6)  return { label: "急上昇", bg: "rgba(74,222,128,.15)",  color: "#4ade80" };
-  if (delta >= 2)  return { label: "上昇",   bg: "rgba(96,165,250,.15)",  color: "#60a5fa" };
-  return                  { label: "安定",   bg: "rgba(139,146,165,.15)", color: "#8b92a5" };
+function pressureArrow(delta: number): { arrow: string; color: string } {
+  if (isNaN(delta)) return { arrow: "—", color: "#8b92a5" };
+  if (delta <= -3) return { arrow: "↙", color: "#f87171" };
+  if (delta <= -1) return { arrow: "↘", color: "#fb923c" };
+  if (delta >= 3)  return { arrow: "↑", color: "#4ade80" };
+  if (delta >= 1)  return { arrow: "↗", color: "#60a5fa" };
+  return                  { arrow: "→", color: "#8b92a5" };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -116,8 +111,7 @@ const TODAY_LABEL_ROWS: { label: string; h: number }[] = [
   { label: "降水確率", h: ROW_H  },
   { label: "降水量", h: ROW_H    },
   { label: "湿度",   h: ROW_H    },
-  { label: "気圧",   h: ROW_H    },
-  { label: "気圧傾向", h: HEADER_H },
+  { label: "気圧",   h: HEADER_H },
 ];
 
 function TodayWeatherSection({
@@ -139,18 +133,10 @@ function TodayWeatherSection({
     if (diff < minDiff) { minDiff = diff; currentIdx = i; }
   }
 
-  // 各時刻の24h前デルタを計算（hourlyPressure の72h分データから参照）
-  const deltas = hourlyWeather.times.map((time, i) => {
-    const target = Date.parse(time) - 24 * 60 * 60 * 1000;
-    let bestIdx = -1;
-    let bestDiff = Infinity;
-    for (let j = 0; j < pressureTimes.length; j++) {
-      const diff = Math.abs(Date.parse(pressureTimes[j]) - target);
-      if (diff < bestDiff) { bestDiff = diff; bestIdx = j; }
-    }
-    if (bestIdx === -1 || bestDiff > 2 * 60 * 60 * 1000) return 0;
-    return Math.round(hourlyWeather.pressures[i] - pressureValues[bestIdx]);
-  });
+  // 各時刻の1時間前との気圧差を計算
+  const hourlyDeltas = hourlyWeather.pressures.map((p, i) =>
+    i === 0 ? NaN : Math.round(p - hourlyWeather.pressures[i - 1])
+  );
 
   return (
     <div className="px-4 pb-3">
@@ -182,7 +168,7 @@ function TodayWeatherSection({
               const hour = new Date(time).getHours();
               const w = weatherCodeToDisplay(hourlyWeather.weatherCodes[i], hour);
               const isCurrent = i === currentIdx;
-              const trend = trendBadge(deltas[i]);
+              const pa = pressureArrow(hourlyDeltas[i]);
               const hourLabel = hour === 0 ? "翌0時" : `${hour}時`;
 
               return (
@@ -226,14 +212,9 @@ function TodayWeatherSection({
                     {hourlyWeather.humidity[i]}%
                   </div>
                   {/* 気圧 */}
-                  <div style={{ height: `${ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "#8b92a5" }}>
-                    {Math.round(hourlyWeather.pressures[i])}
-                  </div>
-                  {/* 気圧傾向バッジ */}
-                  <div style={{ height: `${HEADER_H}px`, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px" }}>
-                    <span style={{ fontSize: "9px", fontWeight: 700, padding: "2px 5px", borderRadius: "9999px", background: trend.bg, color: trend.color, whiteSpace: "nowrap" }}>
-                      {trend.label}
-                    </span>
+                  <div style={{ height: `${HEADER_H}px`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "#8b92a5", gap: "1px" }}>
+                    <span>{Math.round(hourlyWeather.pressures[i])}</span>
+                    <span style={{ fontSize: "11px", color: pa.color }}>{pa.arrow}</span>
                   </div>
                 </div>
               );
@@ -242,37 +223,6 @@ function TodayWeatherSection({
         </div>
       </div>
 
-      {/* 凡例バー（A案: 常時表示） */}
-      <div
-        style={{
-          marginTop: "10px",
-          padding: "7px 10px",
-          background: "rgba(255,255,255,0.03)",
-          border: "1px solid rgba(255,255,255,0.06)",
-          borderRadius: "8px",
-        }}
-      >
-        <p style={{ fontSize: "9px", fontWeight: 600, color: "#8b92a5", marginBottom: "5px", letterSpacing: "0.03em" }}>
-          気圧傾向の目安（前24時間比）
-        </p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 12px" }}>
-          {(
-            [
-              { label: "急落",   color: "#f87171", range: "−6hPa以上" },
-              { label: "下降",   color: "#fb923c", range: "−2〜−5"    },
-              { label: "安定",   color: "#8b92a5", range: "±1以内"    },
-              { label: "上昇",   color: "#60a5fa", range: "+2〜+5"    },
-              { label: "急上昇", color: "#4ade80", range: "+6以上"    },
-            ] as const
-          ).map(({ label, color, range }) => (
-            <div key={label} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-              <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: color, flexShrink: 0 }} />
-              <span style={{ fontSize: "9px", color }}>{label}</span>
-              <span style={{ fontSize: "9px", color: "#8b92a5" }}>（{range}）</span>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
