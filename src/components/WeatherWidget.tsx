@@ -448,7 +448,7 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
 
   // 現在時刻インデックス
   const nowPointIdx = targetPoints.findIndex((p) => p.isNow);
-  const currentIdx = nowPointIdx >= 0 ? nowPointIdx : 0;
+  const currentIdx = nowPointIdx; // -1 のときはバンドを描画しない
 
   // セグメントごとの色情報
   const pointColors = targetPoints.map((p, i) => {
@@ -543,13 +543,10 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
       x: {
         ticks: {
           color: "#8b92a5",
-          font: { size: 10 },
+          font: { size: 9 },
           maxRotation: 0,
           callback: (_: unknown, index: number) => {
-            const h = 18 + index;
-            const label = targetPoints[index]?.label ?? "";
-            if (h === 18 || h % 3 === 0) return label;
-            return "";
+            return targetPoints[index]?.label ?? "";
           },
         },
         grid: { color: "#1e2433" },
