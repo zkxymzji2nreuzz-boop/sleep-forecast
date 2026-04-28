@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Moon, Cloud, Calendar, ArrowRight, Info } from "lucide-react";
+import { Moon, Cloud, ArrowRight, Info } from "lucide-react";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { getAllArticlesMeta } from "@/lib/articles";
 
@@ -24,13 +24,6 @@ export const metadata: Metadata = {
     locale: "ja_JP",
   },
 };
-
-/** YYYY-MM-DD を「2026年4月10日」表記に */
-function formatJpDate(iso: string): string {
-  const [y, m, d] = iso.split("-").map((s) => parseInt(s, 10));
-  if (!y || !m || !d) return iso;
-  return `${y}年${m}月${d}日`;
-}
 
 export default function ArticlesIndexPage() {
   const articles = getAllArticlesMeta();
@@ -82,13 +75,6 @@ export default function ArticlesIndexPage() {
                   <span className="rounded-full border border-indigo-300/15 bg-indigo-500/10 px-2.5 py-0.5 text-[11px] font-medium text-indigo-200/80">
                     {a.category}
                   </span>
-                  <time
-                    dateTime={a.publishedAt}
-                    className="inline-flex items-center gap-1 text-[11px] text-[#8b92a5]"
-                  >
-                    <Calendar className="h-3 w-3" aria-hidden="true" />
-                    {formatJpDate(a.publishedAt)}
-                  </time>
                 </div>
 
                 <h2 className="text-lg font-semibold text-[#e6e8ee] sm:text-xl">

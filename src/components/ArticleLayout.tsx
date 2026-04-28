@@ -1,10 +1,8 @@
 import Link from "next/link";
 import {
   ArrowLeft,
-  Calendar,
   Tag,
   BookOpen,
-  Pencil,
   Moon,
   Sparkles,
   Info,
@@ -32,10 +30,6 @@ type Props = {
  *   - 境界線は border ではなくグラデーションディバイダーで柔らかく表現
  */
 export function ArticleLayout({ article, related }: Props) {
-  const publishedLabel = formatJpDate(article.publishedAt);
-  const updatedLabel = formatJpDate(article.updatedAt);
-  const showUpdated = article.updatedAt !== article.publishedAt;
-
   return (
     <article className="container mx-auto max-w-[680px] px-5 pb-20 pt-10 sm:pt-14">
       {/* 戻るリンク (柔らかいトーンの「ほかの読みものを見る」) */}
@@ -67,16 +61,6 @@ export function ArticleLayout({ article, related }: Props) {
         </p>
 
         <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3 text-xs text-[#8b92a5]">
-          <span className="inline-flex items-center gap-1">
-            <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
-            公開: {publishedLabel}
-          </span>
-          {showUpdated && (
-            <span className="inline-flex items-center gap-1">
-              <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
-              更新: {updatedLabel}
-            </span>
-          )}
           {article.tags.length > 0 && (
             <span className="inline-flex flex-wrap items-center gap-1.5">
               <Tag className="h-3.5 w-3.5" aria-hidden="true" />
@@ -212,9 +196,3 @@ export function ArticleLayout({ article, related }: Props) {
   );
 }
 
-/** YYYY-MM-DD を「2026年4月10日」表記に */
-function formatJpDate(iso: string): string {
-  const [y, m, d] = iso.split("-").map((s) => parseInt(s, 10));
-  if (!y || !m || !d) return iso;
-  return `${y}年${m}月${d}日`;
-}
