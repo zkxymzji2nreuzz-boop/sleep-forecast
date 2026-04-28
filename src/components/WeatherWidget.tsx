@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * WeatherWidget v5 — P0ブラッシヮアップ版
+ * WeatherWidget v5 — P0ブラッシュアップ版
  *
  * レイアウト順:
  * 1. 今日の天気（テーブル形式）
@@ -107,7 +107,7 @@ function pressureArrow(delta: number): { arrow: string; color: string } {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function getWSIBadge(score100: number): { badge: string; color: string } {
-  if (score100 >= 80) return { badge: "とてよ良い夜", color: "#10b981" };
+  if (score100 >= 80) return { badge: "とても良い夜", color: "#10b981" };
   if (score100 >= 65) return { badge: "良い夜",       color: "#4a90d9" };
   if (score100 >= 45) return { badge: "普通の夜",     color: "#8b98a5" };
   if (score100 >= 25) return { badge: "注意の夜",     color: "#f59e0b" };
@@ -606,9 +606,9 @@ interface WakeupForecastProps {
 }
 
 function getWakeupLevel(score100: number): { name: string; color: string; level: number } {
-  if (score100 >= 80) return { name: "スックリ",   color: "#10b981", level: 5 };
+  if (score100 >= 80) return { name: "スッキリ",   color: "#10b981", level: 5 };
   if (score100 >= 65) return { name: "おだやか",   color: "#4a90d9", level: 4 };
-  if (score100 >= 45) return { name: "ふてう",     color: "#8b98a5", level: 3 };
+  if (score100 >= 45) return { name: "ふつう",     color: "#8b98a5", level: 3 };
   if (score100 >= 25) return { name: "うとうと",   color: "#f59e0b", level: 2 };
   return                     { name: "どんより",   color: "#8b98a5", level: 1 };
 }
@@ -658,7 +658,7 @@ function WakeupForecastCard({ hourlyPressureTimes, hourlyPressureValues, current
         border: `1px solid ${color}30`,
       }}
     >
-      <p className="text-xs font-semibold text-[#8b92a5] mb-3">☀️ 明日の目覚ぁ予報</p>
+      <p className="text-xs font-semibold text-[#8b92a5] mb-3">☀️ 明日の目覚め予報</p>
 
       <span
         className="text-2xl font-black"
@@ -779,7 +779,7 @@ function CorrelationChart() {
           <div key={q} className="flex items-center gap-1">
             <div className="w-2.5 h-2.5 rounded-full" style={{ background: QUALITY_COLORS[q] }} />
             <span className="text-[10px] text-[#8b92a5]">
-              {q === 5 ? "とてが良い" : q === 4 ? "良い" : q === 3 ? "普通" : q === 2 ? "悪い" : "とてれ株い"}
+              {q === 5 ? "とても良い" : q === 4 ? "良い" : q === 3 ? "普通" : q === 2 ? "悪い" : "とてれ株い"}
             </span>
           </div>
         ))}
@@ -913,7 +913,7 @@ export function WeatherWidget() {
   // ── ローディング ──
   if (loading) return <WeatherWidgetSkeleton />;
 
-  // ── エラヸ ──
+  // ── エラー ──
   if (error || !data || !wsiScore) {
     return (
       <div className="rounded-2xl border border-white/5 bg-[#1a1f2e] p-5">
