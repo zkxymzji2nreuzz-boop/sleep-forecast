@@ -370,6 +370,167 @@ function SleepScoreHero({ score100, wsiScore, hints }: { score100: number; wsiSc
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// ③.5 気圧急変アラートバナー（通知許可フロー）
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** JST で「今日の日付文字列 YYYY-MM-DD」を返す */
+function getTodayJST(): string {
+  const d = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+/**
+ * 今夜（18:00 JST〜翌7:00 JST）の気圧変化幅が 3hPa 以上かどうか判定する。
+ * hourlyPressureTimes は ISO 8601（+09:00 付き推奨）を想定。
+ */
+function checkTonightPressureDrop(times: string[], pressures: number[]): boolean {
+  const todayStr = getTodayJST();
+  const todayBase = new Date(`${todayStr}T00:00:00+09:00`);
+  const tomorrowBase = new Date(todayBase.getTime() + 24 * 60 * 60 * 1000);
+  const tomorrowStr = `${tomorrowBase.getFullYear()}-${String(tomorrowBase.getMonth() + 1).padStart(2, "0")}-${String(tomorrowBase.getDate()).padStart(2, "0")}`;
+
+  const startMs = new Date(`${todayStr}T18:00:00+09:00`).getTime();
+  const endMs   = new Date(`${tomorrowStr}T07:00:00+09:00`).getTime();
+
+  const tonightPressures = times
+    .map((t, i) => ({
+      ms: Date.parse(t.includes("+") || t.includes("Z") ? t : t + "+09:00"),
+      p: pressures[i],
+    }))
+    .filter(({ ms }) => ms >= startMs && ms <= endMs)
+    .map(({ p }) => p);
+
+  if (tonightPressures.length < 2) return false;
+  return Math.max(...tonightPressures) - Math.min(...tonightPressures) >= 3;
+}
+
+const ALERT_STORAGE_KEY = "sf_pressure_alert_date";
+
+interface PressureAlertBannerProps {
+  hourlyPressureTimes: string[];
+  hourlyPressureValues: number[];
+}
+
+function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: PressureAlertBannerProps) {
+  const [visible, setVisible] = React.useState(false);
+  const [permState, setPermState] = React.useState<"idle" | "denied">("idle");
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!("Notification" in window)) return; // iOS Safari 等は非対応
+
+    const today = getTodayJST();
+    if (localStorage.getItem(ALERT_STORAGE_KEY) === today) return; // 今日通知済み
+    if (!checkTonightPressureDrop(hourlyPressureTimes, hourlyPressureValues)) return; // 急変なし
+
+    // 既に許可済みなら直接通知を送って終了
+    if (Notification.permission === "granted") {
+      new Notification("SleepForecast", {
+        body: "気圧急変の夜です。眠れなかったら明朝記録してみてください",
+        icon: "/icon-192.png",
+      });
+      localStorage.setItem(ALERT_STORAGE_KEY, today);
+      return;
+    }
+
+    // 拒否済みはアプリ内バナーだけ表示（フォールバック）
+    if (Notification.permission === "denied") {
+      setPermState("denied");
+      setVisible(true);
+      return;
+    }
+
+    // default（未決）→ バナーを表示してユーザーに選ばせる
+    setVisible(true);
+  }, [hourlyPressureTimes, hourlyPressureValues]);
+
+  if (!visible) return null;
+
+  const handleAccept = async () => {
+    const permission = await Notification.requestPermission();
+    const today = getTodayJST();
+    localStorage.setItem(ALERT_STORAGE_KEY, today);
+    if (permission === "granted") {
+      new Notification("SleepForecast", {
+        body: "気圧急変の夜です。眠れなかったら明朝記録してみてください",
+        icon: "/icon-192.png",
+      });
+    } else {
+      setPermState("denied");
+      return; // denied の場合はバナーをアプリ内通知として残す
+    }
+    setVisible(false);
+  };
+
+  const handleDismiss = () => {
+    localStorage.setItem(ALERT_STORAGE_KEY, getTodayJST());
+    setVisible(false);
+  };
+
+  return (
+    <div
+      className="mx-5 mb-4 rounded-xl border px-4 py-3"
+      style={{
+        background: "rgba(248,113,113,0.08)",
+        borderColor: "rgba(248,113,113,0.25)",
+      }}
+    >
+      {permState === "denied" ? (
+        /* 拒否済み or 許可拒否後 → アプリ内通知として表示 */
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold" style={{ color: "#f87171" }}>
+              🌧 今夜は気圧が急変しそうです
+            </p>
+            <p className="mt-1 text-xs text-[#8b92a5]">
+              気圧急変の夜です。眠れなかったら明朝記録してみてください
+            </p>
+          </div>
+          <button
+            onClick={handleDismiss}
+            className="mt-0.5 flex-shrink-0 text-xs text-[#8b92a5] hover:text-[#e6e8ee]"
+            aria-label="閉じる"
+          >
+            ✕
+          </button>
+        </div>
+      ) : (
+        /* default → 通知許可を求めるバナー */
+        <div>
+          <div className="mb-3 flex items-start justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold" style={{ color: "#f87171" }}>
+                🌧 今夜は気圧が急変しそうです
+              </p>
+              <p className="mt-1 text-xs text-[#8b92a5]">
+                気圧急変の日だけ、就寝前に1回お知らせします
+              </p>
+            </div>
+            <button
+              onClick={handleDismiss}
+              className="mt-0.5 flex-shrink-0 text-xs text-[#8b92a5] hover:text-[#e6e8ee]"
+              aria-label="閉じる"
+            >
+              ✕
+            </button>
+          </div>
+          <button
+            onClick={handleAccept}
+            className="w-full rounded-lg py-2 text-sm font-semibold text-white"
+            style={{ background: "rgba(248,113,113,0.55)" }}
+          >
+            通知を受け取る
+          </button>
+          <p className="mt-2 text-center text-[10px] text-[#8b92a5]">
+            ブラウザを開いているときのみ届きます
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // ④ カウントダウン帯（ポジティブ表現）
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -999,6 +1160,14 @@ export function WeatherWidget() {
       {/* ── ② カウントダウン帯 ── */}
       {data.hourlyPressure.values.length > 1 && (
         <CountdownBand
+          hourlyPressureTimes={data.hourlyPressure.times}
+          hourlyPressureValues={data.hourlyPressure.values}
+        />
+      )}
+
+      {/* ── ②.5 気圧急変アラートバナー（通知許可フロー） ── */}
+      {data.hourlyPressure.values.length > 1 && (
+        <PressureAlertBanner
           hourlyPressureTimes={data.hourlyPressure.times}
           hourlyPressureValues={data.hourlyPressure.values}
         />
