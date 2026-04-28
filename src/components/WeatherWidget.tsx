@@ -734,20 +734,6 @@ function WakeupForecastCard({ hourlyPressureTimes, hourlyPressureValues, current
 // ⑦ 睡眠×気圧 相関グラフ
 // ─────────────────────────────────────────────────────────────────────────────
 
-const SAMPLE_CORRELATION_DATA = [
-  { pressure: 1020, quality: 5 },
-  { pressure: 1018, quality: 5 },
-  { pressure: 1015, quality: 4 },
-  { pressure: 1014, quality: 4 },
-  { pressure: 1012, quality: 4 },
-  { pressure: 1010, quality: 3 },
-  { pressure: 1008, quality: 3 },
-  { pressure: 1005, quality: 3 },
-  { pressure: 1003, quality: 2 },
-  { pressure: 1000, quality: 2 },
-  { pressure: 997, quality: 2 },
-  { pressure: 995, quality: 1 },
-];
 
 const QUALITY_COLORS: Record<number, string> = {
   5: "#4ade80",
@@ -853,21 +839,6 @@ function CorrelationChart() {
           <span className="text-[10px] text-[#8b92a5]">傾向線</span>
         </div>
       </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// ⑧ ケアヒント（1つに絞る）
-// ─────────────────────────────────────────────────────────────────────────────
-
-function CareHintSingle({ hints }: { hints: string[] }) {
-  if (hints.length === 0) return null;
-  const topHint = hints[0];
-  return (
-    <div className="flex gap-2 text-xs leading-relaxed text-[#b0b8cc]">
-      <span className="mt-0.5 shrink-0 text-[#1d9bf0]">💡</span>
-      <span>{topHint}</span>
     </div>
   );
 }
