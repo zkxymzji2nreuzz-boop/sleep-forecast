@@ -27,7 +27,7 @@ import {
   Filler,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { fetchFullWeather } from "@/lib/weather";
+import { fetchFullWeather, getMoonData } from "@/lib/weather";
 import {
   computeWSI,
   getCareHints,
@@ -114,6 +114,39 @@ function getWSIBadge(score100: number): { badge: string; color: string } {
   return                     { badge: "難しい夜",     color: "#f87070" };
 }
 
+// 月相絵文字
+function getMoonEmoji(phase: number): string {
+  if (phase < 0.0625 || phase >= 0.9375) return "🌑";
+  if (phase < 0.1875) return "🌒";
+  if (phase < 0.3125) return "🌓";
+  if (phase < 0.4375) return "🌔";
+  if (phase < 0.5625) return "🌕";
+  if (phase < 0.6875) return "🌖";
+  if (phase < 0.8125) return "🌗";
+  return "🌘";
+}
+
+// スコア貢献ポイントの概算（UIヒント用）
+function estimatePtContrib(
+  pressureDelta: number,
+  tempDelta: number,
+  humidity: number
+): { pressure: number; temp: number; humid: number } {
+  const pressure =
+    pressureDelta <= -5 ? -25 :
+    pressureDelta <= -3 ? Math.round(pressureDelta * 5) :
+    pressureDelta <= 0  ? Math.round(pressureDelta * 3) :
+    Math.min(5, Math.round(pressureDelta));
+  const temp =
+    tempDelta >= 15 ? -15 :
+    tempDelta >= 12 ? -8  :
+    tempDelta >= 10 ? -4  : 0;
+  const humid =
+    humidity >= 85 ? -10 :
+    humidity >= 75 ? -5  : 0;
+  return { pressure, temp, humid };
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // ① 今日の天気（テーブル形式）
 // ─────────────────────────────────────────────────────────────────────────────
@@ -146,6 +179,7 @@ function TodayWeatherSection({ hourlyWeather }: { hourlyWeather: HourlyWeatherDa
 
   return (
     <div className="px-4 pb-3">
+      <p className="mb-1 text-right text-[9px] text-[#8b92a5]">← → スクロール</p>
       <div className="flex">
         <div style={{ flexShrink: 0, width: "56px" }}>
           {TODAY_LABEL_ROWS.map(({ label, h }) => (
@@ -189,45 +223,51 @@ function TodayWeatherSection({ hourlyWeather }: { hourlyWeather: HourlyWeatherDa
 // ─────────────────────────────────────────────────────────────────────────────
 
 const WEEKLY_ROW_H = 36;
-const WEEKLY_LABEL_ROWS = ["日付", "天気", "最高", "最低", "降水確率", "気圧帯"];
+const WEEKLY_LABEL_ROWS = ["日付", "天気", "最高", "最低", "降水確率", "気圧帯", "月相"];
 
 function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
   const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
   return (
-    <div style={{ display: "flex" }}>
-      <div style={{ flexShrink: 0, width: "56px" }}>
-        {WEEKLY_LABEL_ROWS.map((label) => (
-          <div key={label} style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", fontSize: "10px", color: "#8b92a5", fontWeight: label === "日付" ? 600 : 400 }}>
-            {label}
-          </div>
-        ))}
-      </div>
-      <div style={{ flex: 1, minWidth: 0, display: "grid", gridTemplateColumns: `repeat(${forecast.length}, 1fr)` }}>
-        {forecast.map((day) => {
-          const isCurrentDay = isToday(day.date);
-          const weather = weatherCodeToDisplay(day.weatherCode);
-          const pressureAvg = Math.round((day.pressureMin + day.pressureMax) / 2);
-          const zone = getPressureZone(pressureAvg);
-          const zoneConfig = PRESSURE_ZONE_CONFIG[zone];
-          const d = new Date(`${day.date}T00:00:00+09:00`);
-          const dayLabel = isCurrentDay ? "今日" : `${d.getMonth() + 1}/${d.getDate()}`;
-          const weekLabel = weekdays[d.getDay()];
-          return (
-            <div key={day.date} style={{ display: "flex", flexDirection: "column", borderLeft: isCurrentDay ? "1px solid rgba(29,155,240,0.25)" : "1px solid rgba(255,255,255,0.04)", background: isCurrentDay ? "rgba(29,155,240,0.07)" : "transparent" }}>
-              <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontSize: "10px", fontWeight: 700, color: isCurrentDay ? "#1d9bf0" : "#8b92a5" }}>{dayLabel}</span>
-                <span style={{ fontSize: "9px", color: "#8b92a5" }}>{weekLabel}</span>
-              </div>
-              <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px" }}>{weather.emoji}</div>
-              <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "#fb923c" }}>{Math.round(day.tempMax)}°</div>
-              <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", color: "#93c5fd" }}>{Math.round(day.tempMin)}°</div>
-              <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", color: precipColor(day.precipProbability) }}>{day.precipProbability}%</div>
-              <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontSize: "9px", fontWeight: 700, padding: "2px 5px", borderRadius: "9999px", background: zoneConfig.bg, color: zoneConfig.color, whiteSpace: "nowrap" }}>{zoneConfig.label}</span>
-              </div>
+    <div>
+      <p className="mb-1 text-right text-[9px] text-[#8b92a5]">← → スクロール</p>
+      <div style={{ display: "flex" }}>
+        <div style={{ flexShrink: 0, width: "56px" }}>
+          {WEEKLY_LABEL_ROWS.map((label) => (
+            <div key={label} style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", fontSize: "10px", color: "#8b92a5", fontWeight: label === "日付" ? 600 : 400 }}>
+              {label}
             </div>
-          );
-        })}
+          ))}
+        </div>
+        <div style={{ flex: 1, minWidth: 0, display: "grid", gridTemplateColumns: `repeat(${forecast.length}, 1fr)` }}>
+          {forecast.map((day) => {
+            const isCurrentDay = isToday(day.date);
+            const weather = weatherCodeToDisplay(day.weatherCode);
+            const pressureAvg = Math.round((day.pressureMin + day.pressureMax) / 2);
+            const zone = getPressureZone(pressureAvg);
+            const zoneConfig = PRESSURE_ZONE_CONFIG[zone];
+            const d = new Date(`${day.date}T00:00:00+09:00`);
+            const dayLabel = isCurrentDay ? "今日" : `${d.getMonth() + 1}/${d.getDate()}`;
+            const weekLabel = weekdays[d.getDay()];
+            const moon = getMoonData(new Date(`${day.date}T12:00:00+09:00`));
+            const moonEmoji = getMoonEmoji(moon.phase);
+            return (
+              <div key={day.date} style={{ display: "flex", flexDirection: "column", borderLeft: isCurrentDay ? "1px solid rgba(29,155,240,0.25)" : "1px solid rgba(255,255,255,0.04)", background: isCurrentDay ? "rgba(29,155,240,0.07)" : "transparent" }}>
+                <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ fontSize: "10px", fontWeight: 700, color: isCurrentDay ? "#1d9bf0" : "#8b92a5" }}>{dayLabel}</span>
+                  <span style={{ fontSize: "9px", color: "#8b92a5" }}>{weekLabel}</span>
+                </div>
+                <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px" }}>{weather.emoji}</div>
+                <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "#fb923c" }}>{Math.round(day.tempMax)}°</div>
+                <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", color: "#93c5fd" }}>{Math.round(day.tempMin)}°</div>
+                <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", color: precipColor(day.precipProbability) }}>{day.precipProbability}%</div>
+                <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ fontSize: "9px", fontWeight: 700, padding: "2px 5px", borderRadius: "9999px", background: zoneConfig.bg, color: zoneConfig.color, whiteSpace: "nowrap" }}>{zoneConfig.label}</span>
+                </div>
+                <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px" }}>{moonEmoji}</div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -237,9 +277,10 @@ function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
 // ③ 今夜の睡眠スコア（改善版: バッジ主役）
 // ─────────────────────────────────────────────────────────────────────────────
 
-function SleepScoreHero({ score100, wsiScore }: { score100: number; wsiScore: WSIScore }) {
+function SleepScoreHero({ score100, wsiScore, hints }: { score100: number; wsiScore: WSIScore; hints: string[] }) {
   const { badge, color } = getWSIBadge(score100);
   const [expanded, setExpanded] = React.useState(false);
+  const contrib = estimatePtContrib(wsiScore.pressureDelta6h, wsiScore.tempDelta, wsiScore.humidity);
 
   return (
     <div
@@ -282,12 +323,18 @@ function SleepScoreHero({ score100, wsiScore }: { score100: number; wsiScore: WS
                 {wsiScore.pressureDelta6h >= 0 ? "+" : ""}{wsiScore.pressureDelta6h.toFixed(1)}
                 <span className="text-[9px] font-normal text-[#8b92a5]">hPa</span>
               </p>
+              <p className="text-[9px] tabular-nums" style={{ color: contrib.pressure >= 0 ? "#10b981" : "#f87171" }}>
+                {contrib.pressure >= 0 ? "+" : ""}{contrib.pressure}pt
+              </p>
             </div>
             <div className="rounded-lg bg-black/20 p-2 text-center">
               <p className="text-[9px] text-[#8b92a5]">寒暖差</p>
               <p className="text-sm font-bold text-[#e6e8ee] tabular-nums">
                 {wsiScore.tempDelta.toFixed(0)}
                 <span className="text-[9px] font-normal text-[#8b92a5]">°C</span>
+              </p>
+              <p className="text-[9px] tabular-nums" style={{ color: contrib.temp >= 0 ? "#10b981" : "#f87171" }}>
+                {contrib.temp >= 0 ? "+" : ""}{contrib.temp}pt
               </p>
             </div>
             <div className="rounded-lg bg-black/20 p-2 text-center">
@@ -296,8 +343,18 @@ function SleepScoreHero({ score100, wsiScore }: { score100: number; wsiScore: WS
                 {wsiScore.humidity}
                 <span className="text-[9px] font-normal text-[#8b92a5]">%</span>
               </p>
+              <p className="text-[9px] tabular-nums" style={{ color: contrib.humid >= 0 ? "#10b981" : "#f87171" }}>
+                {contrib.humid >= 0 ? "+" : ""}{contrib.humid}pt
+              </p>
             </div>
           </div>
+          {/* ケアヒント（インライン - 指摘K）*/}
+          {hints.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-white/10 flex gap-2 text-xs leading-relaxed text-[#b0b8cc]">
+              <span className="mt-0.5 shrink-0 text-[#1d9bf0]">💡</span>
+              <span>{hints[0]}</span>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -709,16 +766,24 @@ function CorrelationChart() {
     const validPoints = records
       .filter((r) => r.weather?.pressureHpa != null && r.quality != null)
       .map((r) => ({ pressure: r.weather.pressureHpa, quality: r.quality as number }));
-    if (validPoints.length >= 5) {
+    if (validPoints.length >= 7) {
       setPoints(validPoints.slice(-60));
       setIsSample(false);
     } else {
-      setPoints(SAMPLE_CORRELATION_DATA);
-      setIsSample(true);
+      setPoints([]);
+      setIsSample(false);
     }
   }, []);
 
-  if (points.length === 0) return null;
+  if (points.length === 0) {
+    return (
+      <div className="rounded-xl border border-white/10 bg-black/20 p-5 text-center">
+        <p className="text-2xl mb-2">📊</p>
+        <p className="text-sm font-semibold text-[#e6e8ee] mb-1">7件記録すると表示されます</p>
+        <p className="text-xs text-[#8b92a5]">気圧と睡眠品質の相関を可視化します</p>
+      </div>
+    );
+  }
 
   const W = 600;
   const H = 165;
@@ -947,7 +1012,22 @@ export function WeatherWidget() {
         <span className="text-xs text-[#8b92a5]">📍 {locationName}</span>
       </div>
 
-      {/* ── ① 今日の天気 ── */}
+      {/* ── ① 今夜の睡眠スコア（最上部）── */}
+      <div className="px-5 pt-4 pb-4">
+        <SleepScoreHero score100={score100} wsiScore={wsiScore} hints={careHints} />
+      </div>
+
+      {/* ── ② カウントダウン帯 ── */}
+      {data.hourlyPressure.values.length > 1 && (
+        <CountdownBand
+          hourlyPressureTimes={data.hourlyPressure.times}
+          hourlyPressureValues={data.hourlyPressure.values}
+        />
+      )}
+
+      <div className="mx-4 border-t border-white/5" />
+
+      {/* ── ③ 今日の天気 ── */}
       {data.hourlyWeather?.times?.length > 0 && (
         <>
           <div className="px-4 pt-3 pb-1">
@@ -959,26 +1039,11 @@ export function WeatherWidget() {
 
       <div className="mx-4 border-t border-white/5" />
 
-      {/* ── ② 週間天気予報 ── */}
+      {/* ── ④ 週間天気予報 ── */}
       <div className="px-4 pt-3 pb-4">
         <p className="mb-2 text-xs font-semibold text-[#8b92a5] tracking-wide uppercase">週間天気予報</p>
         <DailyForecastSection forecast={data.forecast} />
       </div>
-
-      <div className="mx-4 border-t border-white/5" />
-
-      {/* ── ③ 今夜の睡眠スコア ── */}
-      <div className="px-5 pt-5 pb-4">
-        <SleepScoreHero score100={score100} wsiScore={wsiScore} />
-      </div>
-
-      {/* ── ④ カウントダウン帯 ── */}
-      {data.hourlyPressure.values.length > 1 && (
-        <CountdownBand
-          hourlyPressureTimes={data.hourlyPressure.times}
-          hourlyPressureValues={data.hourlyPressure.values}
-        />
-      )}
 
       <div className="mx-5 border-t border-white/5" />
 
@@ -1012,21 +1077,10 @@ export function WeatherWidget() {
       <div className="mx-5 border-t border-white/5" />
 
       {/* ── ⑦ 睡眠×気圧 相関グラフ ── */}
-      <div className="px-5 pt-5 pb-4">
+      <div className="px-5 pt-5 pb-6">
         <p className="mb-3 text-xs font-semibold text-[#8b92a5] tracking-wide uppercase">睡眠 × 気圧 相関</p>
         <CorrelationChart />
       </div>
-
-      {/* ── ⑧ ケアヒント（1つに絞る） ── */}
-      {careHints.length > 0 && (
-        <>
-          <div className="mx-5 border-t border-white/5" />
-          <div className="px-5 pt-5 pb-6">
-            <p className="mb-3 text-xs font-semibold text-[#e6e8ee]">💡 今夜のケアヒント</p>
-            <CareHintSingle hints={careHints} />
-          </div>
-        </>
-      )}
     </section>
   );
 }
