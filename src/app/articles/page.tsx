@@ -10,15 +10,15 @@ const SITE_URL =
 export const metadata: Metadata = {
   title: "記事一覧",
   description:
-    "気象病・睡眠の質・月齢と睡眠など、SleepForecast が厳選した睡眠と気象に関する記事の一覧です。",
+    "気象病・低気圧が睡眠に与える影響を解説。気圧変化と眠れない夜の関係、自律神経への影響など科学的根拠に基づく記事を掲載。",
   alternates: {
     canonical: `${SITE_URL}/articles`,
   },
   openGraph: {
     type: "website",
-    title: "記事一覧 | SleepForecast",
+    title: "気象病・低気圧と睡眠の関係 — 記事一覧 | SleepForecast",
     description:
-      "気象病・睡眠の質・月齢と睡眠に関する SleepForecast の記事一覧",
+      "気象病・低気圧が睡眠に与える影響を解説。気圧変化と眠れない夜の関係、自律神経への影響など科学的根拠に基づく記事を掲載。",
     url: `${SITE_URL}/articles`,
     siteName: "SleepForecast",
     locale: "ja_JP",
@@ -45,7 +45,7 @@ export default function ArticlesIndexPage() {
             <span className="font-medium tracking-wide">読みもの</span>
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-[#e6e8ee] sm:text-4xl">
-            睡眠と気象の読みもの
+            気象病・低気圧と睡眠の関係
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-[#9ba3b5] sm:text-base">
             気圧、気温、月のリズム。眠りの奥にある自然の声に、そっと耳を澄ませる読みものを集めました。

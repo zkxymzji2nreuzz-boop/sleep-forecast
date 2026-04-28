@@ -3,6 +3,7 @@ import "./globals.css";
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { BottomNav } from "@/components/BottomNav";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/react";
@@ -86,11 +87,12 @@ export default function RootLayout({
         >
           メインコンテンツへスキップ
         </a>
-        <div className="flex min-h-screen flex-col">
+        <div className="flex min-h-screen flex-col pb-16 md:pb-0">
           <Header />
           <main id="main-content" className="min-h-[calc(100vh-128px)] flex-1">{children}</main>
           <Footer />
         </div>
+        <BottomNav />
         <GoogleAnalytics />
         <Toaster />
         <Analytics />

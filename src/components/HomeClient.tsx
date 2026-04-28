@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Activity, Moon, Timer, Watch } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -59,11 +60,18 @@ export function HomeClient() {
   const [prediction, setPrediction] = useState<PredictionResult | null>(null);
   const [badge, setBadge] = useState<ReturnType<typeof calculateContinuousRecordBadge> | null>(null);
   const [loading, setLoading] = useState(true);
+  const [recordCount, setRecordCount] = useState<number>(0);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+  const [currentPressure, setCurrentPressure] = useState<number | null>(null);
 
   useEffect(() => {
     const loadPrediction = async () => {
       try {
         const records = getRecords();
+        setRecordCount(records.length);
+        setIsLoaded(true);
 
         // 連続記録バッジを計算
         if (records.length > 0) {
@@ -82,6 +90,9 @@ export function HomeClient() {
             );
             const result = predictTomorrow(records, forecast);
             setPrediction(result);
+            if (forecast?.pressureHpa != null) {
+              setCurrentPressure(forecast.pressureHpa);
+            }
           }
         }
       } catch (err) {
@@ -93,6 +104,28 @@ export function HomeClient() {
 
     loadPrediction();
   }, []);
+
+  const handleEmailSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    try {
+      const formspreeId = process.env.NEXT_PUBLIC_FORMSPREE_ID || "YOUR_FORM_ID";
+      const response = await fetch(`https://formspree.io/f/${formspreeId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        console.error("通知登録エラー: HTTP", response.status);
+      }
+    } catch (err) {
+      console.error("通知登録エラー:", err);
+    }
+  };
 
   return (
     <div className="container mx-auto max-w-screen-md px-4 py-10 sm:py-14">
@@ -120,27 +153,61 @@ export function HomeClient() {
           SleepForecast
         </p>
         <h1 className="mb-4 text-3xl font-bold leading-tight tracking-tight text-[#e6e8ee] sm:text-4xl md:text-5xl">
-          明日の眠気を予報する
+          気象病・低気圧から、明日の眠りを予報する
         </h1>
         <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed text-[#9ba3b5] sm:text-base">
           気圧・気温・月齢からあなたの睡眠を読み解く
         </p>
-        <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row">
-          <Button asChild size="lg" className="h-12 text-base">
-            <Link href="/record">
-              <Activity className="mr-1" aria-hidden="true" />
-              今日を記録する
-            </Link>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            size="lg"
-            className="h-12 border-[#1d9bf0]/40 text-base text-[#e6e8ee] hover:bg-[#1d9bf0]/10 hover:text-[#e6e8ee]"
-          >
-            <Link href="/dashboard">ダッシュボードを見る</Link>
-          </Button>
-        </div>
+        {isLoaded && (
+          <>
+            {recordCount === 0 && (
+              <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3">
+                <Button asChild size="lg" className="h-12 w-full text-base">
+                  <Link href="/record">
+                    <Activity className="mr-1" aria-hidden="true" />
+                    今日を記録する
+                  </Link>
+                </Button>
+              </div>
+            )}
+            {recordCount >= 1 && recordCount <= 4 && (
+              <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
+                <Button asChild size="lg" className="h-12 text-base">
+                  <Link href="/record">
+                    <Activity className="mr-1" aria-hidden="true" />
+                    今日を記録する
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="h-9 border-[#1d9bf0]/40 text-sm text-[#e6e8ee] hover:bg-[#1d9bf0]/10 hover:text-[#e6e8ee]"
+                >
+                  <Link href="/dashboard">ダッシュボードを見る</Link>
+                </Button>
+              </div>
+            )}
+            {recordCount >= 5 && (
+              <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
+                <Button asChild size="lg" className="h-12 text-base">
+                  <Link href="/dashboard">
+                    <Activity className="mr-1" aria-hidden="true" />
+                    ダッシュボードで分析する
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="h-9 border-[#1d9bf0]/40 text-sm text-[#e6e8ee] hover:bg-[#1d9bf0]/10 hover:text-[#e6e8ee]"
+                >
+                  <Link href="/record">今日を記録する</Link>
+                </Button>
+              </div>
+            )}
+          </>
+        )}
       </section>
 
       {/* 広告スロット: ヒーロー下 */}
@@ -150,17 +217,52 @@ export function HomeClient() {
       <div className="mb-12">
         <WeatherWidget />
 
-        {/* iOSバナー（Coming Soon状態） */}
+        {/* iOSアプリ通知登録フォーム */}
         <div className="mt-8 rounded-2xl border border-white/10 bg-[#1a1f2e] p-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs text-[#9ba3b5]">近日公開</p>
-              <p className="mt-1 text-base font-semibold text-[#e6e8ee]">SleepForecast iOS アプリ</p>
-              <p className="mt-1 text-xs text-[#9ba3b5]">通知・記録・個人分析がさらに使いやすく</p>
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-base font-semibold text-[#e6e8ee]">📱 iOSアプリ開発中</p>
+              <p className="mt-1 text-xs text-[#9ba3b5]">
+                気圧急落アラートなど、通知機能を準備中です
+              </p>
             </div>
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#252b3b] text-2xl">
-              📱
-            </div>
+          </div>
+
+          {/* 今日の気象コンディション（prediction があれば表示） */}
+          {prediction && currentPressure != null && (
+            <p className="mt-3 text-xs text-[#9ba3b5]">
+              今日の気圧: {Math.round(currentPressure)}hPaです
+            </p>
+          )}
+
+          {/* 通知登録フォーム */}
+          <div className="mt-4 border-t border-white/10 pt-4">
+            {submitted ? (
+              <p className="text-sm text-[#1d9bf0]">登録ありがとうございます！</p>
+            ) : (
+              <>
+                <p className="mb-2 text-xs text-[#9ba3b5]">リリース時に通知を受け取る</p>
+                <form
+                  action={`https://formspree.io/f/${process.env.NEXT_PUBLIC_FORMSPREE_ID || "YOUR_FORM_ID"}`}
+                  method="POST"
+                  onSubmit={handleEmailSubmit}
+                  className="flex flex-col gap-2 sm:flex-row"
+                >
+                  <Input
+                    type="email"
+                    name="email"
+                    required
+                    placeholder="メールアドレス"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="border-white/10 bg-[#0f1117] text-[#e6e8ee] placeholder:text-[#9ba3b5]"
+                  />
+                  <Button type="submit" className="h-10 whitespace-nowrap">
+                    通知を受け取る
+                  </Button>
+                </form>
+              </>
+            )}
           </div>
         </div>
       </div>

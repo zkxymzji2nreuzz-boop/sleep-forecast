@@ -61,8 +61,8 @@ export function Header() {
           ))}
         </nav>
 
-        {/* モバイル: ハンバーガーメニュー */}
-        <div className="md:hidden">
+        {/* モバイル: ハンバーガーメニュー（BottomNav で代替するため非表示） */}
+        <div className="hidden">
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button

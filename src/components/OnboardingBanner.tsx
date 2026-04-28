@@ -40,17 +40,16 @@ export function OnboardingBanner() {
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1">
           <p className="mb-1 text-sm font-bold text-[#e6e8ee]">
-            🌙 SleepForecast へようこそ！
+            🌙 はじめましょう
           </p>
           <p className="mb-3 text-xs leading-relaxed text-[#9ba3b5]">
-            毎朝30秒の記録を続けると、気象があなたの眠りにどう影響するかが見えてきます。
-            まずは今日の眠りを記録してみましょう。
+            まずは今日の眠りを記録してみましょう。15秒で完了します。
           </p>
           <Link
             href="/record"
             className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-4 py-2 text-xs font-medium text-white shadow-lg shadow-indigo-500/20 transition-colors hover:from-indigo-400 hover:to-purple-400"
           >
-            今日の眠りを記録する
+            記録を始める
             <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
           </Link>
         </div>

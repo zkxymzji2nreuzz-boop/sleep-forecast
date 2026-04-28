@@ -1198,17 +1198,44 @@ export function WeatherWidget() {
   if (loading) return <WeatherWidgetSkeleton />;
 
   // ── エラー ──
-  if (error || !data || !wsiScore) {
+  if (error) {
     return (
-      <div className="rounded-2xl border border-white/5 bg-[#1a1f2e] p-5">
-        <p className="text-sm text-[#9ba3b5]">
-          {error ?? "データを取得できませんでした。リロードしてください"}
+      <div className="rounded-2xl border border-white/5 bg-[#1a1f2e] p-5 text-center">
+        <p className="text-2xl mb-2" aria-hidden="true">⚠️</p>
+        <p className="text-sm font-semibold text-[#e6e8ee] mb-1">
+          気象データの取得に失敗しました
+        </p>
+        <p className="text-xs text-[#9ba3b5] mb-4">
+          通信状況をご確認のうえ、再度お試しください
         </p>
         <button
+          type="button"
           onClick={() => window.location.reload()}
-          className="mt-3 text-xs text-[#1d9bf0] underline"
+          className="inline-flex h-9 items-center justify-center rounded-md border border-[#1d9bf0]/40 bg-transparent px-4 text-xs font-medium text-[#e6e8ee] hover:bg-[#1d9bf0]/10"
         >
-          リロードする
+          リトライ
+        </button>
+      </div>
+    );
+  }
+
+  // ── 空状態（データなし） ──
+  if (!data || !wsiScore) {
+    return (
+      <div className="rounded-2xl border border-white/5 bg-[#1a1f2e] p-5 text-center">
+        <p className="text-2xl mb-2" aria-hidden="true">📭</p>
+        <p className="text-sm font-semibold text-[#e6e8ee] mb-1">
+          データを読み込めませんでした
+        </p>
+        <p className="text-xs text-[#9ba3b5] mb-4">
+          気象データが見つかりません
+        </p>
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="inline-flex h-9 items-center justify-center rounded-md border border-[#1d9bf0]/40 bg-transparent px-4 text-xs font-medium text-[#e6e8ee] hover:bg-[#1d9bf0]/10"
+        >
+          リトライ
         </button>
       </div>
     );

@@ -4,7 +4,7 @@ import { AlertCircle, Info, CheckCircle } from "lucide-react";
 import type { PredictionResult } from "@/lib/types";
 
 interface PredictionCardProps {
-  prediction: PredictionResult;
+  prediction: PredictionResult | null;
   variant?: "compact" | "full";
   className?: string;
   streakDays?: number;
@@ -48,6 +48,28 @@ export function PredictionCard({
   className = "",
   streakDays,
 }: PredictionCardProps) {
+  // 空状態（予測データが無い場合）
+  if (!prediction) {
+    return (
+      <div
+        className={`
+          relative bg-[#1a1f2e] border border-white/10
+          rounded-xl p-6 overflow-hidden text-center
+          ${variant === "full" ? "min-h-[320px]" : "min-h-[200px]"}
+          ${className}
+        `}
+      >
+        <p className="text-3xl mb-2" aria-hidden="true">🌙</p>
+        <p className="text-sm font-semibold text-[#e6e8ee] mb-1">
+          予測データがありません
+        </p>
+        <p className="text-xs text-[#9ba3b5]">
+          記録を追加すると、明日の眠気予報が表示されます
+        </p>
+      </div>
+    );
+  }
+
   const scoreColor = getScoreColor(prediction.predictedQuality);
   const emotion = getEmotionStatus(prediction.predictedQuality);
   const confidenceInfo = getConfidenceInfo(prediction.confidence);
