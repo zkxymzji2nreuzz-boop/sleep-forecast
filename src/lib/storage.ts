@@ -14,6 +14,8 @@ import type { SleepRecord, StoredRecords } from "./types";
 export const STORAGE_KEY = "sleep_records_v1";
 /** 設定画面・記録画面で共有する「デフォルト都道府県コード」キー */
 export const DEFAULT_PREFECTURE_KEY = "sf_default_prefecture";
+/** オンボーディングバナーを非表示にしたことを記録するキー */
+export const ONBOARDING_DISMISSED_KEY = "sf_onboarding_dismissed";
 
 /** 安全に localStorage へアクセスできるかチェック */
 function hasStorage(): boolean {

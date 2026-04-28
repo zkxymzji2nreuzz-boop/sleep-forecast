@@ -11,15 +11,13 @@
 import * as React from "react";
 import Link from "next/link";
 import { X, ArrowRight } from "lucide-react";
-import { getRecords } from "@/lib/storage";
-
-const DISMISSED_KEY = "sf_onboarding_dismissed";
+import { getRecords, ONBOARDING_DISMISSED_KEY } from "@/lib/storage";
 
 export function OnboardingBanner() {
   const [visible, setVisible] = React.useState(false);
 
   React.useEffect(() => {
-    const dismissed = localStorage.getItem(DISMISSED_KEY);
+    const dismissed = localStorage.getItem(ONBOARDING_DISMISSED_KEY);
     if (dismissed) return;
     const records = getRecords();
     if (records.length === 0) {
@@ -28,7 +26,7 @@ export function OnboardingBanner() {
   }, []);
 
   function handleDismiss() {
-    localStorage.setItem(DISMISSED_KEY, "1");
+    localStorage.setItem(ONBOARDING_DISMISSED_KEY, "1");
     setVisible(false);
   }
 

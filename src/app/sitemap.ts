@@ -16,16 +16,18 @@ const SITE_URL =
 export default function sitemap(): MetadataRoute.Sitemap {
   const articles = getAllArticlesMeta();
 
+  // ホームと記事一覧の lastModified は実際のコンテンツ更新日を静的に指定する。
+  // new Date() はビルド時刻になるため、毎デプロイで Google に「更新あり」と誤報告してしまう。
   const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: SITE_URL,
-      lastModified: new Date(),
+      lastModified: new Date('2026-04-29'),
       changeFrequency: 'daily',
       priority: 1.0,
     },
     {
       url: `${SITE_URL}/articles`,
-      lastModified: new Date(),
+      lastModified: new Date('2026-04-29'),
       changeFrequency: 'weekly',
       priority: 0.8,
     },

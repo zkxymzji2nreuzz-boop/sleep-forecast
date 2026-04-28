@@ -86,6 +86,7 @@ export default async function ArticlePage({ params }: Params) {
   const url = `${SITE_URL}/articles/${article.slug}`;
 
   // Article schema (schema.org) を JSON-LD として埋め込む
+  // image は Google リッチリザルト必須フィールド
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -94,14 +95,27 @@ export default async function ArticlePage({ params }: Params) {
     datePublished: article.publishedAt,
     dateModified: article.updatedAt,
     inLanguage: "ja",
+    image: {
+      "@type": "ImageObject",
+      url: `${SITE_URL}/og-default.png`,
+      width: 1200,
+      height: 630,
+    },
     author: {
       "@type": "Organization",
       name: "SleepForecast",
+      url: SITE_URL,
     },
     publisher: {
       "@type": "Organization",
       name: "SleepForecast",
       url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/og-default.png`,
+        width: 1200,
+        height: 630,
+      },
     },
     url,
     mainEntityOfPage: {

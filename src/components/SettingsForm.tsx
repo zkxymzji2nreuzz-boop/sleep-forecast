@@ -116,6 +116,8 @@ export function SettingsForm() {
   function handleSavePrefecture() {
     setDefaultPrefectureCode(prefCode);
     setSaved(true);
+    // WeatherWidget に変更を通知（同一タブでは storage イベントが発火しないため CustomEvent を使用）
+    window.dispatchEvent(new CustomEvent("sf:prefecture-changed"));
     setTimeout(() => setSaved(false), 2000);
   }
 

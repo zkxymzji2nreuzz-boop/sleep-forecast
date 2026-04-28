@@ -35,7 +35,12 @@ import {
   getPressureZone,
   PRESSURE_ZONE_CONFIG,
 } from "@/lib/wsi";
-import { DEFAULT_PREFECTURE_KEY, getRecords } from "@/lib/storage";
+import {
+  DEFAULT_PREFECTURE_KEY,
+  ONBOARDING_DISMISSED_KEY,
+  getRecords,
+  formatDateJst,
+} from "@/lib/storage";
 import { getPrefectureByCode } from "@/lib/prefectures";
 import type {
   FullWeatherData,
@@ -60,10 +65,9 @@ ChartJS.register(
 // ヘルパ
 // ─────────────────────────────────────────────────────────────────────────────
 
+/** JST（Asia/Tokyo）基準で today と dateStr を比較する */
 function isToday(dateStr: string): boolean {
-  const now = new Date();
-  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-  return dateStr === today;
+  return dateStr === formatDateJst(new Date());
 }
 
 function precipColor(prob: number): string {
@@ -282,11 +286,25 @@ function SleepScoreHero({ score100, wsiScore, hints }: { score100: number; wsiSc
   const [expanded, setExpanded] = React.useState(false);
   const contrib = estimatePtContrib(wsiScore.pressureDelta6h, wsiScore.tempDelta, wsiScore.humidity);
 
+  function handleToggle() {
+    setExpanded((prev) => !prev);
+  }
+
   return (
     <div
-      className="rounded-2xl p-5 cursor-pointer"
+      role="button"
+      tabIndex={0}
+      aria-expanded={expanded}
+      aria-controls="sleep-score-detail"
+      className="rounded-2xl p-5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300"
       style={{ background: `${color}12`, border: `1px solid ${color}35` }}
-      onClick={() => setExpanded(!expanded)}
+      onClick={handleToggle}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleToggle();
+        }
+      }}
     >
       <p className="text-xs font-semibold text-[#8b92a5] mb-3">🌙 今夜の睡眠スコア</p>
 
@@ -320,7 +338,7 @@ function SleepScoreHero({ score100, wsiScore, hints }: { score100: number; wsiSc
 
       {/* 展開: 内訳 */}
       {expanded && (
-        <div className="mt-3 pt-3 border-t border-white/10">
+        <div id="sleep-score-detail" className="mt-3 pt-3 border-t border-white/10">
           <p className="text-xs leading-relaxed text-[#b0b8cc]">{wsiScore.reason}</p>
           <div className="mt-3 grid grid-cols-3 gap-2">
             <div className="rounded-lg bg-black/20 p-2 text-center">
@@ -500,7 +518,7 @@ function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: Pres
               気圧急変の夜です。眠れなかったら明朝記録してみてください
             </p>
           </div>
-          <button onClick={dismiss} className="mt-0.5 flex-shrink-0 text-xs text-[#8b92a5] hover:text-[#e6e8ee]" aria-label="閉じる">✕</button>
+          <button onClick={dismiss} className="flex-shrink-0 rounded-full p-3 text-xs text-[#8b92a5] hover:text-[#e6e8ee] min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="閉じる">✕</button>
         </div>
       </div>
     );
@@ -522,7 +540,7 @@ function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: Pres
               気圧急変の日だけ、就寝前に1回お知らせします
             </p>
           </div>
-          <button onClick={dismiss} className="mt-0.5 flex-shrink-0 text-xs text-[#8b92a5] hover:text-[#e6e8ee]" aria-label="閉じる">✕</button>
+          <button onClick={dismiss} className="flex-shrink-0 rounded-full p-3 text-xs text-[#8b92a5] hover:text-[#e6e8ee] min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="閉じる">✕</button>
         </div>
         <button
           onClick={() => requestAndNotify(true)}
@@ -554,7 +572,7 @@ function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: Pres
           >
             通知を受け取る
           </button>
-          <button onClick={dismiss} className="text-xs text-[#8b92a5] hover:text-[#e6e8ee]" aria-label="閉じる">✕</button>
+          <button onClick={dismiss} className="rounded-full p-3 text-xs text-[#8b92a5] hover:text-[#e6e8ee] min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="閉じる">✕</button>
         </div>
       </div>
     </div>
@@ -1092,13 +1110,18 @@ export function WeatherWidget() {
   const [score100, setScore100] = React.useState<number>(0);
   const [careHints, setCareHints] = React.useState<string[]>([]);
   const [locationName, setLocationName] = React.useState<string>("東京");
-  const [prefectureSet, setPrefectureSet] = React.useState<boolean>(false);
+  const [showPrefBanner, setShowPrefBanner] = React.useState<boolean>(false);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     let isMounted = true;
+
     async function load() {
+      // ロード前にスピナーを再表示（設定変更後の再フェッチ時に UX を整える）
+      setError(null);
+      setLoading(true);
+
       try {
         const rawCode =
           typeof window !== "undefined"
@@ -1113,7 +1136,13 @@ export function WeatherWidget() {
         };
         if (isMounted) {
           setLocationName(name);
-          setPrefectureSet(rawCode !== null);
+          // 都道府県バナー表示判定:
+          //   - prefecture が未設定（rawCode === null）
+          //   - かつ OnboardingBanner が表示されていない（記録ありまたはdismissed済み）
+          //   新規ユーザーには OnboardingBanner が出るため、都道府県バナーは抑制する
+          const onboardingDismissed = localStorage.getItem(ONBOARDING_DISMISSED_KEY);
+          const hasRecords = getRecords().length > 0;
+          setShowPrefBanner(rawCode === null && (hasRecords || onboardingDismissed !== null));
         }
 
         const full = await fetchFullWeather(latitude, longitude);
@@ -1148,8 +1177,21 @@ export function WeatherWidget() {
         if (isMounted) setLoading(false);
       }
     }
+
     load();
-    return () => { isMounted = false; };
+
+    // 設定画面で都道府県を変更したときに再フェッチ
+    // （同一タブでは storage イベントが発火しないため CustomEvent を使用）
+    function handlePrefectureChanged() {
+      if (isMounted) load();
+    }
+    window.addEventListener("sf:prefecture-changed", handlePrefectureChanged);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener("sf:prefecture-changed", handlePrefectureChanged);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── ローディング ──
@@ -1189,8 +1231,8 @@ export function WeatherWidget() {
         <span className="text-xs text-[#8b92a5]">📍 {locationName}</span>
       </div>
 
-      {/* 都道府県未設定バナー（スキップ後のユーザーへ地域設定を促す） */}
-      {!prefectureSet && (
+      {/* 都道府県未設定バナー（新規ユーザーには非表示・OnboardingBanner との重複を避ける） */}
+      {showPrefBanner && (
         <div className="mx-5 mt-2 mb-1 flex items-center justify-between rounded-lg bg-indigo-500/10 border border-indigo-400/20 px-3 py-2 text-xs">
           <span className="text-[#8b92a5]">東京の気象データを表示中</span>
           <a
