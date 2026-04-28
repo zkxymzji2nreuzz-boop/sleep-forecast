@@ -10,7 +10,7 @@
  */
 
 import * as React from "react";
-import { Settings, MapPin, Trash2, Check, ChevronDown, LocateFixed, Loader2 } from "lucide-react";
+import { Settings, MapPin, Trash2, Check, ChevronDown, LocateFixed, Loader2, Download } from "lucide-react";
 import { PREFECTURES, findNearestPrefecture } from "@/lib/prefectures";
 import {
   getDefaultPrefectureCode,
@@ -18,6 +18,7 @@ import {
   clearAllRecords,
   getRecords,
 } from "@/lib/storage";
+import type { SleepRecord } from "@/lib/types";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Skeleton（SSR・マウント前の CLS 防止）
@@ -93,6 +94,70 @@ function DeleteConfirmDialog({ open, onCancel, onConfirm, recordCount }: AlertDi
 // メイン
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+// CSV エクスポートユーティリティ
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * SleepRecord[] を CSV 文字列に変換する。
+ * ヘッダー行 + データ行。値にカンマ・改行を含む可能性があるためダブルクォートで囲む。
+ */
+function recordsToCsv(records: SleepRecord[]): string {
+  const escape = (v: string | number | undefined | null) => {
+    if (v == null) return "";
+    const s = String(v);
+    // ダブルクォートはエスケープ
+    return `"${s.replace(/"/g, '""')}"`;
+  };
+
+  const header = [
+    "日付",
+    "睡眠品質(1-5)",
+    "就寝時刻",
+    "起床時刻",
+    "気温(°C)",
+    "湿度(%)",
+    "気圧(hPa)",
+    "気圧変化(hPa)",
+    "月齢(0-1)",
+    "都道府県コード",
+    "メモ",
+  ].join(",");
+
+  const rows = records.map((r) =>
+    [
+      escape(r.date),
+      escape(r.quality),
+      escape(r.bedtime ?? ""),
+      escape(r.wakeTime ?? ""),
+      escape(r.weather.temperatureC),
+      escape(r.weather.humidity),
+      escape(r.weather.pressureHpa),
+      escape(r.weather.pressureDeltaHpa),
+      escape(r.weather.moonPhase),
+      escape(r.prefectureCode),
+      escape(r.note ?? ""),
+    ].join(",")
+  );
+
+  return [header, ...rows].join("\r\n");
+}
+
+/** CSV をファイルダウンロードさせる */
+function downloadCsv(csv: string, filename: string) {
+  // BOM 付き UTF-8 にすると Excel でも文字化けしない
+  const bom = "﻿";
+  const blob = new Blob([bom + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 export function SettingsForm() {
   const [mounted, setMounted] = React.useState(false);
   const [prefCode, setPrefCode] = React.useState<string>("13");
@@ -103,6 +168,7 @@ export function SettingsForm() {
   const [geoLoading, setGeoLoading] = React.useState(false);
   const [geoError, setGeoError] = React.useState<string | null>(null);
   const [geoDetected, setGeoDetected] = React.useState<string | null>(null);
+  const [csvExported, setCsvExported] = React.useState(false);
 
   // マウント後に localStorage を読み込む
   React.useEffect(() => {
@@ -154,6 +220,17 @@ export function SettingsForm() {
       },
       { timeout: 10000, maximumAge: 300000 }
     );
+  }
+
+  // ── CSV エクスポート ──
+  function handleExportCsv() {
+    const records = getRecords();
+    if (records.length === 0) return;
+    const csv = recordsToCsv(records);
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    downloadCsv(csv, `sleep_forecast_${dateStr}.csv`);
+    setCsvExported(true);
+    setTimeout(() => setCsvExported(false), 3000);
   }
 
   // ── 全記録削除 ──
@@ -281,14 +358,34 @@ export function SettingsForm() {
           </p>
         )}
 
-        <button
-          onClick={() => setDeleteOpen(true)}
-          disabled={recordCount === 0}
-          className="inline-flex items-center gap-2 rounded-full border border-red-500/40 px-5 py-2.5 text-sm font-medium text-red-400 transition-colors hover:border-red-500/70 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          <Trash2 className="h-4 w-4" aria-hidden="true" />
-          全記録を削除する
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={handleExportCsv}
+            disabled={recordCount === 0}
+            className="inline-flex items-center gap-2 rounded-full border border-indigo-400/40 px-5 py-2.5 text-sm font-medium text-indigo-300 transition-colors hover:border-indigo-400/70 hover:text-indigo-200 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {csvExported ? (
+              <>
+                <Check className="h-4 w-4" aria-hidden="true" />
+                ダウンロード完了
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4" aria-hidden="true" />
+                CSVでダウンロード
+              </>
+            )}
+          </button>
+
+          <button
+            onClick={() => setDeleteOpen(true)}
+            disabled={recordCount === 0}
+            className="inline-flex items-center gap-2 rounded-full border border-red-500/40 px-5 py-2.5 text-sm font-medium text-red-400 transition-colors hover:border-red-500/70 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <Trash2 className="h-4 w-4" aria-hidden="true" />
+            全記録を削除する
+          </button>
+        </div>
 
         <p className="mt-3 text-xs text-[#9ba3b5]">
           ※ データはブラウザの localStorage に保存されています。削除すると元に戻せません。

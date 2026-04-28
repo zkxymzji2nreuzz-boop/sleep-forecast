@@ -172,6 +172,49 @@ export function setDefaultPrefectureCode(code: string): void {
   window.localStorage.setItem(DEFAULT_PREFECTURE_KEY, code);
 }
 
+/**
+ * 現在の連続記録日数を返す。
+ * - 今日の記録があればそこから遡る
+ * - なければ昨日から遡る (昨日も無ければ 0)
+ */
+export function getStreakDays(now: Date = new Date()): number {
+  const records = getRecords(); // sorted desc
+  if (records.length === 0) return 0;
+
+  const recordDates = new Set(records.map((r) => r.date));
+
+  /** YYYY-MM-DD 文字列から1日前の文字列を返す */
+  function prevDay(dateStr: string): string {
+    const [y, m, d] = dateStr.split("-").map(Number);
+    const dt = new Date(Date.UTC(y, m - 1, d));
+    dt.setUTCDate(dt.getUTCDate() - 1);
+    return [
+      dt.getUTCFullYear(),
+      String(dt.getUTCMonth() + 1).padStart(2, "0"),
+      String(dt.getUTCDate()).padStart(2, "0"),
+    ].join("-");
+  }
+
+  const todayStr = formatDateJst(now);
+  const yesterdayStr = prevDay(todayStr);
+
+  // 起点: 今日 or 昨日
+  let current = recordDates.has(todayStr)
+    ? todayStr
+    : recordDates.has(yesterdayStr)
+    ? yesterdayStr
+    : null;
+
+  if (!current) return 0;
+
+  let streak = 0;
+  while (current && recordDates.has(current)) {
+    streak++;
+    current = prevDay(current);
+  }
+  return streak;
+}
+
 /** `rec_YYYY-MM-DD_xxxx` 形式の id を生成する */
 function generateRecordId(date: string): string {
   const rand = Math.random().toString(36).slice(2, 6);

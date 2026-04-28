@@ -74,8 +74,8 @@ import {
 } from "@/lib/prediction";
 import { fetchWeatherForecast } from "@/lib/weather";
 import { getPrefectureByCode } from "@/lib/prefectures";
-import { getRecords } from "@/lib/storage";
-import type { SleepRecord, PredictionResult } from "@/lib/types";
+import { getRecords, getStreakDays } from "@/lib/storage";
+import type { SleepRecord, PredictionResult, WeatherData } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
 // Chart.js グローバル設定 (モジュールスコープで 1 度だけ実行)
@@ -325,11 +325,14 @@ export default function DashboardPage() {
   const [records, setRecords] = React.useState<SleepRecord[]>([]);
   const [isLoaded, setIsLoaded] = React.useState<boolean>(false);
   const [prediction, setPrediction] = React.useState<PredictionResult | null>(null);
+  const [streakDays, setStreakDays] = React.useState<number>(0);
+  const [todayWeather, setTodayWeather] = React.useState<WeatherData | null>(null);
 
   React.useEffect(() => {
     const real = getRecords();
     setRecords(real);
     setIsLoaded(true);
+    setStreakDays(getStreakDays());
 
     // 予測を計算
     if (real.length > 0) {
@@ -344,6 +347,7 @@ export default function DashboardPage() {
             );
             const result = predictTomorrow(real, forecast);
             setPrediction(result);
+            setTodayWeather(forecast);
           }
         } catch (err) {
           console.error("予測計算エラー:", err);
@@ -526,8 +530,17 @@ export default function DashboardPage() {
       {/* 予測カード */}
       {prediction && (
         <div className="mb-8">
-          <PredictionCard prediction={prediction} variant="full" />
+          <PredictionCard
+            prediction={prediction}
+            variant="full"
+            streakDays={streakDays > 0 ? streakDays : undefined}
+          />
         </div>
+      )}
+
+      {/* 気象アドバイスカード (REQ-27) */}
+      {todayWeather && (
+        <WeatherAdviceCard weather={todayWeather} />
       )}
 
       {/* ── ① KPI カード ── */}
@@ -769,6 +782,106 @@ type LockedChartProps = {
   current: number;
   children: React.ReactNode;
 };
+
+// ---------------------------------------------------------------------------
+// WeatherAdviceCard (REQ-27)
+// ---------------------------------------------------------------------------
+
+/**
+ * 今日の気象データ（気圧変化・気温・湿度）に応じた
+ * 具体的な睡眠前アクションアドバイスを表示するカード。
+ */
+function WeatherAdviceCard({ weather }: { weather: WeatherData }) {
+  type Tip = { icon: string; text: string; color: string };
+  const tips: Tip[] = [];
+
+  // 気圧変化アドバイス (pressureDeltaHpa = 24h差)
+  if (weather.pressureDeltaHpa <= -5) {
+    tips.push({
+      icon: "🌀",
+      text: "気圧が急降下中。入浴は38〜40℃のぬるめで副交感神経を整えましょう。",
+      color: "border-rose-400/50 bg-rose-500/[0.05]",
+    });
+    tips.push({
+      icon: "💊",
+      text: "頭痛や体のだるさを感じる場合は早めに横になって安静にしてください。",
+      color: "border-rose-400/50 bg-rose-500/[0.05]",
+    });
+  } else if (weather.pressureDeltaHpa <= -3) {
+    tips.push({
+      icon: "🌧",
+      text: "気圧がやや低め。就寝1時間前のスマホを控えてブルーライトを減らしましょう。",
+      color: "border-amber-400/50 bg-amber-500/[0.05]",
+    });
+  } else if (weather.pressureDeltaHpa >= 3) {
+    tips.push({
+      icon: "☀️",
+      text: "気圧が上昇傾向。体調が整いやすい日です。適度な運動で睡眠の質を高めましょう。",
+      color: "border-emerald-400/50 bg-emerald-500/[0.05]",
+    });
+  } else {
+    tips.push({
+      icon: "🌤",
+      text: "気圧は安定しています。規則正しい就寝時間を意識してみましょう。",
+      color: "border-sky-400/50 bg-sky-500/[0.05]",
+    });
+  }
+
+  // 気温アドバイス
+  if (weather.temperatureC >= 27) {
+    tips.push({
+      icon: "🌡",
+      text: "気温が高め。寝室を26〜28℃に保つと入眠しやすくなります。エアコンを活用して。",
+      color: "border-orange-400/50 bg-orange-500/[0.05]",
+    });
+  } else if (weather.temperatureC <= 8) {
+    tips.push({
+      icon: "🧣",
+      text: "冷え込みが強い夜。湯たんぽや靴下で足元を温めると深部体温が下がりやすくなります。",
+      color: "border-indigo-400/50 bg-indigo-500/[0.05]",
+    });
+  }
+
+  // 湿度アドバイス
+  if (weather.humidity >= 75) {
+    tips.push({
+      icon: "💧",
+      text: "湿度が高め。除湿機や換気で湿度50〜60%を目安にすると眠りが浅くなりにくいです。",
+      color: "border-cyan-400/50 bg-cyan-500/[0.05]",
+    });
+  } else if (weather.humidity < 40) {
+    tips.push({
+      icon: "🌵",
+      text: "空気が乾燥しています。加湿器で50%前後を保つと喉の乾燥を防げます。",
+      color: "border-yellow-400/50 bg-yellow-500/[0.05]",
+    });
+  }
+
+  if (tips.length === 0) return null;
+
+  return (
+    <section
+      aria-label="今夜の睡眠アドバイス"
+      className="mb-6 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4"
+    >
+      <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#e6e8ee]">
+        <Moon className="h-4 w-4 text-indigo-300" aria-hidden />
+        今夜の睡眠アドバイス
+      </h2>
+      <ul className="space-y-2">
+        {tips.slice(0, 3).map((tip, i) => (
+          <li
+            key={i}
+            className={`flex items-start gap-3 rounded-lg border-l-4 p-3 text-sm leading-relaxed text-[#e6e8ee]/90 ${tip.color}`}
+          >
+            <span className="text-base leading-none" aria-hidden>{tip.icon}</span>
+            <span>{tip.text}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
 /**
  * 記録数が閾値未満のとき、グラフをぼかしてロックオーバーレイを表示する。

@@ -1,69 +1,30 @@
-import type { MetadataRoute } from 'next';
-import { getAllArticlesMeta } from '@/lib/articles';
+import type { MetadataRoute } from "next";
+import { getAllArticlesMeta } from "@/lib/articles";
 
-/**
- * sitemap.xml を動的生成する Server Route。
- * - 記事は getAllArticlesMeta() で動的取得（記事追加時に自動追従）
- * - getAllArticlesMeta は Node.js fs を使用する Server 専用関数。
- *   このファイルは Server Route なので問題なし。
- *   Client Component から import しないこと（ビルドエラーになる）。
- * - noindex 対象 (/dashboard, /record, /settings) は含めない
- */
-
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://sleep-forecast.vercel.app';
+const BASE_URL = "https://sleep-forecast.vercel.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const articles = getAllArticlesMeta();
-
-  // ホームと記事一覧の lastModified は実際のコンテンツ更新日を静的に指定する。
-  // new Date() はビルド時刻になるため、毎デプロイで Google に「更新あり」と誤報告してしまう。
-  const staticRoutes: MetadataRoute.Sitemap = [
-    {
-      url: SITE_URL,
-      lastModified: new Date('2026-04-29'),
-      changeFrequency: 'daily',
-      priority: 1.0,
-    },
-    {
-      url: `${SITE_URL}/articles`,
-      lastModified: new Date('2026-04-29'),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/about`,
-      lastModified: new Date('2026-04-10'),
-      changeFrequency: 'monthly',
-      priority: 0.5,
-    },
-    {
-      url: `${SITE_URL}/contact`,
-      lastModified: new Date('2026-04-10'),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
-    {
-      url: `${SITE_URL}/privacy`,
-      lastModified: new Date('2026-04-10'),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
-    {
-      url: `${SITE_URL}/terms`,
-      lastModified: new Date('2026-04-10'),
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
+  const staticPages: MetadataRoute.Sitemap = [
+    { url: BASE_URL, lastModified: new Date(), changeFrequency: "daily", priority: 1.0 },
+    { url: `${BASE_URL}/record`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/dashboard`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
+    { url: `${BASE_URL}/articles`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 },
+    { url: `${BASE_URL}/settings`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
+    { url: `${BASE_URL}/privacy`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
   ];
 
-  // 記事追加時に自動追従（getAllArticlesMeta() による動的生成）
-  const articleRoutes: MetadataRoute.Sitemap = articles.map((article) => ({
-    url: `${SITE_URL}/articles/${article.slug}`,
-    lastModified: new Date(article.updatedAt),
-    changeFrequency: 'monthly' as const,
-    priority: 0.7,
-  }));
+  let articlePages: MetadataRoute.Sitemap = [];
+  try {
+    const articles = getAllArticlesMeta();
+    articlePages = articles.map((article) => ({
+      url: `${BASE_URL}/articles/${article.slug}`,
+      lastModified: new Date(article.updatedAt),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    }));
+  } catch {
+    // ビルド時に記事が見つからなくてもクラッシュさせない
+  }
 
-  return [...staticRoutes, ...articleRoutes];
+  return [...staticPages, ...articlePages];
 }
