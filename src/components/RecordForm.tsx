@@ -50,7 +50,7 @@ const QUALITY_OPTIONS: Array<{
   aria: string;
 }> = [
   { value: 5, emoji: "😊", label: "よく眠れた", aria: "睡眠品質 よく眠れた" },
-  { value: 3, emoji: "😐", label: "まあまあ",   aria: "睡眠品質 まあまあ" },
+  { value: 3, emoji: "😐", label: "なんとか眠れた", aria: "睡眠品質 なんとか眠れた" },
   { value: 1, emoji: "😔", label: "眠れなかった", aria: "睡眠品質 眠れなかった" },
 ];
 
@@ -431,7 +431,10 @@ export function RecordForm(): JSX.Element {
                   <><Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />保存中...</>
                 ) : isUpdate ? "今日の記録を更新する" : "記録する"}
               </Button>
-              <div className="mt-3 text-center">
+              <p className="mt-2 text-center text-[11px] text-[#8b92a5]">
+                記録が増えると予測精度が上がります 📈
+              </p>
+              <div className="mt-6 text-center">
                 <Link href="/" className="text-sm text-[#8b92a5] underline-offset-4 hover:text-[#8b92a5]/70 hover:underline">
                   今日はスキップ
                 </Link>
