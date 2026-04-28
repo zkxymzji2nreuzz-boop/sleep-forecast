@@ -10,8 +10,8 @@
  */
 
 import * as React from "react";
-import { Settings, MapPin, Trash2, Check, ChevronDown } from "lucide-react";
-import { PREFECTURES } from "@/lib/prefectures";
+import { Settings, MapPin, Trash2, Check, ChevronDown, LocateFixed, Loader2 } from "lucide-react";
+import { PREFECTURES, findNearestPrefecture } from "@/lib/prefectures";
 import {
   getDefaultPrefectureCode,
   setDefaultPrefectureCode,
@@ -100,6 +100,9 @@ export function SettingsForm() {
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [deleteSuccess, setDeleteSuccess] = React.useState(false);
   const [recordCount, setRecordCount] = React.useState(0);
+  const [geoLoading, setGeoLoading] = React.useState(false);
+  const [geoError, setGeoError] = React.useState<string | null>(null);
+  const [geoDetected, setGeoDetected] = React.useState<string | null>(null);
 
   // マウント後に localStorage を読み込む
   React.useEffect(() => {
@@ -119,6 +122,38 @@ export function SettingsForm() {
     // WeatherWidget に変更を通知（同一タブでは storage イベントが発火しないため CustomEvent を使用）
     window.dispatchEvent(new CustomEvent("sf:prefecture-changed"));
     setTimeout(() => setSaved(false), 2000);
+  }
+
+  // ── 現在地から都道府県を自動検出 ──
+  function handleGeoDetect() {
+    if (!navigator.geolocation) {
+      setGeoError("このブラウザは位置情報に対応していません");
+      return;
+    }
+    setGeoLoading(true);
+    setGeoError(null);
+    setGeoDetected(null);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const nearest = findNearestPrefecture(pos.coords.latitude, pos.coords.longitude);
+        setPrefCode(nearest.code);
+        setDefaultPrefectureCode(nearest.code);
+        window.dispatchEvent(new CustomEvent("sf:prefecture-changed"));
+        setGeoDetected(nearest.name);
+        setSaved(true);
+        setGeoLoading(false);
+        setTimeout(() => { setSaved(false); setGeoDetected(null); }, 3000);
+      },
+      (err) => {
+        setGeoLoading(false);
+        if (err.code === 1) {
+          setGeoError("位置情報へのアクセスが拒否されました。手動で都道府県を選択してください。");
+        } else {
+          setGeoError("現在地の取得に失敗しました。手動で選択してください。");
+        }
+      },
+      { timeout: 10000, maximumAge: 300000 }
+    );
   }
 
   // ── 全記録削除 ──
@@ -149,6 +184,30 @@ export function SettingsForm() {
         <p className="mb-3 text-sm text-[#9ba3b5]">
           天気・気圧データを取得する都道府県を選択してください。
         </p>
+
+        {/* 現在地から自動検出ボタン */}
+        <button
+          type="button"
+          onClick={handleGeoDetect}
+          disabled={geoLoading}
+          className="mb-3 inline-flex items-center gap-2 rounded-full border border-indigo-400/30 px-4 py-2 text-sm font-medium text-indigo-300 transition-colors hover:border-indigo-400/60 hover:text-indigo-200 disabled:opacity-50"
+        >
+          {geoLoading ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+          ) : (
+            <LocateFixed className="h-3.5 w-3.5" aria-hidden="true" />
+          )}
+          {geoLoading ? "検出中..." : "現在地から自動検出"}
+        </button>
+        {geoDetected && (
+          <p className="mb-2 flex items-center gap-1 text-xs text-emerald-400">
+            <Check className="h-3.5 w-3.5" aria-hidden="true" />
+            {geoDetected} を設定しました
+          </p>
+        )}
+        {geoError && (
+          <p className="mb-2 text-xs text-rose-400">{geoError}</p>
+        )}
 
         {/* 都道府県セレクト */}
         <div className="relative mb-4">

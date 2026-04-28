@@ -119,6 +119,8 @@ export function RecordForm(): JSX.Element {
   const [manual, setManual] = React.useState<ManualWeather>(DEFAULT_MANUAL);
   const [savedView, setSavedView] = React.useState<SleepRecord | null>(null);
   const [allRecords, setAllRecords] = React.useState<SleepRecord[]>([]);
+  /** 保存後の合計記録件数（初回・節目メッセージ表示用） */
+  const [recordCountAfterSave, setRecordCountAfterSave] = React.useState(0);
 
   React.useEffect(() => {
     const today = getTodayRecord();
@@ -245,6 +247,9 @@ export function RecordForm(): JSX.Element {
       const today = formatDateJst(new Date());
       // 初回記録判定（保存前の件数が 0 かつ今日の記録がない = 完全初回）
       const isFirstEver = allRecords.length === 0 && !existingRecord;
+      const countAfterSave = isUpdate
+        ? allRecords.length
+        : allRecords.length + 1;
       const saved = saveRecord({
         date: today,
         quality: form.quality,
@@ -275,6 +280,7 @@ export function RecordForm(): JSX.Element {
           description: "明日の予報と照らし合わせてみてね 🌙",
         });
       }
+      setRecordCountAfterSave(countAfterSave);
       setSavedView(saved);
       setExistingRecord(saved);
     } catch (err) {
@@ -298,6 +304,9 @@ export function RecordForm(): JSX.Element {
   if (savedView) {
     const w = savedView.weather;
     const qualityLabel = QUALITY_OPTIONS.find((o) => o.value === savedView.quality)?.label ?? String(savedView.quality);
+    const isFirstRecord = recordCountAfterSave === 1;
+    const isMilestone = recordCountAfterSave === 3 || recordCountAfterSave === 7;
+    const remaining = Math.max(0, 7 - recordCountAfterSave);
     return (
       <div className="container mx-auto max-w-screen-md px-4 py-10 sm:py-14">
         <Card className="border-0 bg-transparent shadow-none">
@@ -305,9 +314,49 @@ export function RecordForm(): JSX.Element {
             <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#1d9bf0]/10 shadow-[0_0_40px_-10px_rgba(29,155,240,0.5)] ring-1 ring-[#1d9bf0]/30">
               <Moon className="h-7 w-7 text-[#1d9bf0]" aria-hidden="true" />
             </div>
-            <CardTitle className="text-xl text-[#e6e8ee]">記録しました。明日の予報と照らし合わせてみてね 🌙</CardTitle>
+            <CardTitle className="text-xl text-[#e6e8ee]">
+              {isFirstRecord
+                ? "はじめての記録！ 🎉"
+                : isMilestone
+                ? `${recordCountAfterSave}日目の記録 ✨`
+                : "記録しました 🌙"}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-sm text-[#e6e8ee]">
+
+            {/* 初回特別メッセージ */}
+            {isFirstRecord && (
+              <div className="rounded-xl border border-emerald-400/25 bg-emerald-500/8 p-4 text-center">
+                <p className="text-sm font-medium text-emerald-300">
+                  おめでとうございます！最初の一歩を踏み出しました 🎉
+                </p>
+                <p className="mt-1 text-xs text-[#9ba3b5]">
+                  あと6日続けると気象との相関分析が始まります
+                </p>
+              </div>
+            )}
+
+            {/* 3日目メッセージ */}
+            {recordCountAfterSave === 3 && (
+              <div className="rounded-xl border border-indigo-400/25 bg-indigo-500/8 p-4 text-center">
+                <p className="text-sm font-medium text-indigo-300">3日連続！いいペースです 👍</p>
+                <p className="mt-1 text-xs text-[#9ba3b5]">あと4日で相関分析が始まります</p>
+              </div>
+            )}
+
+            {/* 7日目メッセージ */}
+            {recordCountAfterSave === 7 && (
+              <div className="rounded-xl border border-purple-400/25 bg-purple-500/8 p-4 text-center">
+                <p className="text-sm font-medium text-purple-300">
+                  7日分のデータが揃いました！🎊 相関分析スタート
+                </p>
+                <p className="mt-1 text-xs text-[#9ba3b5]">
+                  ダッシュボードで気圧との関係が見えてきます
+                </p>
+              </div>
+            )}
+
+            {/* 気象コンテキスト */}
             <dl className="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-white/5 pt-4">
               <div className="border-0 bg-transparent py-2">
                 <dt className="text-[11px] uppercase tracking-wider text-[#9ba3b5]">昨晩の眠り</dt>
@@ -317,7 +366,7 @@ export function RecordForm(): JSX.Element {
                 <dt className="text-[11px] uppercase tracking-wider text-[#9ba3b5]">気圧 (24h 差)</dt>
                 <dd className="mt-1 text-2xl font-semibold tabular-nums text-[#e6e8ee]">
                   {w.pressureHpa.toFixed(1)}{" "}
-                  <span className="text-sm tabular-nums text-[#9ba3b5]">
+                  <span className={`text-sm tabular-nums ${w.pressureDeltaHpa <= -3 ? "text-rose-400" : "text-[#9ba3b5]"}`}>
                     ({w.pressureDeltaHpa >= 0 ? "+" : ""}{w.pressureDeltaHpa.toFixed(1)})
                   </span>
                 </dd>
@@ -331,6 +380,23 @@ export function RecordForm(): JSX.Element {
                 <dd className="mt-1 text-2xl font-semibold tabular-nums text-[#e6e8ee]">{w.humidity}%</dd>
               </div>
             </dl>
+
+            {/* 分析までの進捗（7件未満） */}
+            {recordCountAfterSave > 0 && recordCountAfterSave < 7 && (
+              <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3">
+                <div className="mb-1.5 flex items-center justify-between text-xs">
+                  <span className="text-[#9ba3b5]">相関分析まで</span>
+                  <span className="text-indigo-300 font-medium">あと {remaining} 日</span>
+                </div>
+                <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+                  <div
+                    className="h-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500"
+                    style={{ width: `${(recordCountAfterSave / 7) * 100}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="flex flex-col gap-2">
               <Button asChild className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600">
                 <Link href="/dashboard">

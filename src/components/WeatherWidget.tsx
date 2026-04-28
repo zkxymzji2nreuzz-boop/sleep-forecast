@@ -227,7 +227,7 @@ function TodayWeatherSection({ hourlyWeather }: { hourlyWeather: HourlyWeatherDa
 // ─────────────────────────────────────────────────────────────────────────────
 
 const WEEKLY_ROW_H = 36;
-const WEEKLY_LABEL_ROWS = ["日付", "天気", "最高", "最低", "降水確率", "気圧帯", "月相（参考）"];
+const WEEKLY_LABEL_ROWS = ["日付", "天気", "最高", "最低", "降水確率", "気圧帯", "気圧注意", "月相（参考）"];
 
 function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
   const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
@@ -245,6 +245,7 @@ function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
         <div style={{ flex: 1, minWidth: 0, display: "grid", gridTemplateColumns: `repeat(${forecast.length}, 1fr)` }}>
           {forecast.map((day) => {
             const isCurrentDay = isToday(day.date);
+            const isDangerDay = day.pressureDelta <= -5;
             const weather = weatherCodeToDisplay(day.weatherCode);
             const pressureAvg = Math.round((day.pressureMin + day.pressureMax) / 2);
             const zone = getPressureZone(pressureAvg);
@@ -254,10 +255,21 @@ function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
             const weekLabel = weekdays[d.getDay()];
             const moon = getMoonData(new Date(`${day.date}T12:00:00+09:00`));
             const moonEmoji = getMoonEmoji(moon.phase);
+            // 危険日（-5hPa以上低下）は赤みがかった背景、通常は今日ハイライト
+            const columnBg = isDangerDay
+              ? "rgba(239,68,68,0.06)"
+              : isCurrentDay
+              ? "rgba(29,155,240,0.07)"
+              : "transparent";
+            const columnBorder = isDangerDay
+              ? "1px solid rgba(239,68,68,0.20)"
+              : isCurrentDay
+              ? "1px solid rgba(29,155,240,0.25)"
+              : "1px solid rgba(255,255,255,0.04)";
             return (
-              <div key={day.date} style={{ display: "flex", flexDirection: "column", borderLeft: isCurrentDay ? "1px solid rgba(29,155,240,0.25)" : "1px solid rgba(255,255,255,0.04)", background: isCurrentDay ? "rgba(29,155,240,0.07)" : "transparent" }}>
+              <div key={day.date} style={{ display: "flex", flexDirection: "column", borderLeft: columnBorder, background: columnBg }}>
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: "10px", fontWeight: 700, color: isCurrentDay ? "#1d9bf0" : "#9ba3b5" }}>{dayLabel}</span>
+                  <span style={{ fontSize: "10px", fontWeight: 700, color: isDangerDay ? "#f87171" : isCurrentDay ? "#1d9bf0" : "#9ba3b5" }}>{dayLabel}</span>
                   <span style={{ fontSize: "9px", color: "#9ba3b5" }}>{weekLabel}</span>
                 </div>
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px" }}>{weather.emoji}</div>
@@ -266,6 +278,16 @@ function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", color: precipColor(day.precipProbability) }}>{day.precipProbability}%</div>
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <span style={{ fontSize: "9px", fontWeight: 700, padding: "2px 5px", borderRadius: "9999px", background: zoneConfig.bg, color: zoneConfig.color, whiteSpace: "nowrap" }}>{zoneConfig.label}</span>
+                </div>
+                {/* 気圧注意バッジ行 */}
+                <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  {isDangerDay ? (
+                    <span style={{ fontSize: "9px", fontWeight: 700, padding: "2px 4px", borderRadius: "9999px", background: "rgba(239,68,68,0.15)", color: "#f87171", border: "1px solid rgba(239,68,68,0.30)", whiteSpace: "nowrap" }}>
+                      ⚠ 要注意
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: "10px", color: "#4a5060" }}>—</span>
+                  )}
                 </div>
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px" }}>{moonEmoji}</div>
               </div>

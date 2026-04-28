@@ -1,6 +1,7 @@
 "use client";
 
-import { AlertCircle, Info, CheckCircle } from "lucide-react";
+import { useState } from "react";
+import { AlertCircle, Info, CheckCircle, ChevronDown } from "lucide-react";
 import type { PredictionResult } from "@/lib/types";
 
 interface PredictionCardProps {
@@ -48,6 +49,8 @@ export function PredictionCard({
   className = "",
   streakDays,
 }: PredictionCardProps) {
+  const [breakdownOpen, setBreakdownOpen] = useState(false);
+
   // 空状態（予測データが無い場合）
   if (!prediction) {
     return (
@@ -176,6 +179,53 @@ export function PredictionCard({
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* スコア内訳 アコーディオン */}
+      {prediction.breakdown && prediction.breakdown.items.length > 0 && (
+        <div className="mt-4 border-t border-white/20 pt-3">
+          <button
+            onClick={() => setBreakdownOpen((prev) => !prev)}
+            className="flex items-center gap-1 text-xs text-white/60 hover:text-white/90 transition-colors w-full text-left"
+            aria-expanded={breakdownOpen}
+            aria-controls="prediction-breakdown"
+          >
+            <ChevronDown
+              className={`h-3.5 w-3.5 transition-transform duration-200 ${breakdownOpen ? "rotate-180" : ""}`}
+            />
+            スコア内訳を見る
+          </button>
+          {breakdownOpen && (
+            <div id="prediction-breakdown" className="mt-2 space-y-1.5">
+              {prediction.breakdown.items.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between bg-white/5 rounded px-2.5 py-1.5"
+                >
+                  <span className="text-xs text-white/80">{item.label}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-white/50">{item.value}</span>
+                    <span
+                      className={`text-xs font-mono tabular-nums ${
+                        item.severity === "bad"
+                          ? "text-rose-300"
+                          : item.severity === "good"
+                          ? "text-emerald-300"
+                          : "text-white/40"
+                      }`}
+                    >
+                      {item.contrib > 0 ? "+" : ""}
+                      {item.contrib.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+              <p className="text-[10px] text-white/30 mt-1 leading-relaxed">
+                ※ 各要素が予測スコアに与える参考値です
+              </p>
+            </div>
+          )}
         </div>
       )}
 

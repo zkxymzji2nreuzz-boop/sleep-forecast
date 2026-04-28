@@ -130,18 +130,23 @@ export function ArticleLayout({ article, related }: Props) {
         <div className="flex items-center gap-2">
           <Moon className="h-5 w-5 text-indigo-200" aria-hidden="true" />
           <h2 className="text-xl font-bold text-[#e6e8ee]">
-            今夜の眠りを、明日の予報に。
+            この記事を読んだら、今夜の眠りを記録してみませんか？
           </h2>
         </div>
         <p className="mt-2 text-sm leading-relaxed text-[#e6e8ee]/80">
-          毎朝たった 30 秒の記録から、気圧・気温・月齢があなたの眠りにどう響いているかを、やさしく見える化します。
+          毎朝たった 30 秒の記録から、気圧・気温・月齢があなたの眠りにどう響いているかを、やさしく見える化します。7日続けると、気象と睡眠の相関分析がスタートします。
         </p>
+        <ul className="mt-3 space-y-1 text-xs text-[#e6e8ee]/60">
+          <li>✓ 無料・登録不要で今すぐ始められる</li>
+          <li>✓ データはあなたの端末のみに保存（外部送信なし）</li>
+          <li>✓ 気圧・気温・月齢を自動取得</li>
+        </ul>
         <div className="mt-5">
           <Button
             asChild
             className="w-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-3 font-medium text-white shadow-lg shadow-indigo-500/25 hover:from-indigo-400 hover:to-purple-400 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1117] sm:w-auto"
           >
-            <Link href="/record">今日の睡眠を記録する</Link>
+            <Link href="/record">今日の睡眠を記録する →</Link>
           </Button>
         </div>
       </aside>

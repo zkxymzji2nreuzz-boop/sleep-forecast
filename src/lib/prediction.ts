@@ -94,6 +94,7 @@ export function predictTomorrow(
     advice,
     isSample,
     dataPointCount: validRecords.length,
+    breakdown: computeBreakdown(validRecords, forecastData),
   };
 }
 
@@ -417,6 +418,113 @@ function generateAdvice(
           text: "毎日の記録を続けて、あなた独自の睡眠パターンを発見しましょう。",
         },
       ];
+}
+
+/**
+ * 気象要素ごとの予測スコア内訳を計算する。
+ * 各要素が睡眠スコアにどれだけ寄与するかをサンプル予測ルールに基づいて推定。
+ * (線形回帰モードでも同様にルールベースの寄与量を返す—参考値として活用)
+ */
+function computeBreakdown(
+  records: SleepRecord[],
+  forecast: WeatherData
+): PredictionResult["breakdown"] {
+  type Severity = "bad" | "neutral" | "good";
+  const items: NonNullable<PredictionResult["breakdown"]>["items"] = [];
+
+  // ── 気圧変化 ──
+  const dp = forecast.pressureDeltaHpa;
+  let pressureContrib = 0;
+  let pressureSeverity: Severity = "neutral";
+  if (dp <= -5) {
+    pressureContrib = -0.8;
+    pressureSeverity = "bad";
+  } else if (dp <= -3) {
+    pressureContrib = -0.4;
+    pressureSeverity = "bad";
+  } else if (dp >= 3) {
+    pressureContrib = +0.3;
+    pressureSeverity = "good";
+  }
+  items.push({
+    label: "気圧変化",
+    value: `${dp >= 0 ? "+" : ""}${dp.toFixed(1)} hPa`,
+    contrib: pressureContrib,
+    severity: pressureSeverity,
+  });
+
+  // ── 月齢 ──
+  let moonContrib = 0;
+  let moonSeverity: Severity = "neutral";
+  let moonLabel = "月齢";
+  if (forecast.moonPhase >= 0.45 && forecast.moonPhase <= 0.55) {
+    moonContrib = -0.25;
+    moonSeverity = "bad";
+    moonLabel = "月齢（満月）";
+  } else if (forecast.moonPhase < 0.1 || forecast.moonPhase > 0.9) {
+    moonContrib = -0.1;
+    moonSeverity = "bad";
+    moonLabel = "月齢（新月）";
+  }
+  const moonPct = Math.round(forecast.moonIllumination * 100);
+  items.push({
+    label: moonLabel,
+    value: `照度 ${moonPct}%`,
+    contrib: moonContrib,
+    severity: moonSeverity,
+  });
+
+  // ── 気温 ──
+  let tempContrib = 0;
+  let tempSeverity: Severity = "neutral";
+  if (forecast.temperatureC >= 25) {
+    tempContrib = -0.2;
+    tempSeverity = "bad";
+  } else if (forecast.temperatureC <= 10) {
+    tempContrib = -0.1;
+    tempSeverity = "bad";
+  } else if (
+    records.length > 0 &&
+    forecast.temperatureC >=
+      records.reduce((s, r) => s + r.weather.temperatureC, 0) / records.length - 1 &&
+    forecast.temperatureC <=
+      records.reduce((s, r) => s + r.weather.temperatureC, 0) / records.length + 1
+  ) {
+    // 過去平均に近い気温は微プラス
+    tempContrib = +0.1;
+    tempSeverity = "good";
+  }
+  items.push({
+    label: "気温",
+    value: `${forecast.temperatureC.toFixed(1)}°C`,
+    contrib: tempContrib,
+    severity: tempSeverity,
+  });
+
+  // ── 湿度 ──
+  let humidContrib = 0;
+  let humidSeverity: Severity = "neutral";
+  if (forecast.humidity >= 70) {
+    humidContrib = -0.15;
+    humidSeverity = "bad";
+  } else if (forecast.humidity >= 50 && forecast.humidity < 70) {
+    humidContrib = 0;
+    humidSeverity = "neutral";
+  } else if (forecast.humidity < 40) {
+    humidContrib = -0.05;
+    humidSeverity = "bad";
+  } else {
+    humidContrib = +0.05;
+    humidSeverity = "good";
+  }
+  items.push({
+    label: "湿度",
+    value: `${forecast.humidity}%`,
+    contrib: humidContrib,
+    severity: humidSeverity,
+  });
+
+  return { items };
 }
 
 /**

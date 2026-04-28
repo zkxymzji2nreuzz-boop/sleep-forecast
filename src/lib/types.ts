@@ -136,6 +136,24 @@ export type PredictionResult = {
    * "0 件のため全サンプル" とか "12 件から計算" を UI に表示するのに使う。
    */
   dataPointCount: number;
+
+  /**
+   * スコア内訳（アコーディオン表示用）。
+   * 各気象要素が予測スコアにどう寄与したかを示す。
+   * contrib がマイナスほど睡眠に悪影響。
+   */
+  breakdown?: {
+    items: {
+      /** 要素名 (例: "気圧変化") */
+      label: string;
+      /** 値の説明 (例: "−5.2 hPa") */
+      value: string;
+      /** 寄与量 (−2.0 〜 +2.0) */
+      contrib: number;
+      /** 影響の方向性 */
+      severity: "bad" | "neutral" | "good";
+    }[];
+  };
 };
 
 /**

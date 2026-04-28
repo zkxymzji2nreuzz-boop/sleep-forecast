@@ -483,6 +483,46 @@ export default function DashboardPage() {
         </p>
       </header>
 
+      {/* 分析解禁まで進捗バー（記録1〜6件） */}
+      {records.length > 0 && records.length < 7 && (
+        <div className="mb-6 rounded-2xl border border-indigo-400/20 bg-indigo-500/[0.05] p-5">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-sm font-semibold text-[#e6e8ee]">
+              相関分析まであと{" "}
+              <span className="text-indigo-300">{7 - records.length}</span> 日！
+            </span>
+            <span className="text-xs text-[#9ba3b5]">
+              {records.length} / 7 件
+            </span>
+          </div>
+          <div className="h-2 overflow-hidden rounded-full bg-white/10">
+            <div
+              className="h-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-700"
+              style={{ width: `${(records.length / 7) * 100}%` }}
+              role="progressbar"
+              aria-valuenow={records.length}
+              aria-valuemin={0}
+              aria-valuemax={7}
+              aria-label="相関分析解禁まで"
+            />
+          </div>
+          <p className="mt-2 text-xs leading-relaxed text-[#9ba3b5]">
+            {records.length === 1 && "よいスタートです！毎日の記録で、気象と睡眠の関係が少しずつ見えてきます。"}
+            {records.length === 2 && "2日分の記録！続けることで、あなただけのパターンが浮かび上がります。"}
+            {records.length === 3 && "3日目！折り返し地点が近づいています。低気圧の夜もぜひ記録してみてください。"}
+            {(records.length === 4 || records.length === 5) && "もうすぐです！気象と睡眠の相関グラフが解放されます。"}
+            {records.length === 6 && "あと1日！明日の記録で相関分析がスタートします 🎉"}
+          </p>
+          <Link
+            href="/record"
+            className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-indigo-300 hover:text-indigo-200 transition-colors"
+          >
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+            今日を記録する
+          </Link>
+        </div>
+      )}
+
       {/* 予測カード */}
       {prediction && (
         <div className="mb-8">
