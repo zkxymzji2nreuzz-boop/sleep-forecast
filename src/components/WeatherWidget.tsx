@@ -552,7 +552,7 @@ function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: Pres
             className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white"
             style={{ background: "rgba(255,255,255,0.12)" }}
           >
-            受け取る
+            通知を受け取る
           </button>
           <button onClick={dismiss} className="text-xs text-[#8b92a5] hover:text-[#e6e8ee]" aria-label="閉じる">✕</button>
         </div>
