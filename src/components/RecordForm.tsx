@@ -4,11 +4,12 @@
  * 記録フォーム (F002 本体)。
  *
  * 要件 (抜粋):
- *   - 5 段階評価ボタン (😴😐🙂😀🌟) を最上部に大型配置
- *   - 都道府県 select (デフォルト復元 + Geolocation スナップ)
+ *   - 3 択評価ボタン (よく眠れた / まあまあ / 眠れなかった) を最上部に大型配置
+ *   - 地域入力欄なし（気象データは位置情報から自動取得、デフォルト東京都）
  *   - 任意: 就寝時刻 / 起床時刻 / 自由メモ 280 字
  *   - 送信: /api/weather 呼び出し → 失敗時は手動入力フォールバック
  *   - 同日 2 回目の記録は上書き (「更新する」文言に切り替え)
+ *   - 「今日はスキップ」リンクを設置
  *   - shadcn toast で成功通知
  *   - モバイル 375px で崩れない、タップ 44px 以上、a11y 対応
  */
@@ -17,7 +18,6 @@ import * as React from "react";
 import Link from "next/link";
 import {
   BarChart3,
-  MapPin,
   Loader2,
   RefreshCcw,
   Moon,
@@ -28,17 +28,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import {
-  PREFECTURES,
-  findNearestPrefecture,
   getPrefectureByCode,
 } from "@/lib/prefectures";
 import {
@@ -47,23 +38,20 @@ import {
   getRecords,
   getTodayRecord,
   saveRecord,
-  setDefaultPrefectureCode,
 } from "@/lib/storage";
 import type { SleepQuality, SleepRecord, WeatherData } from "@/lib/types";
 import { fetchWeather, getMoonData } from "@/lib/weather";
 
-/** 5 段階評価ラベルマスタ (spec.md の対応表に準拠) */
+/** 3 択評価マスタ */
 const QUALITY_OPTIONS: Array<{
   value: SleepQuality;
   emoji: string;
   label: string;
   aria: string;
 }> = [
-  { value: 1, emoji: "😴", label: "とても悪い", aria: "睡眠品質 1 とても悪い" },
-  { value: 2, emoji: "😐", label: "悪い", aria: "睡眠品質 2 悪い" },
-  { value: 3, emoji: "🙂", label: "普通", aria: "睡眠品質 3 普通" },
-  { value: 4, emoji: "😀", label: "良い", aria: "睡眠品質 4 良い" },
-  { value: 5, emoji: "🌟", label: "とても良い", aria: "睡眠品質 5 とても良い" },
+  { value: 5, emoji: "😊", label: "よく眠れた", aria: "睡眠品質 よく眠れた" },
+  { value: 3, emoji: "😐", label: "まあまあ",   aria: "睡眠品質 まあまあ" },
+  { value: 1, emoji: "😔", label: "眠れなかった", aria: "睡眠品質 眠れなかった" },
 ];
 
 /** HH:mm 形式のゆるい正規表現 (空文字列は許容) */
@@ -126,7 +114,6 @@ export function RecordForm(): JSX.Element {
   );
   const [errors, setErrors] = React.useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [isGeolocating, setIsGeolocating] = React.useState(false);
   const [showManualFallback, setShowManualFallback] = React.useState(false);
   const [manual, setManual] = React.useState<ManualWeather>(DEFAULT_MANUAL);
   const [savedView, setSavedView] = React.useState<SleepRecord | null>(null);
@@ -170,45 +157,14 @@ export function RecordForm(): JSX.Element {
 
   const isUpdate = existingRecord !== null;
 
-  const handlePrefectureChange = (code: string): void => {
-    setForm((prev) => ({ ...prev, prefectureCode: code }));
-    setDefaultPrefectureCode(code);
-  };
-
   const handleQualityPick = (value: SleepQuality): void => {
     setForm((prev) => ({ ...prev, quality: value }));
     setErrors((prev) => ({ ...prev, quality: undefined }));
   };
 
-  const handleGeolocate = (): void => {
-    if (typeof navigator === "undefined" || !navigator.geolocation) {
-      toast({
-        title: "位置情報を利用できません",
-        description: "お使いの環境では Geolocation API が有効ではありません。",
-        variant: "destructive",
-      });
-      return;
-    }
-    setIsGeolocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const nearest = findNearestPrefecture(pos.coords.latitude, pos.coords.longitude);
-        handlePrefectureChange(nearest.code);
-        toast({ title: "位置情報から設定しました", description: `${nearest.name} を選択しました` });
-        setIsGeolocating(false);
-      },
-      (err) => {
-        toast({ title: "位置情報の取得に失敗しました", description: err.message, variant: "destructive" });
-        setIsGeolocating(false);
-      },
-      { enableHighAccuracy: false, timeout: 10_000, maximumAge: 60_000 }
-    );
-  };
-
   const validate = (): boolean => {
     const next: FormErrors = {};
-    if (form.quality === null) next.quality = "睡眠品質を選択してください";
-    if (!/^\d{2}$/.test(form.prefectureCode)) next.prefectureCode = "都道府県を選択してください";
+    if (form.quality === null) next.quality = "睡眠の状態を選択してください";
     if (form.bedtime && !TIME_RE.test(form.bedtime)) next.bedtime = "HH:mm 形式で入力してください";
     if (form.wakeTime && !TIME_RE.test(form.wakeTime)) next.wakeTime = "HH:mm 形式で入力してください";
     if (form.note.length > 280) next.note = "メモは 280 字以内で入力してください";
@@ -293,8 +249,8 @@ export function RecordForm(): JSX.Element {
   const submitDisabled = isSubmitting || form.quality === null || !manualValid;
 
   if (savedView) {
-    const pref = getPrefectureByCode(savedView.prefectureCode);
     const w = savedView.weather;
+    const qualityLabel = QUALITY_OPTIONS.find((o) => o.value === savedView.quality)?.label ?? String(savedView.quality);
     return (
       <div className="container mx-auto max-w-screen-md px-4 py-10 sm:py-14">
         <Card className="border-0 bg-transparent shadow-none">
@@ -302,21 +258,13 @@ export function RecordForm(): JSX.Element {
             <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#1d9bf0]/10 shadow-[0_0_40px_-10px_rgba(29,155,240,0.5)] ring-1 ring-[#1d9bf0]/30">
               <Moon className="h-7 w-7 text-[#1d9bf0]" aria-hidden="true" />
             </div>
-            <CardTitle className="text-xl text-[#e6e8ee]">今日の記録を保存しました</CardTitle>
+            <CardTitle className="text-xl text-[#e6e8ee]">記録しました。明日の予報と照らし合わせてみてね 🌙</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-sm text-[#e6e8ee]">
             <dl className="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-white/5 pt-4">
               <div className="border-0 bg-transparent py-2">
-                <dt className="text-[11px] uppercase tracking-wider text-[#8b92a5]">睡眠品質</dt>
-                <dd className="mt-1 text-2xl font-semibold tabular-nums text-[#e6e8ee]">{savedView.quality} / 5</dd>
-              </div>
-              <div className="border-0 bg-transparent py-2">
-                <dt className="text-[11px] uppercase tracking-wider text-[#8b92a5]">都道府県</dt>
-                <dd className="mt-1 text-2xl font-semibold tabular-nums text-[#e6e8ee]">{pref?.name ?? savedView.prefectureCode}</dd>
-              </div>
-              <div className="border-0 bg-transparent py-2">
-                <dt className="text-[11px] uppercase tracking-wider text-[#8b92a5]">気温</dt>
-                <dd className="mt-1 text-2xl font-semibold tabular-nums text-[#e6e8ee]">{w.temperatureC.toFixed(1)}°C</dd>
+                <dt className="text-[11px] uppercase tracking-wider text-[#8b92a5]">昨晩の眠り</dt>
+                <dd className="mt-1 text-2xl font-semibold text-[#e6e8ee]">{qualityLabel}</dd>
               </div>
               <div className="border-0 bg-transparent py-2">
                 <dt className="text-[11px] uppercase tracking-wider text-[#8b92a5]">気圧 (24h 差)</dt>
@@ -326,6 +274,14 @@ export function RecordForm(): JSX.Element {
                     ({w.pressureDeltaHpa >= 0 ? "+" : ""}{w.pressureDeltaHpa.toFixed(1)})
                   </span>
                 </dd>
+              </div>
+              <div className="border-0 bg-transparent py-2">
+                <dt className="text-[11px] uppercase tracking-wider text-[#8b92a5]">気温</dt>
+                <dd className="mt-1 text-2xl font-semibold tabular-nums text-[#e6e8ee]">{w.temperatureC.toFixed(1)}°C</dd>
+              </div>
+              <div className="border-0 bg-transparent py-2">
+                <dt className="text-[11px] uppercase tracking-wider text-[#8b92a5]">湿度</dt>
+                <dd className="mt-1 text-2xl font-semibold tabular-nums text-[#e6e8ee]">{w.humidity}%</dd>
               </div>
             </dl>
             <div className="flex flex-col gap-2">
@@ -361,18 +317,18 @@ export function RecordForm(): JSX.Element {
           <span>連続 {metrics.streak} 日</span>
         </div>
         <h1 className="text-2xl font-bold text-[#e6e8ee] sm:text-3xl">今日の睡眠を記録する</h1>
-        <p className="mt-2 text-sm text-[#8b92a5]">毎朝 30 秒で OK。気象データは自動で取得します。</p>
+        <p className="mt-2 text-sm text-[#8b92a5]">毎朝15秒でOK。気象データは自動で取得します。</p>
       </div>
 
       <form onSubmit={handleSubmit} noValidate>
         <Card className="border-0 bg-transparent shadow-none">
           <CardContent className="space-y-8 p-0 sm:p-2">
-            {/* 1) 5 段階評価 */}
+            {/* 1) 3 択評価 */}
             <fieldset>
               <legend className="mb-3 block text-sm font-medium text-[#e6e8ee]">
                 昨晩の睡眠はいかがでしたか？<span className="text-[#f87171]" aria-hidden="true"> *</span>
               </legend>
-              <div role="radiogroup" aria-label="睡眠品質 5 段階評価" className="grid grid-cols-5 gap-1.5 sm:gap-2">
+              <div role="radiogroup" aria-label="睡眠の状態 3 択" className="grid grid-cols-3 gap-3">
                 {QUALITY_OPTIONS.map((opt) => {
                   const selected = form.quality === opt.value;
                   return (
@@ -384,13 +340,13 @@ export function RecordForm(): JSX.Element {
                       aria-label={opt.aria}
                       onClick={() => handleQualityPick(opt.value)}
                       className={[
-                        "flex min-h-[76px] min-w-[44px] flex-col items-center justify-center gap-1 rounded-lg bg-white/[0.03] p-1 text-[#8b92a5] transition-colors hover:bg-white/[0.06] hover:text-[#e6e8ee] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d9bf0]",
+                        "flex min-h-[88px] min-w-[44px] flex-col items-center justify-center gap-2 rounded-xl bg-white/[0.03] p-3 text-[#8b92a5] transition-colors hover:bg-white/[0.06] hover:text-[#e6e8ee] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d9bf0]",
                         selected ? "bg-[#1d9bf0]/10 text-[#e6e8ee] ring-1 ring-inset ring-[#1d9bf0]/60 shadow-[0_0_24px_-8px_rgba(29,155,240,0.55)]" : "",
                       ].join(" ")}
                     >
-                      <span className="text-2xl" aria-hidden="true">{opt.emoji}</span>
-                      <span className="text-[10px] leading-tight sm:text-xs">{opt.label}</span>
-                      {selected ? <span className="mt-1 block h-0.5 w-6 rounded-full bg-[#1d9bf0]" aria-hidden="true" /> : null}
+                      <span className="text-3xl" aria-hidden="true">{opt.emoji}</span>
+                      <span className="text-xs font-medium leading-tight sm:text-sm">{opt.label}</span>
+                      {selected ? <span className="block h-0.5 w-6 rounded-full bg-[#1d9bf0]" aria-hidden="true" /> : null}
                     </button>
                   );
                 })}
@@ -398,33 +354,7 @@ export function RecordForm(): JSX.Element {
               {errors.quality ? <p className="mt-2 text-xs text-[#f87171]" role="alert">{errors.quality}</p> : null}
             </fieldset>
 
-            {/* 2) 都道府県 */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <Label htmlFor="prefecture" className="text-sm font-medium text-[#e6e8ee]">
-                  お住まいの地域<span className="text-[#f87171]" aria-hidden="true"> *</span>
-                </Label>
-                <Button
-                  type="button" variant="ghost" size="sm"
-                  className="h-8 gap-1 px-2 text-xs text-[#8b92a5] underline-offset-4 hover:bg-transparent hover:text-[#1d9bf0] hover:underline"
-                  onClick={handleGeolocate} disabled={isGeolocating} aria-label="現在地から都道府県を自動取得"
-                >
-                  {isGeolocating ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : <MapPin className="h-3.5 w-3.5" aria-hidden="true" />}
-                  位置を自動取得
-                </Button>
-              </div>
-              <Select value={form.prefectureCode} onValueChange={handlePrefectureChange}>
-                <SelectTrigger id="prefecture" className="h-11 border-0 bg-white/[0.04] text-[#e6e8ee] focus:ring-1 focus:ring-[#1d9bf0] focus:ring-offset-0" aria-label="都道府県を選択">
-                  <SelectValue placeholder="都道府県を選択" />
-                </SelectTrigger>
-                <SelectContent className="max-h-[320px] border-white/5 bg-[#141826] text-[#e6e8ee]">
-                  {PREFECTURES.map((p) => <SelectItem key={p.code} value={p.code}>{p.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
-              {errors.prefectureCode ? <p className="text-xs text-[#f87171]" role="alert">{errors.prefectureCode}</p> : null}
-            </div>
-
-            {/* 3) 就寝/起床時刻 */}
+            {/* 2) 就寝/起床時刻 */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label htmlFor="bedtime" className="flex items-center text-sm font-medium text-[#e6e8ee]">
@@ -450,7 +380,7 @@ export function RecordForm(): JSX.Element {
               </div>
             </div>
 
-            {/* 4) 自由メモ */}
+            {/* 3) 自由メモ */}
             <div className="space-y-2">
               <Label htmlFor="note" className="text-sm font-medium text-[#e6e8ee]">
                 自由メモ (任意 · <span className="tabular-nums">{form.note.length}/280</span>)
@@ -494,13 +424,18 @@ export function RecordForm(): JSX.Element {
               </div>
             ) : null}
 
-            {/* 送信ボタン */}
+            {/* 送信ボタン + スキップリンク */}
             <div className="sticky bottom-0 -mx-4 mt-2 border-t border-white/5 bg-[#0f1117]/90 p-4 pb-[env(safe-area-inset-bottom)] backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
               <Button type="submit" className="h-12 w-full bg-[#1d9bf0] text-base font-semibold text-white hover:bg-[#1d9bf0]/90 disabled:opacity-50" disabled={submitDisabled}>
                 {isSubmitting ? (
                   <><Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />保存中...</>
                 ) : isUpdate ? "今日の記録を更新する" : "記録する"}
               </Button>
+              <div className="mt-3 text-center">
+                <Link href="/" className="text-sm text-[#8b92a5] underline-offset-4 hover:text-[#8b92a5]/70 hover:underline">
+                  今日はスキップ
+                </Link>
+              </div>
             </div>
 
             <p className="text-center text-xs text-[#8b92a5]">
