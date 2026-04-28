@@ -3,7 +3,7 @@ slug: "blue-light"
 title: "ブルーライトと睡眠の質——寝る前スマホが眠りを浅くする仕組み"
 description: "寝る直前までスマホを見ていると眠りが浅くなる、というのは本当でしょうか。ブルーライトがメラトニン分泌に及ぼす影響と、具体的な対策を紹介します。"
 publishedAt: "2026-04-10"
-updatedAt: "2026-04-10"
+updatedAt: "2026-04-29"
 category: "生活習慣"
 tags: ["ブルーライト", "スマホ", "メラトニン", "睡眠の質"]
 relatedSlugs: ["suimin-shitsu-up", "suimin-fusai", "fuminshou-sign"]

@@ -3,7 +3,7 @@ slug: "kisho-byo-check"
 title: "気象病セルフチェック——あなたの不調は天気と関係している?"
 description: "雨の前日に頭が痛い、季節の変わり目にだるい、気圧が下がると眠気が強くなる。気象病の傾向があるかどうかを、日常の観察からセルフチェックしてみましょう。"
 publishedAt: "2026-04-10"
-updatedAt: "2026-04-10"
+updatedAt: "2026-04-29"
 category: "気象病"
 tags: ["気象病", "セルフチェック", "気圧", "天気痛"]
 relatedSlugs: ["kiatsu-zutsu", "kandansa-hirou", "jiritsu-shinkei"]

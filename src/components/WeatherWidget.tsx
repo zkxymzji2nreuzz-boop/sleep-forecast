@@ -843,6 +843,7 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
           data={chartData}
           options={chartOptions}
           plugins={[currentBandPlugin]}
+          aria-label="今後13時間の気圧推移グラフ"
         />
       </div>
     </div>
@@ -1091,6 +1092,7 @@ export function WeatherWidget() {
   const [score100, setScore100] = React.useState<number>(0);
   const [careHints, setCareHints] = React.useState<string[]>([]);
   const [locationName, setLocationName] = React.useState<string>("東京");
+  const [prefectureSet, setPrefectureSet] = React.useState<boolean>(false);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -1098,17 +1100,21 @@ export function WeatherWidget() {
     let isMounted = true;
     async function load() {
       try {
-        const code =
+        const rawCode =
           typeof window !== "undefined"
-            ? (window.localStorage.getItem(DEFAULT_PREFECTURE_KEY) ?? "13")
-            : "13";
+            ? window.localStorage.getItem(DEFAULT_PREFECTURE_KEY)
+            : null;
+        const code = rawCode ?? "13";
         const prefecture = getPrefectureByCode(code);
         const { latitude, longitude, name } = prefecture ?? {
           latitude: 35.6895,
           longitude: 139.6917,
           name: "東京都",
         };
-        if (isMounted) setLocationName(name);
+        if (isMounted) {
+          setLocationName(name);
+          setPrefectureSet(rawCode !== null);
+        }
 
         const full = await fetchFullWeather(latitude, longitude);
         if (!isMounted) return;
@@ -1182,6 +1188,19 @@ export function WeatherWidget() {
         </h2>
         <span className="text-xs text-[#8b92a5]">📍 {locationName}</span>
       </div>
+
+      {/* 都道府県未設定バナー（スキップ後のユーザーへ地域設定を促す） */}
+      {!prefectureSet && (
+        <div className="mx-5 mt-2 mb-1 flex items-center justify-between rounded-lg bg-indigo-500/10 border border-indigo-400/20 px-3 py-2 text-xs">
+          <span className="text-[#8b92a5]">東京の気象データを表示中</span>
+          <a
+            href="/settings"
+            className="text-indigo-300 underline decoration-indigo-400/40 underline-offset-2 hover:decoration-indigo-300 whitespace-nowrap ml-2"
+          >
+            地域を設定する →
+          </a>
+        </div>
+      )}
 
       {/* ── ① 今夜の睡眠スコア（最上部）── */}
       <div className="px-5 pt-4 pb-4">

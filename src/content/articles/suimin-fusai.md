@@ -3,7 +3,7 @@ slug: "suimin-fusai"
 title: "睡眠負債の怖さと返済方法——週末の寝だめでは取り返せない理由"
 description: "慢性的な睡眠不足が少しずつ積み重なる「睡眠負債」は、集中力や健康にじわじわと影響します。負債のメカニズムと、日常で返済するためのヒントを紹介します。"
 publishedAt: "2026-04-10"
-updatedAt: "2026-04-10"
+updatedAt: "2026-04-29"
 category: "生活習慣"
 tags: ["睡眠負債", "睡眠不足", "生活習慣", "健康管理"]
 relatedSlugs: ["fuminshou-sign", "suimin-shitsu-up", "blue-light"]

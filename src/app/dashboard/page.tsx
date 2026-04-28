@@ -476,6 +476,11 @@ export default function DashboardPage() {
         <p className="mt-1 text-sm text-[#8b92a5]">
           過去 30 日の記録から、気象と睡眠品質の関係を分析します。
         </p>
+        {/* データ保存場所の注記 */}
+        <p className="mt-2 text-xs text-[#8b92a5]/70">
+          <Info className="mb-0.5 mr-1 inline-block h-3 w-3" aria-hidden />
+          記録はこのブラウザの端末内に保存されています。他の端末・ブラウザとは同期されません。
+        </p>
       </header>
 
       {/* 予測カード */}

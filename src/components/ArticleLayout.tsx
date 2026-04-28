@@ -138,8 +138,11 @@ export function ArticleLayout({ article, related }: Props) {
       {/* 広告スロット: 記事中間〜末尾 */}
       <AdBanner slot="article-mid" format="rectangle" className="mt-10" />
 
+      {/* CTA区切り */}
+      <div className="mt-14 h-px bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent" />
+
       {/* CTA: 記録を促す (ウェルネスグラデーション) */}
-      <aside className="mt-14 rounded-3xl border border-indigo-300/25 bg-gradient-to-br from-indigo-500/15 via-purple-500/12 to-rose-500/8 p-7 shadow-[0_12px_40px_-16px_rgba(124,77,255,0.4)] sm:p-8">
+      <aside className="mt-8 rounded-3xl border border-indigo-300/25 bg-gradient-to-br from-indigo-500/15 via-purple-500/12 to-rose-500/8 p-7 shadow-[0_12px_40px_-16px_rgba(124,77,255,0.4)] sm:p-8">
         <div className="flex items-center gap-2">
           <Moon className="h-5 w-5 text-indigo-200" aria-hidden="true" />
           <h2 className="text-xl font-bold text-[#e6e8ee]">
@@ -152,7 +155,7 @@ export function ArticleLayout({ article, related }: Props) {
         <div className="mt-5">
           <Button
             asChild
-            className="rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-3 font-medium text-white shadow-lg shadow-indigo-500/25 hover:from-indigo-400 hover:to-purple-400 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1117]"
+            className="w-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-3 font-medium text-white shadow-lg shadow-indigo-500/25 hover:from-indigo-400 hover:to-purple-400 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1117] sm:w-auto"
           >
             <Link href="/record">今日の睡眠を記録する</Link>
           </Button>

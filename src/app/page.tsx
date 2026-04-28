@@ -15,6 +15,7 @@ import { AdBanner } from "@/components/AdBanner";
 import { PredictionCard } from "@/components/PredictionCard";
 import { ContinuousRecordBadge } from "@/components/ContinuousRecordBadge";
 import { WeatherWidget } from "@/components/WeatherWidget";
+import { OnboardingBanner } from "@/components/OnboardingBanner";
 import { getRecords } from "@/lib/storage";
 import {
   predictTomorrow,
@@ -110,6 +111,9 @@ export default function HomePage() {
         }}
       />
 
+      {/* オンボーディングバナー（初回訪問・記録ゼロ時のみ表示） */}
+      <OnboardingBanner />
+
       {/* 連続記録バッジ + 予測カード */}
       {!loading && (
         <>
@@ -175,6 +179,57 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* 3ステップで始める */}
+      <section
+        aria-labelledby="howto-heading"
+        className="mb-12 sm:mb-16"
+      >
+        <h2
+          id="howto-heading"
+          className="mb-6 text-center text-xl font-semibold text-[#e6e8ee] sm:text-2xl"
+        >
+          3 ステップで始める
+        </h2>
+        <ol className="space-y-4">
+          {[
+            {
+              step: "01",
+              title: "今日の眠りを記録する",
+              desc: "「よく眠れた」「眠れなかった」の 3 択でタップ。30 秒で完了します。",
+              href: "/record",
+            },
+            {
+              step: "02",
+              title: "7 日間続けてみる",
+              desc: "気象データは自動取得。記録を重ねるほど、あなただけのパターンが見えてきます。",
+              href: null,
+            },
+            {
+              step: "03",
+              title: "ダッシュボードで傾向を把握",
+              desc: "気圧・気温・月齢との相関グラフで、眠れない夜の原因が分かります。",
+              href: "/dashboard",
+            },
+          ].map(({ step, title, desc, href }) => (
+            <li key={step} className="flex gap-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+              <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-indigo-500/15 text-xs font-bold text-indigo-300">
+                {step}
+              </span>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-[#e6e8ee]">
+                  {href ? (
+                    <a href={href} className="hover:underline decoration-indigo-400/50">
+                      {title}
+                    </a>
+                  ) : title}
+                </p>
+                <p className="mt-0.5 text-xs leading-relaxed text-[#8b92a5]">{desc}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
 
       <section
         aria-labelledby="features-heading"

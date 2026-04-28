@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://sleep-forecast.vercel.app";
+
 export const metadata: Metadata = {
   title: "プライバシーポリシー | SleepForecast",
   description: "SleepForecastのプライバシーポリシー。iOSアプリ・Webアプリにおける位置情報、データ保存、プッシュ通知の取り扱いについて説明します。",
+  alternates: { canonical: `${SITE_URL}/privacy` },
 };
 
 export default function PrivacyPage() {

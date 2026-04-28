@@ -3,7 +3,7 @@ slug: "gaba-supplement"
 title: "GABA と睡眠をめぐる研究——サプリメントを考える前に知っておきたいこと"
 description: "GABA という成分を睡眠との関連で耳にすることが増えました。研究で語られてきた内容と、サプリメントを考えるうえで留意したいポイントを中立的に紹介します。"
 publishedAt: "2026-04-10"
-updatedAt: "2026-04-10"
+updatedAt: "2026-04-29"
 category: "生活習慣"
 tags: ["GABA", "サプリメント", "研究", "睡眠"]
 relatedSlugs: ["suimin-shitsu-up", "jiritsu-shinkei", "fuminshou-sign"]

@@ -3,7 +3,7 @@ slug: "kiatsu-zutsu"
 title: "低気圧頭痛のメカニズムと気圧変化への対策"
 description: "気圧が下がると頭痛が起きやすくなるのはなぜ？血管の拡張と自律神経の働きをもとに、気象病と呼ばれる症状の背景を分かりやすく解説します。"
 publishedAt: "2026-04-10"
-updatedAt: "2026-04-10"
+updatedAt: "2026-04-29"
 category: "気象病"
 tags: ["低気圧", "頭痛", "気象病", "自律神経"]
 relatedSlugs: ["suimin-shitsu-up", "tsuki-to-suimin"]

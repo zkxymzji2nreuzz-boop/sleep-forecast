@@ -2,10 +2,14 @@ import type { Metadata } from "next";
 import { Moon, Info } from "lucide-react";
 import { Breadcrumb } from "@/components/Breadcrumb";
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://sleep-forecast.vercel.app";
+
 export const metadata: Metadata = {
   title: "運営者情報",
   description:
     "SleepForecast（眠れる明日予報）の運営者情報・開発ストーリー・お問い合わせ先をご案内します。",
+  alternates: { canonical: `${SITE_URL}/about` },
 };
 
 export default function AboutPage() {

@@ -2,10 +2,14 @@ import type { Metadata } from "next";
 import { ExternalLink, Info } from "lucide-react";
 import { Breadcrumb } from "@/components/Breadcrumb";
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://sleep-forecast.vercel.app";
+
 export const metadata: Metadata = {
   title: "お問い合わせ",
   description:
     "SleepForecast へのお問い合わせ方法をご案内します。ご質問・ご要望は 3 営業日以内に回答いたします。",
+  alternates: { canonical: `${SITE_URL}/contact` },
 };
 
 export default function ContactPage() {

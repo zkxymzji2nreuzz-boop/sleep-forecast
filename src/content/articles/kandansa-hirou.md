@@ -3,7 +3,7 @@ slug: "kandansa-hirou"
 title: "寒暖差疲労のメカニズムと今日からできる対策"
 description: "1日の気温差が大きい季節に感じるだるさ・眠気・肩こり。寒暖差疲労の原因と、自律神経をいたわる生活習慣のヒントをわかりやすく紹介します。"
 publishedAt: "2026-04-10"
-updatedAt: "2026-04-10"
+updatedAt: "2026-04-29"
 category: "気象病"
 tags: ["寒暖差疲労", "自律神経", "気象病", "体温調節"]
 relatedSlugs: ["kiatsu-zutsu", "jiritsu-shinkei", "kisho-byo-check"]

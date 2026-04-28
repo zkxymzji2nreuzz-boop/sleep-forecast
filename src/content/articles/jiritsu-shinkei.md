@@ -3,7 +3,7 @@ slug: "jiritsu-shinkei"
 title: "自律神経の乱れと睡眠の関係——交感神経と副交感神経のスイッチを整える"
 description: "眠れない・起きられない・疲れが抜けない。その背景には自律神経の乱れが隠れているかもしれません。交感神経と副交感神経の働きと整え方を解説します。"
 publishedAt: "2026-04-10"
-updatedAt: "2026-04-10"
+updatedAt: "2026-04-29"
 category: "自律神経"
 tags: ["自律神経", "交感神経", "副交感神経", "睡眠の質"]
 relatedSlugs: ["fuminshou-sign", "kandansa-hirou", "kiatsu-zutsu"]

@@ -110,6 +110,32 @@ export default async function ArticlePage({ params }: Params) {
     },
   };
 
+  // BreadcrumbList JSON-LD（Google リッチリザルト対応）
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "ホーム",
+        item: SITE_URL,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "記事一覧",
+        item: `${SITE_URL}/articles`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: article.title,
+        item: url,
+      },
+    ],
+  };
+
   return (
     <>
       <script
@@ -118,6 +144,12 @@ export default async function ArticlePage({ params }: Params) {
         // 追加防御: </script> 早期終端を防ぐため "<" を \u003c にエスケープ。
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, "\\u003c"),
         }}
       />
       <div className="container mx-auto max-w-[680px] px-5 pt-10 sm:pt-14">

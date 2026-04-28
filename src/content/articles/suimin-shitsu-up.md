@@ -3,7 +3,7 @@ slug: "suimin-shitsu-up"
 title: "睡眠の質を上げる7つの習慣——気温・湿度の最適化から始めよう"
 description: "寝ても疲れが取れないと感じるなら、睡眠の量ではなく質を見直す時期かもしれません。寝室環境・就寝前のルーティン・気温と湿度の整え方を具体的に紹介します。"
 publishedAt: "2026-04-10"
-updatedAt: "2026-04-10"
+updatedAt: "2026-04-29"
 category: "睡眠改善"
 tags: ["睡眠の質", "生活習慣", "寝室環境", "体内時計"]
 relatedSlugs: ["kiatsu-zutsu", "tsuki-to-suimin", "suimin-fusai"]

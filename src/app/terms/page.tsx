@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://sleep-forecast.vercel.app";
+
 export const metadata: Metadata = {
   title: "利用規約 | SleepForecast",
   description: "SleepForecastの利用規約。サービスの利用条件、免責事項、医療免責をご確認ください。",
+  alternates: { canonical: `${SITE_URL}/terms` },
 };
 
 export default function TermsPage() {

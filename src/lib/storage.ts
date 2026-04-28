@@ -147,6 +147,14 @@ export function clearAll(): void {
 }
 
 /**
+ * 全記録を削除する (設定画面からのリセット用エイリアス)。
+ * clearAll() と同一。
+ */
+export function clearAllRecords(): void {
+  clearAll();
+}
+
+/**
  * デフォルト都道府県コードの取得。未設定なら null。
  */
 export function getDefaultPrefectureCode(): string | null {
