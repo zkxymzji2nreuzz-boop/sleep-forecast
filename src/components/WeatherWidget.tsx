@@ -404,7 +404,16 @@ function checkTonightPressureDrop(times: string[], pressures: number[]): boolean
   return Math.max(...tonightPressures) - Math.min(...tonightPressures) >= 3;
 }
 
+/** 当日の急変通知済み日付を記録するキー */
 const ALERT_STORAGE_KEY = "sf_pressure_alert_date";
+/** オプトインプロンプトを一度でも表示したかどうかを記録するキー */
+const OPTIN_ASKED_KEY = "sf_notification_asked";
+
+type BannerMode =
+  | "none"          // 表示しない
+  | "drop"          // 急変あり・通知許可を求める
+  | "drop-denied"   // 急変あり・拒否済み → アプリ内フォールバック
+  | "optin";        // 急変なし・初回のみオプトインプロンプト
 
 interface PressureAlertBannerProps {
   hourlyPressureTimes: string[];
@@ -412,71 +421,76 @@ interface PressureAlertBannerProps {
 }
 
 function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: PressureAlertBannerProps) {
-  const [visible, setVisible] = React.useState(false);
-  const [permState, setPermState] = React.useState<"idle" | "denied">("idle");
+  const [mode, setMode] = React.useState<BannerMode>("none");
 
   React.useEffect(() => {
     if (typeof window === "undefined") return;
     if (!("Notification" in window)) return; // iOS Safari 等は非対応
 
     const today = getTodayJST();
-    if (localStorage.getItem(ALERT_STORAGE_KEY) === today) return; // 今日通知済み
-    if (!checkTonightPressureDrop(hourlyPressureTimes, hourlyPressureValues)) return; // 急変なし
+    const hasDrop = checkTonightPressureDrop(hourlyPressureTimes, hourlyPressureValues);
+    const alreadyNotifiedToday = localStorage.getItem(ALERT_STORAGE_KEY) === today;
+    const perm = Notification.permission;
 
-    // 既に許可済みなら直接通知を送って終了
-    if (Notification.permission === "granted") {
-      new Notification("SleepForecast", {
-        body: "気圧急変の夜です。眠れなかったら明朝記録してみてください",
-        icon: "/icon-192.png",
-      });
-      localStorage.setItem(ALERT_STORAGE_KEY, today);
+    // ── 許可済み ──────────────────────────────────────────────────────────────
+    if (perm === "granted") {
+      if (hasDrop && !alreadyNotifiedToday) {
+        new Notification("SleepForecast", {
+          body: "気圧急変の夜です。眠れなかったら明朝記録してみてください",
+          icon: "/icon-192.png",
+        });
+        localStorage.setItem(ALERT_STORAGE_KEY, today);
+      }
+      return; // バナー不要
+    }
+
+    // ── 拒否済み ──────────────────────────────────────────────────────────────
+    if (perm === "denied") {
+      if (hasDrop && !alreadyNotifiedToday) {
+        localStorage.setItem(ALERT_STORAGE_KEY, today);
+        setMode("drop-denied"); // アプリ内フォールバックだけ表示
+      }
       return;
     }
 
-    // 拒否済みはアプリ内バナーだけ表示（フォールバック）
-    if (Notification.permission === "denied") {
-      setPermState("denied");
-      setVisible(true);
-      return;
+    // ── 未決（default）────────────────────────────────────────────────────────
+    if (hasDrop && !alreadyNotifiedToday) {
+      setMode("drop"); // 急変バナー（赤）
+    } else if (!localStorage.getItem(OPTIN_ASKED_KEY)) {
+      setMode("optin"); // 初回のみ静かなオプトインプロンプト
     }
-
-    // default（未決）→ バナーを表示してユーザーに選ばせる
-    setVisible(true);
   }, [hourlyPressureTimes, hourlyPressureValues]);
 
-  if (!visible) return null;
+  if (mode === "none") return null;
 
-  const handleAccept = async () => {
+  /** 許可ダイアログを呼び出して通知を送る共通処理 */
+  const requestAndNotify = async (sendIfGranted: boolean) => {
     const permission = await Notification.requestPermission();
-    const today = getTodayJST();
-    localStorage.setItem(ALERT_STORAGE_KEY, today);
-    if (permission === "granted") {
+    localStorage.setItem(OPTIN_ASKED_KEY, "true");
+    if (permission === "granted" && sendIfGranted) {
       new Notification("SleepForecast", {
         body: "気圧急変の夜です。眠れなかったら明朝記録してみてください",
         icon: "/icon-192.png",
       });
-    } else {
-      setPermState("denied");
-      return; // denied の場合はバナーをアプリ内通知として残す
+      localStorage.setItem(ALERT_STORAGE_KEY, getTodayJST());
     }
-    setVisible(false);
+    // 拒否されても mode を "none" にして閉じる（拒否フォールバックは急変時のみ）
+    setMode("none");
   };
 
-  const handleDismiss = () => {
-    localStorage.setItem(ALERT_STORAGE_KEY, getTodayJST());
-    setVisible(false);
+  const dismiss = () => {
+    if (mode === "drop") localStorage.setItem(ALERT_STORAGE_KEY, getTodayJST());
+    if (mode === "optin") localStorage.setItem(OPTIN_ASKED_KEY, "true");
+    setMode("none");
   };
 
-  return (
-    <div
-      className="mx-5 mb-4 rounded-xl border px-4 py-3"
-      style={{
-        background: "rgba(248,113,113,0.08)",
-        borderColor: "rgba(248,113,113,0.25)",
-      }}
-    >
-      {permState === "denied" ? (
-        /* 拒否済み or 許可拒否後 → アプリ内通知として表示 */
+  // ── 急変アプリ内フォールバック（拒否済み）────────────────────────────────
+  if (mode === "drop-denied") {
+    return (
+      <div
+        className="mx-5 mb-4 rounded-xl border px-4 py-3"
+        style={{ background: "rgba(248,113,113,0.08)", borderColor: "rgba(248,113,113,0.25)" }}
+      >
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-sm font-semibold" style={{ color: "#f87171" }}>
@@ -486,46 +500,63 @@ function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: Pres
               気圧急変の夜です。眠れなかったら明朝記録してみてください
             </p>
           </div>
-          <button
-            onClick={handleDismiss}
-            className="mt-0.5 flex-shrink-0 text-xs text-[#8b92a5] hover:text-[#e6e8ee]"
-            aria-label="閉じる"
-          >
-            ✕
-          </button>
+          <button onClick={dismiss} className="mt-0.5 flex-shrink-0 text-xs text-[#8b92a5] hover:text-[#e6e8ee]" aria-label="閉じる">✕</button>
         </div>
-      ) : (
-        /* default → 通知許可を求めるバナー */
-        <div>
-          <div className="mb-3 flex items-start justify-between gap-3">
-            <div>
-              <p className="text-sm font-semibold" style={{ color: "#f87171" }}>
-                🌧 今夜は気圧が急変しそうです
-              </p>
-              <p className="mt-1 text-xs text-[#8b92a5]">
-                気圧急変の日だけ、就寝前に1回お知らせします
-              </p>
-            </div>
-            <button
-              onClick={handleDismiss}
-              className="mt-0.5 flex-shrink-0 text-xs text-[#8b92a5] hover:text-[#e6e8ee]"
-              aria-label="閉じる"
-            >
-              ✕
-            </button>
+      </div>
+    );
+  }
+
+  // ── 急変バナー（通知許可を求める）────────────────────────────────────────
+  if (mode === "drop") {
+    return (
+      <div
+        className="mx-5 mb-4 rounded-xl border px-4 py-3"
+        style={{ background: "rgba(248,113,113,0.08)", borderColor: "rgba(248,113,113,0.25)" }}
+      >
+        <div className="mb-3 flex items-start justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold" style={{ color: "#f87171" }}>
+              🌧 今夜は気圧が急変しそうです
+            </p>
+            <p className="mt-1 text-xs text-[#8b92a5]">
+              気圧急変の日だけ、就寝前に1回お知らせします
+            </p>
           </div>
-          <button
-            onClick={handleAccept}
-            className="w-full rounded-lg py-2 text-sm font-semibold text-white"
-            style={{ background: "rgba(248,113,113,0.55)" }}
-          >
-            通知を受け取る
-          </button>
-          <p className="mt-2 text-center text-[10px] text-[#8b92a5]">
-            ブラウザを開いているときのみ届きます
-          </p>
+          <button onClick={dismiss} className="mt-0.5 flex-shrink-0 text-xs text-[#8b92a5] hover:text-[#e6e8ee]" aria-label="閉じる">✕</button>
         </div>
-      )}
+        <button
+          onClick={() => requestAndNotify(true)}
+          className="w-full rounded-lg py-2 text-sm font-semibold text-white"
+          style={{ background: "rgba(248,113,113,0.55)" }}
+        >
+          通知を受け取る
+        </button>
+        <p className="mt-2 text-center text-[10px] text-[#8b92a5]">ブラウザを開いているときのみ届きます</p>
+      </div>
+    );
+  }
+
+  // ── 初回オプトインプロンプト（急変なし・穏やか）──────────────────────────
+  return (
+    <div
+      className="mx-5 mb-4 rounded-xl border px-4 py-3"
+      style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.07)" }}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-xs text-[#8b92a5]">
+          気圧急変の日だけ、就寝前に1回お知らせします
+        </p>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <button
+            onClick={() => requestAndNotify(false)}
+            className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white"
+            style={{ background: "rgba(255,255,255,0.12)" }}
+          >
+            受け取る
+          </button>
+          <button onClick={dismiss} className="text-xs text-[#8b92a5] hover:text-[#e6e8ee]" aria-label="閉じる">✕</button>
+        </div>
+      </div>
     </div>
   );
 }
