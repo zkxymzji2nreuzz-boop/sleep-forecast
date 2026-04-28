@@ -779,7 +779,7 @@ function CorrelationChart() {
           <div key={q} className="flex items-center gap-1">
             <div className="w-2.5 h-2.5 rounded-full" style={{ background: QUALITY_COLORS[q] }} />
             <span className="text-[10px] text-[#8b92a5]">
-              {q === 5 ? "とても良い" : q === 4 ? "良い" : q === 3 ? "普通" : q === 2 ? "悪い" : "とてれ株い"}
+              {q === 5 ? "とても良い" : q === 4 ? "良い" : q === 3 ? "普通" : q === 2 ? "悪い" : "とても悪い"}
             </span>
           </div>
         ))}
