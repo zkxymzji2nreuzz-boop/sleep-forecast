@@ -6,6 +6,8 @@ import {
   Moon,
   Sparkles,
   Info,
+  BarChart2,
+  PenLine,
 } from "lucide-react";
 import type { ArticleFull, ArticleMeta } from "@/lib/types";
 import { AdBanner } from "@/components/AdBanner";
@@ -29,6 +31,88 @@ type Props = {
  *   - F003/F004 と揃えた indigo→purple→rose のウェルネスグラデーションを継承
  *   - 境界線は border ではなくグラデーションディバイダーで柔らかく表現
  */
+// ---------------------------------------------------------------------------
+// RelatedActions (REQ-21)
+// ---------------------------------------------------------------------------
+
+/**
+ * 記事のカテゴリ・タグに応じた「次に試してほしいアクション」を提案するカード。
+ * カテゴリ × タグマッチングで最大2件のアクションリンクを生成する。
+ */
+function RelatedActions({ article }: { article: ArticleFull }) {
+  type Action = {
+    href: string;
+    icon: React.ReactNode;
+    label: string;
+    description: string;
+  };
+
+  const actions: Action[] = [];
+
+  const tags = article.tags.map((t) => t.toLowerCase());
+  const cat = article.category.toLowerCase();
+
+  // 睡眠記録を促すアクション（汎用・常時追加）
+  actions.push({
+    href: "/record",
+    icon: <PenLine className="h-4 w-4 text-indigo-300" aria-hidden />,
+    label: "今日の睡眠を記録する",
+    description: "記録を続けると、気象との相関があなただけのグラフで見えてきます。",
+  });
+
+  // ダッシュボードへのアクション（気圧・相関・分析系タグがある場合）
+  const dashboardTriggers = ["気圧", "相関", "分析", "睡眠改善", "気象病", "自律神経", "低気圧"];
+  const needsDashboard = dashboardTriggers.some(
+    (k) => tags.includes(k) || cat.includes(k)
+  );
+  if (needsDashboard) {
+    actions.push({
+      href: "/dashboard",
+      icon: <BarChart2 className="h-4 w-4 text-purple-300" aria-hidden />,
+      label: "ダッシュボードで分析する",
+      description: "記録データから気圧・月齢別の睡眠パターンを確認できます。",
+    });
+  }
+
+  // 記事一覧へのアクション（記事が2本以上ある補完用）
+  if (actions.length < 2) {
+    actions.push({
+      href: "/articles",
+      icon: <Sparkles className="h-4 w-4 text-rose-300" aria-hidden />,
+      label: "ほかの読みものを見る",
+      description: "気象病・睡眠・自律神経に関するコラムをまとめています。",
+    });
+  }
+
+  return (
+    <section
+      aria-label="この記事を読んだ方へのおすすめアクション"
+      className="mt-12 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6"
+    >
+      <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-[#e6e8ee]">
+        <Sparkles className="h-3.5 w-3.5 text-indigo-300" aria-hidden />
+        この記事を読んだ次のステップ
+      </h2>
+      <ul className="space-y-3">
+        {actions.slice(0, 2).map((action) => (
+          <li key={action.href}>
+            <Link
+              href={action.href}
+              className="flex items-start gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 transition-all duration-300 hover:border-indigo-300/25 hover:bg-gradient-to-br hover:from-indigo-500/[0.08] hover:to-purple-500/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300"
+            >
+              <span className="mt-0.5 flex-shrink-0">{action.icon}</span>
+              <div>
+                <p className="text-sm font-semibold text-[#e6e8ee]">{action.label}</p>
+                <p className="mt-0.5 text-xs leading-relaxed text-[#9ba3b5]">{action.description}</p>
+              </div>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export function ArticleLayout({ article, related }: Props) {
   return (
     <article className="container mx-auto max-w-[680px] px-5 pb-20 pt-10 sm:pt-14">
@@ -121,6 +205,9 @@ export function ArticleLayout({ article, related }: Props) {
 
       {/* 広告スロット: 記事中間〜末尾 */}
       <AdBanner slot="article-mid" format="rectangle" className="mt-10" />
+
+      {/* 関連アクション (REQ-21) */}
+      <RelatedActions article={article} />
 
       {/* CTA区切り */}
       <div className="mt-14 h-px bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent" />
