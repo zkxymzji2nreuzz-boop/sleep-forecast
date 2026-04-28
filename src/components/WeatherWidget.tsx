@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * WeatherWidget v5 — P0ブラッシュアップ版
+ * WeatherWidget v5 — P0ブラッシヮアップ版
  *
  * レイアウト順:
  * 1. 今日の天気（テーブル形式）
@@ -107,7 +107,7 @@ function pressureArrow(delta: number): { arrow: string; color: string } {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function getWSIBadge(score100: number): { badge: string; color: string } {
-  if (score100 >= 80) return { badge: "とても良い夜", color: "#10b981" };
+  if (score100 >= 80) return { badge: "とてよ良い夜", color: "#10b981" };
   if (score100 >= 65) return { badge: "良い夜",       color: "#4a90d9" };
   if (score100 >= 45) return { badge: "普通の夜",     color: "#8b98a5" };
   if (score100 >= 25) return { badge: "注意の夜",     color: "#f59e0b" };
@@ -358,7 +358,7 @@ function CountdownBand({ hourlyPressureTimes, hourlyPressureValues }: CountdownB
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ⑤ 気圧グラフ（Chart.js版、今夜18時〜翌7時）
+// ⑤ 気圧グラフ（Chart.js版、現在時刻〜13時間後のローリングウィンドウ）
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface NightPressureChartProps {
@@ -376,31 +376,30 @@ function getSegmentColor(delta: number): { color: string; width: number } {
 function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: NightPressureChartProps) {
   const chartRef = React.useRef<ChartJS<"line"> | null>(null);
 
-  // 今夜18時〜翌朝7時（13ポイント）を抽出
-  const now = new Date();
-  const nowMs = now.getTime();
+  // 現在時刻から13時間後まで（ローリングウィンドウ）を抽出
+  const nowMs = Date.now();
 
-  // 今夜の18時 JST を計算
-  const jstNow = new Date(nowMs + 9 * 3600 * 1000);
-  const jstYear = jstNow.getUTCFullYear();
-  const jstMonth = jstNow.getUTCMonth();
-  const jstDate = jstNow.getUTCDate();
+  // 現在JST時刻を「時単位に切り捨て」したUTCエポックを計算
+  const jstNowMs = nowMs + 9 * 3600 * 1000;
+  const currentJstHourStartJst = Math.floor(jstNowMs / 3600000) * 3600000;
+  const currentHourStartUtc = currentJstHourStartJst - 9 * 3600 * 1000;
 
-  // 対象時間帯のデータを抽出
+  // 翌日判定用：現在のJST日付
+  const jstNowDateObj = new Date(currentJstHourStartJst);
+  const jstTodayDate = jstNowDateObj.getUTCDate();
+
+  // 対象時間帯のデータを抽出（現在時刻〜+13時間、14ポイント）
   const targetPoints: { label: string; value: number; isNow: boolean; delta: number }[] = [];
 
-  // 18時から7時まで1時間ごとに探す
-  const targetHours: number[] = [];
-  for (let h = 18; h <= 31; h++) {
-    targetHours.push(h); // 18-23が今夜、24-31が翌0-7時
-  }
+  for (let offset = 0; offset <= 13; offset++) {
+    const targetUtcMs = currentHourStartUtc + offset * 3600 * 1000;
+    const targetJstMs = targetUtcMs + 9 * 3600 * 1000;
+    const targetJstDateObj = new Date(targetJstMs);
+    const targetJstHour = targetJstDateObj.getUTCHours();
+    const isTomorrow = targetJstDateObj.getUTCDate() !== jstTodayDate;
 
-  for (const h of targetHours) {
-    const jstHour = h % 24;
-    // JST→UTC変換: JST18〜23時 → UTC9〜14時(同日), JST翌0〜7時 → UTC15〜22時(同日)
-    // いずれも jstDate の UTC 時刻に収まるため dOffset は常に 0
-    const utcHour = jstHour - 9 + (jstHour < 9 ? 24 : 0);
-    const correctedUtcMs = Date.UTC(jstYear, jstMonth, jstDate, utcHour, 0, 0);
+    const label = isTomorrow ? `翌${targetJstHour}時` : `${targetJstHour}時`;
+    const isNow = offset === 0; // 最初のポイントが常に現在時刻
 
     // 対応するhourlyデータを探す（±30分以内）
     let bestIdx = -1;
@@ -410,16 +409,12 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
       const tMs = timeStr.includes("+") || timeStr.includes("Z")
         ? Date.parse(timeStr)
         : Date.parse(timeStr + "+09:00");
-      const diff = Math.abs(tMs - correctedUtcMs);
+      const diff = Math.abs(tMs - targetUtcMs);
       if (diff < bestDiff && diff <= 1800000) {
         bestDiff = diff;
         bestIdx = i;
       }
     }
-
-    const labelH = h % 24;
-    const label = h >= 24 ? `翌${labelH}時` : `${labelH}時`;
-    const isNow = Math.abs(correctedUtcMs - nowMs) < 1800000;
 
     if (bestIdx >= 0) {
       const value = hourlyPressureValues[bestIdx];
@@ -611,9 +606,9 @@ interface WakeupForecastProps {
 }
 
 function getWakeupLevel(score100: number): { name: string; color: string; level: number } {
-  if (score100 >= 80) return { name: "スッキリ",   color: "#10b981", level: 5 };
+  if (score100 >= 80) return { name: "スックリ",   color: "#10b981", level: 5 };
   if (score100 >= 65) return { name: "おだやか",   color: "#4a90d9", level: 4 };
-  if (score100 >= 45) return { name: "ふつう",     color: "#8b98a5", level: 3 };
+  if (score100 >= 45) return { name: "ふてう",     color: "#8b98a5", level: 3 };
   if (score100 >= 25) return { name: "うとうと",   color: "#f59e0b", level: 2 };
   return                     { name: "どんより",   color: "#8b98a5", level: 1 };
 }
@@ -663,7 +658,7 @@ function WakeupForecastCard({ hourlyPressureTimes, hourlyPressureValues, current
         border: `1px solid ${color}30`,
       }}
     >
-      <p className="text-xs font-semibold text-[#8b92a5] mb-3">☀️ 明日の目覚め予報</p>
+      <p className="text-xs font-semibold text-[#8b92a5] mb-3">☀️ 明日の目覚ぁ予報</p>
 
       <span
         className="text-2xl font-black"
@@ -784,7 +779,7 @@ function CorrelationChart() {
           <div key={q} className="flex items-center gap-1">
             <div className="w-2.5 h-2.5 rounded-full" style={{ background: QUALITY_COLORS[q] }} />
             <span className="text-[10px] text-[#8b92a5]">
-              {q === 5 ? "とても良い" : q === 4 ? "良い" : q === 3 ? "普通" : q === 2 ? "悪い" : "とても悪い"}
+              {q === 5 ? "とてが良い" : q === 4 ? "良い" : q === 3 ? "普通" : q === 2 ? "悪い" : "とてれ株い"}
             </span>
           </div>
         ))}
@@ -918,7 +913,7 @@ export function WeatherWidget() {
   // ── ローディング ──
   if (loading) return <WeatherWidgetSkeleton />;
 
-  // ── エラー ──
+  // ── エラヸ ──
   if (error || !data || !wsiScore) {
     return (
       <div className="rounded-2xl border border-white/5 bg-[#1a1f2e] p-5">
@@ -987,11 +982,11 @@ export function WeatherWidget() {
 
       <div className="mx-5 border-t border-white/5" />
 
-      {/* ── ⑤ 気圧グラフ（今夜18時〜翌7時、Chart.js） ── */}
+      {/* ── ⑤ 気圧グラフ（現在時刻〜13時間後、Chart.js） ── */}
       {data.hourlyPressure.values.length > 1 && (
         <div className="px-5 pt-5 pb-4">
           <p className="mb-3 text-xs font-semibold text-[#8b92a5] tracking-wide uppercase">
-            気圧推移（今夜〜翌朝）
+            気圧推移（これから13時間）
           </p>
           <NightPressureChart
             hourlyPressureTimes={data.hourlyPressure.times}
