@@ -9,12 +9,12 @@
  *   3. 散布図 + 回帰直線 — 気圧 × 睡眠品質
  *   4. 気象別平均グラフ (Tabs: 気圧別 / 月齢別)
  *
- * その下に自然言語インサイト、最下部に医療免責を配置する。
+ * その下に医療免責を配置する。
  *
  * デモ/リアル切替:
- *   - localStorage 記録 0〜9 件: DEMO_RECORDS 表示 + サンプルバナー
+ *   - localStorage 記録 0〜9 件: フル分析グラフはロック表示
  *   - 10 件以上: 実データ表示
- *   - SSR 対策: マウント前は DEMO_RECORDS を初期値として描画し、
+ *   - SSR 対策: マウント前は空配列を初期値として描画し、
  *               useEffect で実データに差し替える (hydration safe)
  */
 
@@ -100,9 +100,22 @@ ChartJS.defaults.font.family = "'Inter', sans-serif";
 // ---------------------------------------------------------------------------
 // 定数
 // ---------------------------------------------------------------------------
+/** 折れ線グラフの解放に必要な最小記録数 */
+const LINE_THRESHOLD = 5;
+/** 散布図・気象別グラフの解放に必要な最小記録数 */
 const DEMO_THRESHOLD = 10;
 
+/** グラフ Y 軸ラベル用（短縮版：幅を節約） */
 const QUALITY_LABEL_MAP: Record<1 | 2 | 3 | 4 | 5, string> = {
+  1: "最低",
+  2: "悪い",
+  3: "普通",
+  4: "良い",
+  5: "最高",
+};
+
+/** ツールチップ・テキスト表示用（フル版） */
+const QUALITY_FULL_MAP: Record<1 | 2 | 3 | 4 | 5, string> = {
   1: "とても悪い",
   2: "悪い",
   3: "普通",
@@ -233,7 +246,8 @@ function buildLineOptions(): ChartOptions<"line"> {
           label: (ctx: TooltipItem<"line">) => {
             const q = Math.round(Number(ctx.parsed.y)) as 1 | 2 | 3 | 4 | 5;
             if (q < 1 || q > 5) return "";
-            return `品質: ${QUALITY_LABEL_MAP[q]} (${q})`;
+            // ツールチップにはフル版ラベルを使う
+            return `品質: ${QUALITY_FULL_MAP[q]} (${q})`;
           },
         },
       },
@@ -253,6 +267,7 @@ function buildLineOptions(): ChartOptions<"line"> {
         ticks: {
           stepSize: 1,
           color: "#8b92a5",
+          // Y 軸は短縮ラベルを使って横幅を節約する
           callback: (value) => {
             const v = Number(value);
             if (!Number.isInteger(v) || v < 1 || v > 5) return "";
@@ -463,26 +478,6 @@ export default function DashboardPage() {
         </p>
       </header>
 
-      {/* 記録が少ない場合の促進バナー */}
-      {records.length < DEMO_THRESHOLD && records.length > 0 && (
-        <div className="mb-6 flex flex-col gap-3 rounded-lg border border-sky-400/30 bg-sky-500/5 p-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-gray-200">
-            📈 あと <span className="font-bold text-sky-400">{DEMO_THRESHOLD - records.length} 日</span> 記録するとフル分析が見られます。
-          </p>
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-            className="border-sky-400/50 bg-transparent text-sky-400 hover:bg-sky-500/10 hover:text-sky-300"
-          >
-            <Link href="/record">
-              今日を記録する
-              <ArrowRight className="ml-1 h-4 w-4" aria-hidden />
-            </Link>
-          </Button>
-        </div>
-      )}
-
       {/* 予測カード */}
       {prediction && (
         <div className="mb-8">
@@ -490,15 +485,21 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* KPI カード */}
+      {/* ── ① KPI カード ── */}
       <section
         aria-label="睡眠 KPI サマリー"
         className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4"
       >
+        {/* 7日平均: サブラベルに言語解釈を添える */}
         <KpiCard
           icon={<TrendingUp className="h-4 w-4" aria-hidden />}
           label="7 日平均品質"
           value={stats.avg7Days !== null ? stats.avg7Days.toFixed(1) : "--"}
+          subtitle={
+            stats.avg7Days !== null
+              ? QUALITY_FULL_MAP[Math.round(stats.avg7Days) as 1 | 2 | 3 | 4 | 5]
+              : undefined
+          }
         />
         <KpiCard
           icon={<CalendarDays className="h-4 w-4" aria-hidden />}
@@ -514,81 +515,20 @@ export default function DashboardPage() {
           label="最長連続"
           value={stats.longestStreak > 0 ? `${stats.longestStreak}日` : "--"}
         />
+        {/* worstDay: 日付をメイン値・品質をサブラベルに分けてスッキリ表示 */}
         <KpiCard
           icon={<Moon className="h-4 w-4" aria-hidden />}
           label="最も浅かった日"
-          value={
+          value={stats.worstDay ? toShortLabel(stats.worstDay.date) : "--"}
+          subtitle={
             stats.worstDay
-              ? `${toShortLabel(stats.worstDay.date)} (品質${stats.worstDay.quality})`
-              : "--"
+              ? QUALITY_FULL_MAP[stats.worstDay.quality as 1 | 2 | 3 | 4 | 5]
+              : undefined
           }
-          small
         />
       </section>
 
-      {/* 折れ線グラフ: quality 推移 */}
-      <ChartCard title="過去 30 日の睡眠品質推移">
-        <div className="h-[200px] overflow-hidden md:h-[280px]">
-          <Line
-            data={lineData}
-            options={lineOptions}
-            aria-label="過去 30 日の睡眠品質推移 折れ線グラフ"
-            role="img"
-          />
-        </div>
-      </ChartCard>
-
-      {/* 散布図 + 回帰直線 */}
-      <ChartCard title="気圧と睡眠品質の関係">
-        <div className="h-[220px] overflow-hidden md:h-[280px]">
-          <CorrelationChart records={records} height={280} />
-        </div>
-      </ChartCard>
-
-      {/* 気象別平均 (Tabs) */}
-      <ChartCard title="気象別の平均品質">
-        <Tabs defaultValue="pressure" className="w-full">
-          <TabsList className="mb-3 grid w-full grid-cols-2 gap-1 bg-[#0f1117] p-1">
-            <TabsTrigger
-              value="pressure"
-              className="rounded-md text-[#8b92a5] data-[state=active]:bg-[#1d9bf0]/10 data-[state=active]:text-[#1d9bf0] data-[state=active]:shadow-none"
-            >
-              気圧別
-            </TabsTrigger>
-            <TabsTrigger
-              value="moon"
-              className="rounded-md text-[#8b92a5] data-[state=active]:bg-[#1d9bf0]/10 data-[state=active]:text-[#1d9bf0] data-[state=active]:shadow-none"
-            >
-              月齢別
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="pressure" className="mt-0">
-            <div className="h-[180px] overflow-hidden md:h-[240px]">
-              <Bar
-                data={pressureBarData}
-                options={barOptions}
-                aria-label="気圧別の平均睡眠品質"
-                role="img"
-              />
-            </div>
-          </TabsContent>
-          <TabsContent value="moon" className="mt-0">
-            <div className="h-[180px] overflow-hidden md:h-[240px]">
-              <Bar
-                data={moonBarData}
-                options={barOptions}
-                aria-label="月齢別の平均睡眠品質"
-                role="img"
-              />
-            </div>
-          </TabsContent>
-        </Tabs>
-      </ChartCard>
-
-      {/* 広告スロット: チャートセクション下 */}
-      <AdBanner slot="dashboard-charts" format="horizontal" className="mb-6" />
-
-      {/* 自然言語インサイト — B案: 感情別カラー */}
+      {/* ── ② インサイト（KPI直下・グラフより先に表示） ── */}
       {insights.length > 0 && (
         <section aria-label="睡眠インサイト" className="mb-6 space-y-3">
           <h2 className="mb-2 text-sm font-semibold text-[#e6e8ee]">
@@ -610,8 +550,107 @@ export default function DashboardPage() {
         </section>
       )}
 
+      {/* ── ③ 折れ線グラフ: quality 推移（5件未満はロック） ── */}
+      <ChartCard title="過去 30 日の睡眠品質推移">
+        <LockedChart needed={LINE_THRESHOLD} current={records.length}>
+          <div className="h-[200px] overflow-hidden md:h-[280px]">
+            <Line
+              data={lineData}
+              options={lineOptions}
+              aria-label="過去 30 日の睡眠品質推移 折れ線グラフ"
+              role="img"
+            />
+          </div>
+        </LockedChart>
+      </ChartCard>
+
+      {/* ── ④ 散布図 + 回帰直線（10件未満はロック） ── */}
+      <ChartCard title="気圧と睡眠品質の関係">
+        <LockedChart needed={DEMO_THRESHOLD} current={records.length}>
+          <div className="h-[220px] overflow-hidden md:h-[280px]">
+            <CorrelationChart records={records} height={280} />
+          </div>
+        </LockedChart>
+      </ChartCard>
+
+      {/* ── ⑤ 気象別平均 (Tabs)（10件未満はロック） ── */}
+      <ChartCard title="気象別の平均品質">
+        <LockedChart needed={DEMO_THRESHOLD} current={records.length}>
+          <Tabs defaultValue="pressure" className="w-full">
+            <TabsList className="mb-3 grid w-full grid-cols-2 gap-1 bg-[#0f1117] p-1">
+              <TabsTrigger
+                value="pressure"
+                className="rounded-md text-[#8b92a5] data-[state=active]:bg-[#1d9bf0]/10 data-[state=active]:text-[#1d9bf0] data-[state=active]:shadow-none"
+              >
+                気圧別
+              </TabsTrigger>
+              <TabsTrigger
+                value="moon"
+                className="rounded-md text-[#8b92a5] data-[state=active]:bg-[#1d9bf0]/10 data-[state=active]:text-[#1d9bf0] data-[state=active]:shadow-none"
+              >
+                月齢別
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="pressure" className="mt-0">
+              <div className="h-[180px] overflow-hidden md:h-[240px]">
+                <Bar
+                  data={pressureBarData}
+                  options={barOptions}
+                  aria-label="気圧別の平均睡眠品質"
+                  role="img"
+                />
+              </div>
+            </TabsContent>
+            <TabsContent value="moon" className="mt-0">
+              <div className="h-[180px] overflow-hidden md:h-[240px]">
+                <Bar
+                  data={moonBarData}
+                  options={barOptions}
+                  aria-label="月齢別の平均睡眠品質"
+                  role="img"
+                />
+              </div>
+            </TabsContent>
+          </Tabs>
+        </LockedChart>
+      </ChartCard>
+
+      {/* 広告スロット: チャートセクション下 */}
+      <AdBanner slot="dashboard-charts" format="horizontal" className="mb-6" />
+
+      {/* ── ⑥ 「今日を記録する」CTA — 常時表示 ── */}
+      <div className="mb-6 flex items-center justify-between gap-3 rounded-lg border border-violet-400/20 bg-violet-500/5 p-4">
+        <div>
+          <p className="text-sm font-medium text-[#e6e8ee]">今日の眠りを記録する</p>
+          <p className="mt-0.5 text-xs text-[#8b92a5]">毎日記録すると、あなただけの傾向が見えてきます</p>
+        </div>
+        <Button
+          asChild
+          size="sm"
+          className="flex-shrink-0 bg-[#a78bfa] text-white hover:bg-[#9061f9]"
+        >
+          <Link href="/record">
+            記録する
+            <ArrowRight className="ml-1 h-4 w-4" aria-hidden />
+          </Link>
+        </Button>
+      </div>
+
+      {/* ── ⑦ 記録促進バナー（下部へ移動・ページ冒頭の圧迫感を解消） ── */}
+      {records.length > 0 && records.length < DEMO_THRESHOLD && (
+        <div className="mb-6 rounded-lg border border-sky-400/30 bg-sky-500/5 p-3">
+          <p className="text-sm text-gray-200">
+            📈 あと{" "}
+            <span className="font-bold text-sky-400">
+              {DEMO_THRESHOLD - records.length} 日
+            </span>{" "}
+            記録するとフル分析が解放されます。引き続き記録を続けてみてください。
+          </p>
+        </div>
+      )}
+
       {/* 医療免責 — C案要素取り込み: AlertCircle + amber テキスト */}
-      <div className="mt-6 rounded-md border border-amber-700/30 bg-amber-900/10 px-4 py-3">
+      <div className="mt-2 rounded-md border border-amber-700/30 bg-amber-900/10 px-4 py-3">
         <div className="flex items-start gap-2 text-xs text-amber-200">
           <AlertCircle
             className="mt-0.5 h-4 w-4 shrink-0 text-amber-500"
@@ -636,11 +675,13 @@ type KpiCardProps = {
   icon: React.ReactNode;
   label: string;
   value: string;
-  /** 文字数が多い (例: "04/03 (品質1)") 場合に 1 段階小さくする */
+  /** 値の下に表示するサブラベル（例: 品質の言語解釈 "普通" など） */
+  subtitle?: string;
+  /** 文字数が多い場合に 1 段階小さくする */
   small?: boolean;
 };
 
-function KpiCard({ icon, label, value, small }: KpiCardProps) {
+function KpiCard({ icon, label, value, subtitle, small }: KpiCardProps) {
   return (
     // B案: グラデーション背景 + ホバー時 violet ボーダー
     <div className="flex flex-col gap-2 rounded-xl border border-gray-700/50 bg-gradient-to-br from-gray-900 to-[#161a24] p-4 shadow-md transition-all duration-200 hover:border-violet-400/30 hover:shadow-lg">
@@ -655,6 +696,9 @@ function KpiCard({ icon, label, value, small }: KpiCardProps) {
       >
         {value}
       </p>
+      {subtitle && (
+        <p className="text-xs text-[#8b92a5]">{subtitle}</p>
+      )}
     </div>
   );
 }
@@ -670,5 +714,42 @@ function ChartCard({ title, children }: ChartCardProps) {
       <h2 className="mb-3 text-sm font-semibold text-[#e6e8ee]">{title}</h2>
       {children}
     </section>
+  );
+}
+
+type LockedChartProps = {
+  /** 解放に必要な最小記録数 */
+  needed: number;
+  /** 現在の記録数 */
+  current: number;
+  children: React.ReactNode;
+};
+
+/**
+ * 記録数が閾値未満のとき、グラフをぼかしてロックオーバーレイを表示する。
+ * 閾値以上なら children をそのまま描画する。
+ */
+function LockedChart({ needed, current, children }: LockedChartProps) {
+  if (current >= needed) return <>{children}</>;
+  const remaining = needed - current;
+  return (
+    <div className="relative overflow-hidden rounded-lg">
+      {/* グラフ本体: ぼかし + 半透明でロック感を演出 */}
+      <div className="pointer-events-none select-none opacity-20 blur-[3px]">
+        {children}
+      </div>
+      {/* ロックオーバーレイ */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-gray-700/60 bg-[#0f1117]/90 px-6 py-4 text-center shadow-lg">
+          <span className="text-2xl" aria-hidden>🔒</span>
+          <p className="text-sm font-semibold text-[#e6e8ee]">
+            あと{" "}
+            <span className="text-violet-400">{remaining} 件</span>{" "}
+            で解放
+          </p>
+          <p className="text-xs text-[#8b92a5]">記録を続けると分析が見えてきます</p>
+        </div>
+      </div>
+    </div>
   );
 }
