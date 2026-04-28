@@ -545,6 +545,7 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
           color: "#8b92a5",
           font: { size: 9 },
           maxRotation: 0,
+          autoSkip: false,
           callback: (_: unknown, index: number) => {
             return targetPoints[index]?.label ?? "";
           },
