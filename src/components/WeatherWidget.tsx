@@ -223,7 +223,7 @@ function TodayWeatherSection({ hourlyWeather }: { hourlyWeather: HourlyWeatherDa
 // ─────────────────────────────────────────────────────────────────────────────
 
 const WEEKLY_ROW_H = 36;
-const WEEKLY_LABEL_ROWS = ["日付", "天気", "最高", "最低", "降水確率", "気圧帯", "月相"];
+const WEEKLY_LABEL_ROWS = ["日付", "天気", "最高", "最低", "降水確率", "気圧帯", "月相（参考）"];
 
 function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
   const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
@@ -308,7 +308,13 @@ function SleepScoreHero({ score100, wsiScore, hints }: { score100: number; wsiSc
       </div>
 
       {/* タップで内訳 */}
-      <p className="text-xs text-[#8b92a5]">
+      <p className="text-xs text-[#8b92a5] flex items-center gap-1.5">
+        {!expanded && (
+          <span
+            className="inline-block w-2 h-2 rounded-full flex-shrink-0"
+            style={{ background: score100 >= 80 ? "#10b981" : score100 >= 45 ? "#8b92a5" : score100 >= 25 ? "#f59e0b" : "#f87070" }}
+          />
+        )}
         タップで内訳を見る {expanded ? "∧" : "∨"}
       </p>
 
@@ -355,6 +361,8 @@ function SleepScoreHero({ score100, wsiScore, hints }: { score100: number; wsiSc
               <span>{hints[0]}</span>
             </div>
           )}
+          {/* ⑤ スコアは目安である旨を明示 */}
+          <p className="mt-2 text-[9px] text-[#8b92a5] text-right">※ スコアは目安です</p>
         </div>
       )}
     </div>
@@ -799,7 +807,7 @@ function CorrelationChart() {
     <div>
       {isSample && (
         <div className="mb-3 rounded-xl border border-[#facc15]/20 bg-[#facc15]/5 px-3 py-2 text-xs text-[#facc15]">
-          サンプル表示中 — 睡眠記録が 5 件以上貯まると実データに切り替わります
+          サンプル表示中 — 1週間分の気圧データと照合すると傾向が見えてきます
         </div>
       )}
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full" aria-label="睡眠品質と気圧の相関グラフ">

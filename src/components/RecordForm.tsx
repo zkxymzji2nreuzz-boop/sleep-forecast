@@ -41,6 +41,7 @@ import {
 } from "@/lib/storage";
 import type { SleepQuality, SleepRecord, WeatherData } from "@/lib/types";
 import { fetchWeather, getMoonData } from "@/lib/weather";
+import { computeWSIScore100 } from "@/lib/wsi";
 
 /** 3 択評価マスタ */
 const QUALITY_OPTIONS: Array<{
@@ -156,6 +157,33 @@ export function RecordForm(): JSX.Element {
   }, [allRecords]);
 
   const isUpdate = existingRecord !== null;
+
+  // ⑥ 昨夜の予報との照合用: 前日の記録からWSIスコアを概算
+  const yesterdayRecord = React.useMemo(() => {
+    if (allRecords.length === 0) return null;
+    const todayStr = formatDateJst(new Date());
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const yesterdayStr = formatDateJst(new Date(new Date(`${todayStr}T00:00:00+09:00`).getTime() - msPerDay));
+    return allRecords.find((r) => r.date === yesterdayStr) ?? null;
+  }, [allRecords]);
+
+  const yesterdayScore = React.useMemo(() => {
+    if (!yesterdayRecord) return null;
+    const w = yesterdayRecord.weather;
+    return computeWSIScore100(
+      w.pressureDeltaHpa / 4, // 24h → 6h 近似
+      0,                       // tempDelta 不明のため 0
+      w.humidity,
+      w.apparentTemperatureC
+    );
+  }, [yesterdayRecord]);
+
+  const yesterdayBadge = yesterdayScore === null ? null
+    : yesterdayScore >= 80 ? { label: "とても良い夜", color: "#10b981" }
+    : yesterdayScore >= 65 ? { label: "良い夜", color: "#4a90d9" }
+    : yesterdayScore >= 45 ? { label: "普通の夜", color: "#8b92a5" }
+    : yesterdayScore >= 25 ? { label: "注意の夜", color: "#f59e0b" }
+    : { label: "難しい夜", color: "#f87070" };
 
   const handleQualityPick = (value: SleepQuality): void => {
     setForm((prev) => ({ ...prev, quality: value }));
@@ -320,6 +348,18 @@ export function RecordForm(): JSX.Element {
         <p className="mt-2 text-sm text-[#8b92a5]">毎朝15秒でOK。気象データは自動で取得します。</p>
       </div>
 
+      {/* ⑥ 昨夜の予報との照合 */}
+      {yesterdayBadge && yesterdayScore !== null && (
+        <div className="mb-4 rounded-xl border border-white/8 bg-white/4 px-4 py-3">
+          <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-[#8b92a5]">昨夜の予報</p>
+          <p className="text-sm text-[#e6e8ee]">
+            <span className="font-semibold" style={{ color: yesterdayBadge.color }}>{yesterdayBadge.label}</span>
+            <span className="ml-1.5 tabular-nums text-[#8b92a5]">（{yesterdayScore}点）</span>
+          </p>
+          <p className="mt-1 text-xs text-[#8b92a5]">実際はどうでしたか？↓</p>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} noValidate>
         <Card className="border-0 bg-transparent shadow-none">
           <CardContent className="space-y-8 p-0 sm:p-2">
@@ -432,7 +472,13 @@ export function RecordForm(): JSX.Element {
                 ) : isUpdate ? "今日の記録を更新する" : "記録する"}
               </Button>
               <p className="mt-2 text-center text-[11px] text-[#8b92a5]">
-                記録が増えると予測精度が上がります 📈
+                {allRecords.length === 0
+                  ? "毎朝の記録が予報の精度を上げます 📈"
+                  : allRecords.length < 4
+                    ? `あと${7 - allRecords.length}件で気圧との相関グラフが表示されます 📊`
+                    : allRecords.length < 7
+                      ? `もうすぐ！あと${7 - allRecords.length}件でグラフ解禁です 📊`
+                      : "記録が増えるほど予測が精緻になります 🎯"}
               </p>
               <div className="mt-6 text-center">
                 <Link href="/" className="text-sm text-[#8b92a5] underline-offset-4 hover:text-[#8b92a5]/70 hover:underline">
