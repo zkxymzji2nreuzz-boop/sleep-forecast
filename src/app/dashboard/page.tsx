@@ -93,7 +93,7 @@ ChartJS.register(
   Legend,
   Filler
 );
-ChartJS.defaults.color = "#8b92a5";
+ChartJS.defaults.color = "#9ba3b5";
 ChartJS.defaults.borderColor = "rgba(139, 146, 165, 0.15)";
 ChartJS.defaults.font.family = "'Inter', sans-serif";
 
@@ -124,7 +124,7 @@ const QUALITY_FULL_MAP: Record<1 | 2 | 3 | 4 | 5, string> = {
 };
 
 const PRESSURE_BUCKETS = ["急上昇 (+3以上)", "横ばい", "急低下 (-3以下)"] as const;
-const PRESSURE_BUCKET_COLORS = ["#4ade80", "#8b92a5", "#ef4444"];
+const PRESSURE_BUCKET_COLORS = ["#4ade80", "#9ba3b5", "#ef4444"];
 
 const MOON_BUCKETS = [
   "新月期 (0〜0.1)",
@@ -221,7 +221,7 @@ const TOOLTIP_BASE = {
   borderColor: "#1d9bf0",
   borderWidth: 1,
   titleColor: "#e6e8ee",
-  bodyColor: "#8b92a5",
+  bodyColor: "#9ba3b5",
   padding: 10,
 } as const;
 
@@ -256,7 +256,7 @@ function buildLineOptions(): ChartOptions<"line"> {
       x: {
         grid: { color: "rgba(139, 146, 165, 0.10)" },
         ticks: {
-          color: "#8b92a5",
+          color: "#9ba3b5",
           maxRotation: 0,
           autoSkipPadding: 16,
         },
@@ -266,7 +266,7 @@ function buildLineOptions(): ChartOptions<"line"> {
         max: 5,
         ticks: {
           stepSize: 1,
-          color: "#8b92a5",
+          color: "#9ba3b5",
           // Y 軸は短縮ラベルを使って横幅を節約する
           callback: (value) => {
             const v = Number(value);
@@ -303,12 +303,12 @@ function buildBarOptions(): ChartOptions<"bar"> {
     scales: {
       x: {
         grid: { color: "rgba(139, 146, 165, 0.10)" },
-        ticks: { color: "#8b92a5", font: { size: 10 } },
+        ticks: { color: "#9ba3b5", font: { size: 10 } },
       },
       y: {
         min: 0,
         max: 5,
-        ticks: { stepSize: 0.5, color: "#8b92a5" },
+        ticks: { stepSize: 0.5, color: "#9ba3b5" },
         grid: { color: "rgba(139, 146, 165, 0.10)" },
       },
     },
@@ -443,7 +443,7 @@ export default function DashboardPage() {
         <Breadcrumb items={[{ name: "ホーム", href: "/" }, { name: "ダッシュボード" }]} />
         <header className="mb-6">
           <h1 className="text-2xl font-bold text-[#e6e8ee]">睡眠ダッシュボード</h1>
-          <p className="mt-1 text-sm text-[#8b92a5]">
+          <p className="mt-1 text-sm text-[#9ba3b5]">
             過去 30 日の記録から、気象と睡眠品質の関係を分析します。
           </p>
         </header>
@@ -451,7 +451,7 @@ export default function DashboardPage() {
           <Moon className="h-12 w-12 text-violet-400 opacity-60" aria-hidden />
           <div>
             <h2 className="text-lg font-semibold text-[#e6e8ee]">まだ記録がありません</h2>
-            <p className="mt-2 text-sm text-[#8b92a5]">
+            <p className="mt-2 text-sm text-[#9ba3b5]">
               毎日の睡眠を記録すると、気圧との関係やあなただけのパターンが見えてきます。<br />
               まずは今日の眠りを記録してみましょう。
             </p>
@@ -473,11 +473,11 @@ export default function DashboardPage() {
 
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-[#e6e8ee]">睡眠ダッシュボード</h1>
-        <p className="mt-1 text-sm text-[#8b92a5]">
+        <p className="mt-1 text-sm text-[#9ba3b5]">
           過去 30 日の記録から、気象と睡眠品質の関係を分析します。
         </p>
         {/* データ保存場所の注記 */}
-        <p className="mt-2 text-xs text-[#8b92a5]/70">
+        <p className="mt-2 text-xs text-[#9ba3b5]/70">
           <Info className="mb-0.5 mr-1 inline-block h-3 w-3" aria-hidden />
           記録はこのブラウザの端末内に保存されています。他の端末・ブラウザとは同期されません。
         </p>
@@ -585,13 +585,13 @@ export default function DashboardPage() {
             <TabsList className="mb-3 grid w-full grid-cols-2 gap-1 bg-[#0f1117] p-1">
               <TabsTrigger
                 value="pressure"
-                className="rounded-md text-[#8b92a5] data-[state=active]:bg-[#1d9bf0]/10 data-[state=active]:text-[#1d9bf0] data-[state=active]:shadow-none"
+                className="rounded-md text-[#9ba3b5] data-[state=active]:bg-[#1d9bf0]/10 data-[state=active]:text-[#1d9bf0] data-[state=active]:shadow-none"
               >
                 気圧別
               </TabsTrigger>
               <TabsTrigger
                 value="moon"
-                className="rounded-md text-[#8b92a5] data-[state=active]:bg-[#1d9bf0]/10 data-[state=active]:text-[#1d9bf0] data-[state=active]:shadow-none"
+                className="rounded-md text-[#9ba3b5] data-[state=active]:bg-[#1d9bf0]/10 data-[state=active]:text-[#1d9bf0] data-[state=active]:shadow-none"
               >
                 月齢別
               </TabsTrigger>
@@ -627,7 +627,7 @@ export default function DashboardPage() {
       <div className="mb-6 flex items-center justify-between gap-3 rounded-lg border border-violet-400/20 bg-violet-500/5 p-4">
         <div>
           <p className="text-sm font-medium text-[#e6e8ee]">今日の眠りを記録する</p>
-          <p className="mt-0.5 text-xs text-[#8b92a5]">毎日記録すると、あなただけの傾向が見えてきます</p>
+          <p className="mt-0.5 text-xs text-[#9ba3b5]">毎日記録すると、あなただけの傾向が見えてきます</p>
         </div>
         <Button
           asChild
@@ -702,7 +702,7 @@ function KpiCard({ icon, label, value, subtitle, small }: KpiCardProps) {
         {value}
       </p>
       {subtitle && (
-        <p className="text-xs text-[#8b92a5]">{subtitle}</p>
+        <p className="text-xs text-[#9ba3b5]">{subtitle}</p>
       )}
     </div>
   );
@@ -752,7 +752,7 @@ function LockedChart({ needed, current, children }: LockedChartProps) {
             <span className="text-violet-400">{remaining} 件</span>{" "}
             で解放
           </p>
-          <p className="text-xs text-[#8b92a5]">記録を続けると分析が見えてきます</p>
+          <p className="text-xs text-[#9ba3b5]">記録を続けると分析が見えてきます</p>
         </div>
       </div>
     </div>

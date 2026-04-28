@@ -137,7 +137,7 @@ export function CorrelationChart({
         borderColor: "#1d9bf0",
         borderWidth: 1,
         titleColor: "#e6e8ee",
-        bodyColor: "#8b92a5",
+        bodyColor: "#9ba3b5",
         padding: 10,
         callbacks: {
           label: (ctx: TooltipItem<"scatter">) => {
@@ -159,11 +159,11 @@ export function CorrelationChart({
         title: {
           display: true,
           text: "前日比気圧 (hPa)",
-          color: "#8b92a5",
+          color: "#9ba3b5",
           font: { size: 11 },
         },
         grid: { color: "rgba(139, 146, 165, 0.10)" },
-        ticks: { color: "#8b92a5" },
+        ticks: { color: "#9ba3b5" },
       },
       y: {
         type: "linear",
@@ -171,7 +171,7 @@ export function CorrelationChart({
         max: 5,
         ticks: {
           stepSize: 1,
-          color: "#8b92a5",
+          color: "#9ba3b5",
           callback: (value) => {
             const v = Number(value);
             if (!Number.isInteger(v) || v < 1 || v > 5) return "";
@@ -186,7 +186,7 @@ export function CorrelationChart({
   if (records.length === 0) {
     return (
       <div
-        className="flex items-center justify-center text-sm text-[#8b92a5]"
+        className="flex items-center justify-center text-sm text-[#9ba3b5]"
         style={{ height }}
       >
         データがありません

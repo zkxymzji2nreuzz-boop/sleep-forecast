@@ -66,14 +66,14 @@ function DeleteConfirmDialog({ open, onCancel, onConfirm, recordCount }: AlertDi
         <h2 id="delete-dialog-title" className="mb-3 text-base font-bold text-[#e6e8ee]">
           全記録を削除しますか？
         </h2>
-        <p className="mb-6 text-sm leading-relaxed text-[#8b92a5]">
+        <p className="mb-6 text-sm leading-relaxed text-[#9ba3b5]">
           保存されている <strong className="text-[#e6e8ee]">{recordCount} 件</strong> の睡眠記録がすべて削除されます。
           この操作は取り消せません。
         </p>
         <div className="flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 rounded-full border border-white/10 py-2.5 text-sm font-medium text-[#8b92a5] transition-colors hover:border-white/20 hover:text-[#e6e8ee]"
+            className="flex-1 rounded-full border border-white/10 py-2.5 text-sm font-medium text-[#9ba3b5] transition-colors hover:border-white/20 hover:text-[#e6e8ee]"
           >
             キャンセル
           </button>
@@ -146,7 +146,7 @@ export function SettingsForm() {
           <MapPin className="h-4 w-4 text-indigo-300/70" aria-hidden="true" />
           地域設定
         </h2>
-        <p className="mb-3 text-sm text-[#8b92a5]">
+        <p className="mb-3 text-sm text-[#9ba3b5]">
           天気・気圧データを取得する都道府県を選択してください。
         </p>
 
@@ -169,13 +169,13 @@ export function SettingsForm() {
             ))}
           </select>
           <ChevronDown
-            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8b92a5]"
+            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9ba3b5]"
             aria-hidden="true"
           />
         </div>
 
         {selectedPref && (
-          <p className="mb-4 text-xs text-[#8b92a5]">
+          <p className="mb-4 text-xs text-[#9ba3b5]">
             {selectedPref.name}（{selectedPref.latitude.toFixed(2)}°N, {selectedPref.longitude.toFixed(2)}°E）
           </p>
         )}
@@ -210,7 +210,7 @@ export function SettingsForm() {
         >
           データ管理
         </h2>
-        <p className="mb-4 text-sm text-[#8b92a5]">
+        <p className="mb-4 text-sm text-[#9ba3b5]">
           ブラウザに保存されている睡眠記録を管理できます。
           現在 <strong className="text-[#e6e8ee]">{recordCount} 件</strong> の記録があります。
         </p>
@@ -231,7 +231,7 @@ export function SettingsForm() {
           全記録を削除する
         </button>
 
-        <p className="mt-3 text-xs text-[#8b92a5]">
+        <p className="mt-3 text-xs text-[#9ba3b5]">
           ※ データはブラウザの localStorage に保存されています。削除すると元に戻せません。
         </p>
       </section>
@@ -241,17 +241,17 @@ export function SettingsForm() {
         <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-base font-bold text-[#e6e8ee] leading-snug">
           アプリ情報
         </h2>
-        <dl className="space-y-2 text-sm text-[#8b92a5]">
+        <dl className="space-y-2 text-sm text-[#9ba3b5]">
           <div className="flex gap-4">
-            <dt className="w-28 shrink-0 text-[#8b92a5]">アプリ名</dt>
+            <dt className="w-28 shrink-0 text-[#9ba3b5]">アプリ名</dt>
             <dd className="text-[#e6e8ee]">SleepForecast（眠れる明日予報）</dd>
           </div>
           <div className="flex gap-4">
-            <dt className="w-28 shrink-0 text-[#8b92a5]">データ保存先</dt>
+            <dt className="w-28 shrink-0 text-[#9ba3b5]">データ保存先</dt>
             <dd>ブラウザの localStorage（端末内）</dd>
           </div>
           <div className="flex gap-4">
-            <dt className="w-28 shrink-0 text-[#8b92a5]">外部送信</dt>
+            <dt className="w-28 shrink-0 text-[#9ba3b5]">外部送信</dt>
             <dd>なし（気象APIリクエストを除く）</dd>
           </div>
         </dl>

@@ -42,7 +42,7 @@ export function OnboardingBanner() {
           <p className="mb-1 text-sm font-bold text-[#e6e8ee]">
             🌙 SleepForecast へようこそ！
           </p>
-          <p className="mb-3 text-xs leading-relaxed text-[#8b92a5]">
+          <p className="mb-3 text-xs leading-relaxed text-[#9ba3b5]">
             毎朝30秒の記録を続けると、気象があなたの眠りにどう影響するかが見えてきます。
             まずは今日の眠りを記録してみましょう。
           </p>
@@ -57,7 +57,7 @@ export function OnboardingBanner() {
         <button
           onClick={handleDismiss}
           aria-label="バナーを閉じる"
-          className="flex-shrink-0 rounded-full p-1 text-[#8b92a5] transition-colors hover:text-[#e6e8ee]"
+          className="flex-shrink-0 rounded-full p-1 text-[#9ba3b5] transition-colors hover:text-[#e6e8ee]"
         >
           <X className="h-4 w-4" aria-hidden="true" />
         </button>

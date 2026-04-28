@@ -1,276 +1,36 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { Activity, Moon, Timer, Watch } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { AdBanner } from "@/components/AdBanner";
-import { PredictionCard } from "@/components/PredictionCard";
-import { ContinuousRecordBadge } from "@/components/ContinuousRecordBadge";
-import { WeatherWidget } from "@/components/WeatherWidget";
-import { OnboardingBanner } from "@/components/OnboardingBanner";
-import { getRecords } from "@/lib/storage";
-import {
-  predictTomorrow,
-  calculateContinuousRecordBadge,
-} from "@/lib/prediction";
-import { fetchWeatherForecast } from "@/lib/weather";
-import { getPrefectureByCode } from "@/lib/prefectures";
-import { calculateStats } from "@/lib/correlation";
-import type { PredictionResult } from "@/lib/types";
-
 /**
- * ランディングページ。
- * F001 では予測機能は未実装のため、コピーと CTA のみのスケルトン。
+ * ホームページ — Server Component。
+ *
+ * - WebApplication JSON-LD を SSR で出力（Google クローラーが初回取得可能）
+ * - client ロジック（useState / useEffect / localStorage）は HomeClient に委譲
  */
-const FEATURES = [
-  {
-    icon: Watch,
-    title: "ウェアラブル不要",
-    description:
-      "高価なデバイスは要りません。ブラウザ 1 つであなたの睡眠を記録・予測します。",
-  },
-  {
-    icon: Timer,
-    title: "毎朝15秒で入力",
-    description:
-      "昨晩の眠りを 3 択でタップするだけ。気象データは自動で取得します。",
-  },
-  {
-    icon: Moon,
-    title: "明日の眠気を予報",
-    description:
-      "気圧・気温・月齢とあなたの過去データから、明日の睡眠品質を予測します。",
-  },
-] as const;
+
+import { HomeClient } from "@/components/HomeClient";
+
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://sleep-forecast.vercel.app";
+
+const webAppJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "SleepForecast",
+  url: SITE_URL,
+  applicationCategory: "HealthApplication",
+  operatingSystem: "Web",
+  offers: { "@type": "Offer", price: "0" },
+};
 
 export default function HomePage() {
-  const [prediction, setPrediction] = useState<PredictionResult | null>(null);
-  const [badge, setBadge] = useState<ReturnType<typeof calculateContinuousRecordBadge> | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadPrediction = async () => {
-      try {
-        const records = getRecords();
-
-        // 連続記録バッジを計算
-        if (records.length > 0) {
-          const stats = calculateStats(records);
-          setBadge(calculateContinuousRecordBadge(stats.longestStreak));
-        }
-
-        // 予測を計算
-        if (records.length > 0) {
-          const lastRecord = records[0];
-          const prefecture = getPrefectureByCode(lastRecord.prefectureCode);
-          if (prefecture) {
-            const forecast = await fetchWeatherForecast(
-              prefecture.latitude,
-              prefecture.longitude
-            );
-            const result = predictTomorrow(records, forecast);
-            setPrediction(result);
-          }
-        }
-      } catch (err) {
-        console.error("予測計算エラー:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadPrediction();
-  }, []);
-
-  /** WebApplication JSON-LD (SEO 構造化データ) */
-  const webAppJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    name: "SleepForecast",
-    url: "https://sleep-forecast.vercel.app",
-    applicationCategory: "HealthApplication",
-    operatingSystem: "Web",
-    offers: { "@type": "Offer", price: "0" },
-  };
-
   return (
-    <div className="container mx-auto max-w-screen-md px-4 py-10 sm:py-14">
-      {/* WebApplication 構造化データ */}
+    <>
+      {/* WebApplication 構造化データ（SSR で出力） */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(webAppJsonLd).replace(/</g, "\\u003c"),
         }}
       />
-
-      {/* オンボーディングバナー（初回訪問・記録ゼロ時のみ表示） */}
-      <OnboardingBanner />
-
-      {/* 連続記録バッジ + 予測カード */}
-      {!loading && (
-        <>
-          {badge?.level && (
-            <div className="mb-6">
-              <ContinuousRecordBadge badge={badge} />
-            </div>
-          )}
-          {prediction && (
-            <div className="mb-12">
-              <PredictionCard prediction={prediction} variant="compact" />
-            </div>
-          )}
-        </>
-      )}
-
-      <section className="mb-12 text-center sm:mb-16">
-        <p className="mb-3 text-xs uppercase tracking-widest text-[#1d9bf0]">
-          SleepForecast
-        </p>
-        <h1 className="mb-4 text-3xl font-bold leading-tight tracking-tight text-[#e6e8ee] sm:text-4xl md:text-5xl">
-          明日の眠気を予報する
-        </h1>
-        <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed text-[#8b92a5] sm:text-base">
-          気圧・気温・月齢からあなたの睡眠を読み解く
-        </p>
-        <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row">
-          <Button asChild size="lg" className="h-12 text-base">
-            <Link href="/record">
-              <Activity className="mr-1" aria-hidden="true" />
-              今日を記録する
-            </Link>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            size="lg"
-            className="h-12 border-[#1d9bf0]/40 text-base text-[#e6e8ee] hover:bg-[#1d9bf0]/10 hover:text-[#e6e8ee]"
-          >
-            <Link href="/dashboard">ダッシュボードを見る</Link>
-          </Button>
-        </div>
-      </section>
-
-      {/* 広告スロット: ヒーロー下 */}
-      <AdBanner slot="hero-bottom" format="horizontal" className="mb-8" />
-
-      {/* 気象・睡眠ウィジェット: 今夜の睡眠予報 + 気圧グラフ + 5日間予報 */}
-      <div className="mb-12">
-        <WeatherWidget />
-
-        {/* iOSバナー（Coming Soon状態） */}
-        <div className="mt-8 rounded-2xl border border-white/10 bg-[#1a1f2e] p-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs text-[#8b98a5]">近日公開</p>
-              <p className="mt-1 text-base font-semibold text-[#e6e8ee]">SleepForecast iOS アプリ</p>
-              <p className="mt-1 text-xs text-[#8b98a5]">通知・記録・個人分析がさらに使いやすく</p>
-            </div>
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#252b3b] text-2xl">
-              📱
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 3ステップで始める */}
-      <section
-        aria-labelledby="howto-heading"
-        className="mb-12 sm:mb-16"
-      >
-        <h2
-          id="howto-heading"
-          className="mb-6 text-center text-xl font-semibold text-[#e6e8ee] sm:text-2xl"
-        >
-          3 ステップで始める
-        </h2>
-        <ol className="space-y-4">
-          {[
-            {
-              step: "01",
-              title: "今日の眠りを記録する",
-              desc: "「よく眠れた」「眠れなかった」の 3 択でタップ。30 秒で完了します。",
-              href: "/record",
-            },
-            {
-              step: "02",
-              title: "7 日間続けてみる",
-              desc: "気象データは自動取得。記録を重ねるほど、あなただけのパターンが見えてきます。",
-              href: null,
-            },
-            {
-              step: "03",
-              title: "ダッシュボードで傾向を把握",
-              desc: "気圧・気温・月齢との相関グラフで、眠れない夜の原因が分かります。",
-              href: "/dashboard",
-            },
-          ].map(({ step, title, desc, href }) => (
-            <li key={step} className="flex gap-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-              <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-indigo-500/15 text-xs font-bold text-indigo-300">
-                {step}
-              </span>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-[#e6e8ee]">
-                  {href ? (
-                    <a href={href} className="hover:underline decoration-indigo-400/50">
-                      {title}
-                    </a>
-                  ) : title}
-                </p>
-                <p className="mt-0.5 text-xs leading-relaxed text-[#8b92a5]">{desc}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section
-        aria-labelledby="features-heading"
-        className="mb-12 sm:mb-16"
-      >
-        <h2
-          id="features-heading"
-          className="mb-6 text-center text-xl font-semibold text-[#e6e8ee] sm:text-2xl"
-        >
-          SleepForecast の特徴
-        </h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {FEATURES.map((feature) => {
-            const Icon = feature.icon;
-            return (
-              <Card
-                key={feature.title}
-                className="border-white/5 bg-[#1a1f2e]"
-              >
-                <CardHeader className="space-y-2 pb-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[#1d9bf0]/15 text-[#1d9bf0]">
-                    <Icon className="h-5 w-5" aria-hidden="true" />
-                  </div>
-                  <CardTitle className="text-base text-[#e6e8ee]">
-                    {feature.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-sm leading-relaxed text-[#8b92a5]">
-                    {feature.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      </section>
-
-      <p className="text-center text-xs text-[#8b92a5]/80">
-        ※ 本サービスは医療行為・診断ではありません
-      </p>
-    </div>
+      <HomeClient />
+    </>
   );
 }
