@@ -52,7 +52,7 @@ export async function generateMetadata({
       locale: "ja_JP",
       images: [
         {
-          url: "/og-default.png",
+          url: `${SITE_URL}/og?title=${encodeURIComponent(article.title)}&category=${encodeURIComponent(article.category)}`,
           width: 1200,
           height: 630,
           alt: article.title,
@@ -65,7 +65,7 @@ export async function generateMetadata({
       description: article.description,
       images: [
         {
-          url: "/og-default.png",
+          url: `${SITE_URL}/og?title=${encodeURIComponent(article.title)}&category=${encodeURIComponent(article.category)}`,
           width: 1200,
           height: 630,
           alt: article.title,
@@ -97,7 +97,7 @@ export default async function ArticlePage({ params }: Params) {
     inLanguage: "ja",
     image: {
       "@type": "ImageObject",
-      url: `${SITE_URL}/og-default.png`,
+      url: `${SITE_URL}/og?title=${encodeURIComponent(article.title)}&category=${encodeURIComponent(article.category)}`,
       width: 1200,
       height: 630,
     },

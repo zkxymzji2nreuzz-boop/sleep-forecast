@@ -986,7 +986,6 @@ const QUALITY_COLORS: Record<number, string> = {
 
 function CorrelationChart() {
   const [points, setPoints] = React.useState<{ pressure: number; quality: number }[]>([]);
-  const [isSample, setIsSample] = React.useState(false);
 
   React.useEffect(() => {
     const records = getRecords();
@@ -995,10 +994,8 @@ function CorrelationChart() {
       .map((r) => ({ pressure: r.weather.pressureHpa, quality: r.quality as number }));
     if (validPoints.length >= 7) {
       setPoints(validPoints.slice(-60));
-      setIsSample(false);
     } else {
       setPoints([]);
-      setIsSample(false);
     }
   }, []);
 
@@ -1038,11 +1035,6 @@ function CorrelationChart() {
 
   return (
     <div>
-      {isSample && (
-        <div className="mb-3 rounded-xl border border-[#facc15]/20 bg-[#facc15]/5 px-3 py-2 text-xs text-[#facc15]">
-          サンプル表示中 — 1週間分の気圧データと照合すると傾向が見えてきます
-        </div>
-      )}
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full" aria-label="睡眠品質と気圧の相関グラフ">
         <rect x={PAD.left} y={PAD.top} width={Math.max(0, toX(1000) - PAD.left)} height={chartH} fill="rgba(248,113,113,0.06)" />
         <rect x={Math.max(PAD.left, toX(1000))} y={PAD.top} width={Math.max(0, Math.min(toX(1008), W - PAD.right) - Math.max(PAD.left, toX(1000)))} height={chartH} fill="rgba(251,146,60,0.06)" />
