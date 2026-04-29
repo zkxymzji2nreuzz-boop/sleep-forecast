@@ -102,8 +102,8 @@ export default async function ArticlePage({ params }: Params) {
       height: 630,
     },
     author: {
-      "@type": "Organization",
-      name: "SleepForecast",
+      "@type": "Person",
+      name: "SleepForecast 開発チーム",
       url: SITE_URL,
     },
     publisher: {
