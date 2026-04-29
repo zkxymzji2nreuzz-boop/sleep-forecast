@@ -12,7 +12,7 @@ const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://sleep-forecast.vercel.app";
 
 export const metadata: Metadata = {
-  title: "SleepForecast — 明日の眠りを気象から予報する",
+  title: "SleepForecast — 気象病・低気圧から、明日の眠りを予報する",
   description:
     "気象病・低気圧が気になる方へ。気圧・気温・月齢から明日の睡眠質を予報するアプリ。毎朝15秒の記録で、あなただけの眠れない夜のパターンが分かります。",
   alternates: {
@@ -20,10 +20,27 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    title: "SleepForecast — 明日の眠りを気象から予報する",
+    title: "SleepForecast — 気象病・低気圧から、明日の眠りを予報する",
     description:
       "気象病・低気圧が気になる方へ。気圧・気温・月齢から明日の睡眠質を予報するアプリ。毎朝15秒の記録で、あなただけの眠れない夜のパターンが分かります。",
     url: SITE_URL,
+    siteName: "SleepForecast",
+    locale: "ja_JP",
+    images: [
+      {
+        url: `${SITE_URL}/og`,
+        width: 1200,
+        height: 630,
+        alt: "SleepForecast — 気象病・低気圧から、今夜の眠りを予報する",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SleepForecast — 気象病・低気圧から、明日の眠りを予報する",
+    description:
+      "気象病・低気圧が気になる方へ。気圧・気温・月齢から明日の睡眠質を予報するアプリ。毎朝15秒の記録で、あなただけの眠れない夜のパターンが分かります。",
+    images: [{ url: `${SITE_URL}/og`, alt: "SleepForecast" }],
   },
 };
 
@@ -32,9 +49,15 @@ const webAppJsonLd = {
   "@type": "WebApplication",
   name: "SleepForecast",
   url: SITE_URL,
+  description: "気圧・気温・月齢から明日の睡眠質を予報するWebアプリ。気象病・低気圧が気になる方の睡眠改善をサポートします。",
   applicationCategory: "HealthApplication",
   operatingSystem: "Web",
-  offers: { "@type": "Offer", price: "0" },
+  inLanguage: "ja",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "JPY",
+  },
 };
 
 const faqJsonLd = {

@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 export const runtime = "edge";
 
 const SITE_NAME = "SleepForecast";
-const TAGLINE = "気象と眠りの予報アプリ";
+const TAGLINE = "気象病・低気圧から、眠りを予報する";
 
 /**
  * 動的 OGP 画像生成エンドポイント。
@@ -117,7 +117,7 @@ export async function GET(req: NextRequest) {
                   letterSpacing: "-0.02em",
                 }}
               >
-                気圧から、今夜の眠りを予報する
+                気象病・低気圧から、今夜の眠りを予報する
               </div>
               <div
                 style={{

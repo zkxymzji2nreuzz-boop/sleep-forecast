@@ -245,8 +245,6 @@ export function RecordForm(): JSX.Element {
         }
       }
       const today = formatDateJst(new Date());
-      // 初回記録判定（保存前の件数が 0 かつ今日の記録がない = 完全初回）
-      const isFirstEver = allRecords.length === 0 && !existingRecord;
       const countAfterSave = isUpdate
         ? allRecords.length
         : allRecords.length + 1;
@@ -259,27 +257,7 @@ export function RecordForm(): JSX.Element {
         prefectureCode: form.prefectureCode,
         weather,
       });
-      if (isFirstEver) {
-        // 初回記録：ダッシュボードへの誘導トーストを6秒間表示
-        toast({
-          title: "🎉 初めての記録を保存しました！",
-          description: (
-            <span>
-              記録を続けると気象との相関が見えてきます。
-              {" "}
-              <a href="/dashboard" className="underline text-indigo-300 hover:text-indigo-200">
-                ダッシュボードを見る →
-              </a>
-            </span>
-          ),
-          duration: 6000,
-        });
-      } else {
-        toast({
-          title: isUpdate ? "今日の記録を更新しました" : "今日の記録を保存しました",
-          description: "明日の予報と照らし合わせてみてね 🌙",
-        });
-      }
+      // 保存完了フィードバックは savedView カード（インライン表示）で提供するため Toast は不要
       setRecordCountAfterSave(countAfterSave);
       setSavedView(saved);
       setExistingRecord(saved);

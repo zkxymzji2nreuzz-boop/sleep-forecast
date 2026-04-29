@@ -221,7 +221,7 @@ export function ArticleLayout({ article, related }: Props) {
           </h2>
         </div>
         <p className="mt-2 text-sm leading-relaxed text-[#e6e8ee]/80">
-          毎朝たった 30 秒の記録から、気圧・気温・月齢があなたの眠りにどう響いているかを、やさしく見える化します。7日続けると、気象と睡眠の相関分析がスタートします。
+          毎朝たった 15 秒の記録から、気圧・気温・月齢があなたの眠りにどう響いているかを、やさしく見える化します。7日続けると、気象と睡眠の相関分析がスタートします。
         </p>
         <ul className="mt-3 space-y-1 text-xs text-[#e6e8ee]/60">
           <li>✓ 無料・登録不要で今すぐ始められる</li>

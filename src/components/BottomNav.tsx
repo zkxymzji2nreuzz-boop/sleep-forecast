@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, PenLine, BarChart2, Settings } from "lucide-react";
+import { Home, PenLine, BarChart2, Settings, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -12,7 +12,8 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS = [
   { href: "/", label: "ホーム", icon: Home },
   { href: "/record", label: "記録", icon: PenLine },
-  { href: "/dashboard", label: "ダッシュボード", icon: BarChart2 },
+  { href: "/articles", label: "記事", icon: BookOpen },
+  { href: "/dashboard", label: "グラフ", icon: BarChart2 },
   { href: "/settings", label: "設定", icon: Settings },
 ] as const;
 

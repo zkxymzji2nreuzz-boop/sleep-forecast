@@ -13,7 +13,7 @@ const SITE_URL =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "SleepForecast | 眠れる明日予報",
+    default: "SleepForecast — 気象病・低気圧から、明日の眠りを予報する",
     template: "%s | SleepForecast",
   },
   description:
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     "予測",
     "ヘルスケア",
     "SleepForecast",
-    "眠れる明日予報",
+    "気象病",
   ],
   robots: { index: true, follow: true },
   manifest: "/manifest.json",
@@ -52,14 +52,14 @@ export const metadata: Metadata = {
     siteName: "SleepForecast",
     locale: "ja_JP",
     url: SITE_URL,
-    title: "SleepForecast | 眠れる明日予報",
+    title: "SleepForecast — 気象病・低気圧から、明日の眠りを予報する",
     description:
       "気温・湿度・気圧・月齢から明日の眠気を予測する、ウェアラブル不要の睡眠予測アプリ",
     images: [{ url: "/og-default.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "SleepForecast | 眠れる明日予報",
+    title: "SleepForecast — 気象病・低気圧から、明日の眠りを予報する",
     description:
       "気温・湿度・気圧・月齢から明日の眠気を予測する、ウェアラブル不要の睡眠予測アプリ",
     images: ["/og-default.png"],

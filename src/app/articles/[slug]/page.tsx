@@ -112,9 +112,9 @@ export default async function ArticlePage({ params }: Params) {
       url: SITE_URL,
       logo: {
         "@type": "ImageObject",
-        url: `${SITE_URL}/og-default.png`,
-        width: 1200,
-        height: 630,
+        url: `${SITE_URL}/icon-192.png`,
+        width: 192,
+        height: 192,
       },
     },
     url,

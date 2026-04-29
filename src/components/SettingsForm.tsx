@@ -400,7 +400,7 @@ export function SettingsForm() {
         <dl className="space-y-2 text-sm text-[#9ba3b5]">
           <div className="flex gap-4">
             <dt className="w-28 shrink-0 text-[#9ba3b5]">アプリ名</dt>
-            <dd className="text-[#e6e8ee]">SleepForecast（眠れる明日予報）</dd>
+            <dd className="text-[#e6e8ee]">SleepForecast</dd>
           </div>
           <div className="flex gap-4">
             <dt className="w-28 shrink-0 text-[#9ba3b5]">データ保存先</dt>

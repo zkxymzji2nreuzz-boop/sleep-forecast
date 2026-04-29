@@ -8,7 +8,7 @@ const SITE_URL =
 export const metadata: Metadata = {
   title: "運営者情報",
   description:
-    "SleepForecast（眠れる明日予報）の運営者情報・開発ストーリー・お問い合わせ先をご案内します。",
+    "SleepForecastの運営者情報・開発ストーリー・お問い合わせ先をご案内します。",
   alternates: { canonical: `${SITE_URL}/about` },
 };
 
@@ -35,12 +35,12 @@ export default function AboutPage() {
             SleepForecast について
           </h2>
           <p>
-            SleepForecast（眠れる明日予報）は、気温・湿度・気圧・月齢などの気象データと
+            SleepForecastは、気温・湿度・気圧・月齢などの気象データと
             日々の睡眠記録を組み合わせて「明日の眠気レベル」を予測する、ウェアラブル不要の
             ヘルスケア Web アプリです。
           </p>
           <p className="mt-3">
-            高価なデバイスを買わなくても、ブラウザひとつで毎朝 30 秒の入力を続けるだけで、
+            高価なデバイスを買わなくても、ブラウザひとつで毎朝 15 秒の入力を続けるだけで、
             気象があなたの眠りにどう影響しているかを見える化します。
           </p>
         </section>
@@ -75,7 +75,7 @@ export default function AboutPage() {
             </div>
             <div className="flex gap-4">
               <dt className="w-24 shrink-0 font-medium text-[#9ba3b5]">サービス名</dt>
-              <dd>SleepForecast（眠れる明日予報）</dd>
+              <dd>SleepForecast</dd>
             </div>
             <div className="flex gap-4">
               <dt className="w-24 shrink-0 font-medium text-[#9ba3b5]">お問い合わせ</dt>

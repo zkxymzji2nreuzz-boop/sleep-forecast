@@ -9,7 +9,7 @@ const SITE_URL =
 export const metadata: Metadata = {
   title: "記録",
   description:
-    "毎朝 30 秒で昨晩の眠りを記録します。気象データは自動取得されます。",
+    "毎朝 15 秒で昨晩の眠りを記録します。気象データは自動取得されます。",
   robots: { index: false, follow: false },
   alternates: { canonical: `${SITE_URL}/record` },
 };

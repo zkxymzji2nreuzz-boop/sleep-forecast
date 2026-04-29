@@ -321,7 +321,7 @@ export function generateInsights(records: SleepRecord[]): InsightItem[] {
       key: "general",
       severity: "info",
       message:
-        "データが 10 件を超えると、より精度の高い分析ができます。毎朝 30 秒の記録を続けてみましょう。",
+        "データが 10 件を超えると、より精度の高い分析ができます。毎朝 15 秒の記録を続けてみましょう。",
     });
   }
 

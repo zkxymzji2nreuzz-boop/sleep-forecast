@@ -56,7 +56,7 @@ export function OnboardingBanner() {
         <button
           onClick={handleDismiss}
           aria-label="バナーを閉じる"
-          className="flex-shrink-0 rounded-full p-1 text-[#9ba3b5] transition-colors hover:text-[#e6e8ee]"
+          className="flex flex-shrink-0 items-center justify-center min-h-[44px] min-w-[44px] rounded-full p-3 text-[#9ba3b5] transition-colors hover:text-[#e6e8ee]"
         >
           <X className="h-4 w-4" aria-hidden="true" />
         </button>
