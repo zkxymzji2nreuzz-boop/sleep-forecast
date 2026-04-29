@@ -3,15 +3,23 @@ import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { RecordForm } from "@/components/RecordForm";
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://sleep-forecast.vercel.app";
-
 export const metadata: Metadata = {
   title: "記録",
   description:
     "毎朝 15 秒で昨晩の眠りを記録します。気象データは自動取得されます。",
   robots: { index: false, follow: false },
-  alternates: { canonical: `${SITE_URL}/record` },
+  openGraph: {
+    title: "睡眠を記録する | SleepForecast",
+    description:
+      "毎朝 15 秒で昨晩の眠りを記録します。気象データは自動取得されます。",
+    url: "/record",
+  },
+  twitter: {
+    card: "summary",
+    title: "睡眠を記録する | SleepForecast",
+    description:
+      "毎朝 15 秒で昨晩の眠りを記録します。気象データは自動取得されます。",
+  },
 };
 
 export default function RecordPage() {

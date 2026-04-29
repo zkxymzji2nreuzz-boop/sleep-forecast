@@ -12,6 +12,7 @@
  */
 @layer base {
   :root {
+    --color-muted: #9ba3b5;
     /* HSL 値は shadcn/ui 互換のため各トークンを hsl() で定義 */
     --background: 225 24% 8%; /* #0f1117 */
     --foreground: 225 18% 91%; /* #e6e8ee */
