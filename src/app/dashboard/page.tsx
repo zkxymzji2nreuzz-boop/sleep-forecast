@@ -130,6 +130,17 @@ const QUALITY_FULL_MAP: Record<1 | 2 | 3 | 4 | 5, string> = {
 const PRESSURE_BUCKETS = ["急上昇 (+3以上)", "横ばい", "急低下 (-3以下)"] as const;
 const PRESSURE_BUCKET_COLORS = ["#4ade80", "#9ba3b5", "#ef4444"];
 
+const DOW_LABELS = ["日", "月", "火", "水", "木", "金", "土"] as const;
+const DOW_COLORS = [
+  "#f87171", // 日: rose
+  "#9ba3b5", // 月
+  "#9ba3b5", // 火
+  "#9ba3b5", // 水
+  "#9ba3b5", // 木
+  "#4ade80", // 金: emerald
+  "#60a5fa", // 土: blue
+];
+
 const MOON_BUCKETS = [
   "新月期 (0〜0.1)",
   "上弦期 (0.1〜0.45)",
@@ -162,6 +173,20 @@ function ascByDate(records: SleepRecord[]): SleepRecord[] {
   );
 }
 
+/**
+ * 7日移動平均を計算する。
+ * values[i] の移動平均 = [i-6 .. i] の平均（足りない場合は存在する分だけで計算）。
+ * 3件未満の先頭は null にして非表示にする。
+ */
+function calcMovingAverage(values: number[], window = 7): (number | null)[] {
+  return values.map((_, i) => {
+    const start = Math.max(0, i - window + 1);
+    const slice = values.slice(start, i + 1);
+    if (slice.length < 3) return null;
+    return slice.reduce((a, b) => a + b, 0) / slice.length;
+  });
+}
+
 /** YYYY-MM-DD → MM/DD に短縮する。 */
 function toShortLabel(isoDate: string): string {
   const [, mm, dd] = isoDate.split("-");
@@ -183,6 +208,16 @@ function groupByPressure(records: SleepRecord[]) {
   );
   const drop = records.filter((r) => r.weather.pressureDeltaHpa <= -3);
   return [bucketStats(rise), bucketStats(flat), bucketStats(drop)];
+}
+
+/** 曜日別（日〜土）に分ける。 */
+function groupByDayOfWeek(records: SleepRecord[]) {
+  const groups: SleepRecord[][] = Array.from({ length: 7 }, () => []);
+  for (const r of records) {
+    const dow = new Date(r.date + "T00:00:00+09:00").getDay(); // JST曜日
+    groups[dow].push(r);
+  }
+  return groups.map((g) => bucketStats(g));
 }
 
 /** 月齢 4 バケツに分ける (満月期優先)。 */
@@ -235,7 +270,18 @@ function buildLineOptions(): ChartOptions<"line"> {
     maintainAspectRatio: false,
     animation: { duration: 400 },
     plugins: {
-      legend: { display: false },
+      legend: {
+        display: true,
+        position: "top" as const,
+        align: "end" as const,
+        labels: {
+          color: "#9ba3b5",
+          font: { size: 11 },
+          boxWidth: 16,
+          boxHeight: 2,
+          padding: 12,
+        },
+      },
       tooltip: {
         ...TOOLTIP_BASE,
         callbacks: {
@@ -372,25 +418,41 @@ export default function DashboardPage() {
     const asc = ascByDate(records).slice(-30);
     const labels = asc.map((r) => toShortLabel(r.date));
     const values = asc.map((r) => r.quality);
+    const movingAvg = calcMovingAverage(values);
     return {
       labels,
       datasets: [
         {
-          label: "品質",
+          label: "日次品質",
           data: values,
           borderColor: "#6366f1",
-          backgroundColor: "rgba(99, 102, 241, 0.12)",
+          backgroundColor: "rgba(99, 102, 241, 0.10)",
           borderWidth: 2,
           pointBackgroundColor: "#6366f1",
           pointBorderColor: "#1a1f2e",
           pointBorderWidth: 2,
-          pointRadius: 4,
-          pointHoverRadius: 6,
+          pointRadius: 3,
+          pointHoverRadius: 5,
           fill: true,
           tension: 0.25,
+          order: 2,
           // カスタムキーで tooltip タイトルに元日付を渡す
           _dates: asc.map((r) => r.date),
         } as ChartData<"line">["datasets"][number] & { _dates: string[] },
+        {
+          label: "7日平均",
+          data: movingAvg,
+          borderColor: "#a78bfa",
+          backgroundColor: "transparent",
+          borderWidth: 2,
+          borderDash: [4, 3],
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          fill: false,
+          tension: 0.4,
+          order: 1,
+          spanGaps: false,
+        } as ChartData<"line">["datasets"][number],
       ],
     };
   }, [records]);
@@ -429,6 +491,27 @@ export default function DashboardPage() {
           data: values,
           backgroundColor: MOON_BUCKET_COLORS,
           borderColor: MOON_BUCKET_COLORS,
+          borderWidth: 1,
+          borderRadius: 6,
+          _counts: counts,
+        } as ChartData<"bar">["datasets"][number] & { _counts: number[] },
+      ],
+    };
+  }, [records]);
+
+  // --- 棒グラフ (曜日別) ---
+  const dowBarData = React.useMemo<ChartData<"bar">>(() => {
+    const buckets = groupByDayOfWeek(records);
+    const values = buckets.map((b) => (b.count === 0 ? 0 : b.avg));
+    const counts = buckets.map((b) => b.count);
+    return {
+      labels: [...DOW_LABELS],
+      datasets: [
+        {
+          label: "平均品質",
+          data: values,
+          backgroundColor: DOW_COLORS,
+          borderColor: DOW_COLORS,
           borderWidth: 1,
           borderRadius: 6,
           _counts: counts,
@@ -598,10 +681,10 @@ export default function DashboardPage() {
       </ChartCard>
 
       {/* ── ⑤ 気象別平均 (Tabs)（10件未満はロック） ── */}
-      <ChartCard title="気象別の平均品質">
+      <ChartCard title="気象・曜日別の平均品質">
         <LockedChart needed={DEMO_THRESHOLD} current={records.length}>
           <Tabs defaultValue="pressure" className="w-full">
-            <TabsList className="mb-3 grid w-full grid-cols-2 gap-1 bg-[#0f1117] p-1">
+            <TabsList className="mb-3 grid w-full grid-cols-3 gap-1 bg-[#0f1117] p-1">
               <TabsTrigger
                 value="pressure"
                 className="rounded-md text-[#9ba3b5] data-[state=active]:bg-indigo-500/10 data-[state=active]:text-indigo-300 data-[state=active]:shadow-none"
@@ -613,6 +696,12 @@ export default function DashboardPage() {
                 className="rounded-md text-[#9ba3b5] data-[state=active]:bg-indigo-500/10 data-[state=active]:text-indigo-300 data-[state=active]:shadow-none"
               >
                 月齢別
+              </TabsTrigger>
+              <TabsTrigger
+                value="dow"
+                className="rounded-md text-[#9ba3b5] data-[state=active]:bg-indigo-500/10 data-[state=active]:text-indigo-300 data-[state=active]:shadow-none"
+              >
+                曜日別
               </TabsTrigger>
             </TabsList>
             <TabsContent value="pressure" className="mt-0">
@@ -634,6 +723,19 @@ export default function DashboardPage() {
                   role="img"
                 />
               </div>
+            </TabsContent>
+            <TabsContent value="dow" className="mt-0">
+              <div className="h-[180px] overflow-hidden md:h-[240px]">
+                <Bar
+                  data={dowBarData}
+                  options={barOptions}
+                  aria-label="曜日別の平均睡眠品質"
+                  role="img"
+                />
+              </div>
+              <p className="mt-2 text-[10px] text-[#9ba3b5]">
+                曜日ごとの平均睡眠品質。週末の生活リズムの乱れや週明けの疲れを確認できます。
+              </p>
             </TabsContent>
           </Tabs>
         </LockedChart>
