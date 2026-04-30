@@ -16,6 +16,10 @@ export const STORAGE_KEY = "sleep_records_v1";
 export const DEFAULT_PREFECTURE_KEY = "sf_default_prefecture";
 /** オンボーディングバナーを非表示にしたことを記録するキー */
 export const ONBOARDING_DISMISSED_KEY = "sf_onboarding_dismissed";
+/** ストリークフリーズの残りトークン数（数値文字列） */
+export const STREAK_FREEZE_COUNT_KEY = "sf_streak_freeze_count";
+/** ストリークフリーズを使用した日付の配列（JSON 文字列） */
+export const STREAK_FREEZE_USED_DATES_KEY = "sf_streak_freeze_used_dates";
 
 /** 安全に localStorage へアクセスできるかチェック */
 function hasStorage(): boolean {
@@ -173,15 +177,88 @@ export function setDefaultPrefectureCode(code: string): void {
 }
 
 /**
+ * ストリークフリーズを使用済みの日付セットを返す。
+ */
+export function getFreezedDates(): Set<string> {
+  if (!hasStorage()) return new Set();
+  const raw = window.localStorage.getItem(STREAK_FREEZE_USED_DATES_KEY);
+  if (!raw) return new Set();
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (Array.isArray(parsed)) {
+      return new Set(parsed.filter((v): v is string => typeof v === "string"));
+    }
+  } catch {
+    // 壊れていたら空で返す
+  }
+  return new Set();
+}
+
+/**
+ * 残りストリークフリーズトークン数を返す。
+ */
+export function getStreakFreezeCount(): number {
+  if (!hasStorage()) return 0;
+  const raw = window.localStorage.getItem(STREAK_FREEZE_COUNT_KEY);
+  const n = Number(raw);
+  return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
+}
+
+/**
+ * ストリークフリーズトークン数を設定する（内部用）。
+ */
+function setStreakFreezeCount(n: number): void {
+  if (!hasStorage()) return;
+  window.localStorage.setItem(STREAK_FREEZE_COUNT_KEY, String(Math.max(0, Math.floor(n))));
+}
+
+/**
+ * 連続記録マイルストーン（7 の倍数）でフリーズを 1 枚付与する。
+ * - 最大 3 枚まで蓄積可能
+ * - 付与した場合 true を返す
+ */
+export function tryEarnStreakFreeze(currentStreak: number): boolean {
+  if (currentStreak <= 0 || currentStreak % 7 !== 0) return false;
+  const current = getStreakFreezeCount();
+  if (current >= 3) return false; // 上限
+  setStreakFreezeCount(current + 1);
+  return true;
+}
+
+/**
+ * ストリークフリーズを 1 枚消費して指定日をフリーズ日として登録する。
+ * - トークンが 0 の場合は false を返す
+ * - 成功した場合 true を返す
+ */
+export function applyStreakFreeze(date: string): boolean {
+  const count = getStreakFreezeCount();
+  if (count <= 0) return false;
+  setStreakFreezeCount(count - 1);
+  const frozen = getFreezedDates();
+  frozen.add(date);
+  if (hasStorage()) {
+    window.localStorage.setItem(
+      STREAK_FREEZE_USED_DATES_KEY,
+      JSON.stringify(Array.from(frozen))
+    );
+  }
+  return true;
+}
+
+/**
  * 現在の連続記録日数を返す。
  * - 今日の記録があればそこから遡る
  * - なければ昨日から遡る (昨日も無ければ 0)
+ * - ストリークフリーズ使用済み日も「記録あり」扱いで計算する
  */
 export function getStreakDays(now: Date = new Date()): number {
   const records = getRecords(); // sorted desc
   if (records.length === 0) return 0;
 
-  const recordDates = new Set(records.map((r) => r.date));
+  const recordDates = new Set([
+    ...records.map((r) => r.date),
+    ...Array.from(getFreezedDates()),
+  ]);
 
   /** YYYY-MM-DD 文字列から1日前の文字列を返す */
   function prevDay(dateStr: string): string {

@@ -22,6 +22,7 @@ import {
   Loader2,
   RefreshCcw,
   Moon,
+  Shield,
   Sparkles,
   Sunrise,
   TrendingUp,
@@ -35,11 +36,15 @@ import {
   getPrefectureByCode,
 } from "@/lib/prefectures";
 import {
+  applyStreakFreeze,
   formatDateJst,
   getDefaultPrefectureCode,
   getRecords,
+  getStreakDays,
+  getStreakFreezeCount,
   getTodayRecord,
   saveRecord,
+  tryEarnStreakFreeze,
 } from "@/lib/storage";
 import type { SleepQuality, SleepRecord, WeatherData } from "@/lib/types";
 import { fetchWeather, getMoonData } from "@/lib/weather";
@@ -123,6 +128,12 @@ export function RecordForm(): JSX.Element {
   const [allRecords, setAllRecords] = React.useState<SleepRecord[]>([]);
   /** 保存後の合計記録件数（初回・節目メッセージ表示用） */
   const [recordCountAfterSave, setRecordCountAfterSave] = React.useState(0);
+  /** 保存時にストリークフリーズを自動消費したか */
+  const [freezeUsed, setFreezeUsed] = React.useState(false);
+  /** 保存時にストリークフリーズを獲得したか */
+  const [freezeEarned, setFreezeEarned] = React.useState(false);
+  /** 保存後の残りフリーズ枚数 */
+  const [freezeCountAfterSave, setFreezeCountAfterSave] = React.useState(0);
 
   React.useEffect(() => {
     const today = getTodayRecord();
@@ -247,6 +258,8 @@ export function RecordForm(): JSX.Element {
         }
       }
       const today = formatDateJst(new Date());
+      const todayBase = new Date(`${today}T00:00:00+09:00`).getTime();
+      const yesterdayStr = formatDateJst(new Date(todayBase - 24 * 60 * 60 * 1000));
       const countAfterSave = isUpdate
         ? allRecords.length
         : allRecords.length + 1;
@@ -259,7 +272,24 @@ export function RecordForm(): JSX.Element {
         prefectureCode: form.prefectureCode,
         weather,
       });
+
+      // Streak Freeze 自動消費: 昨日が記録なし かつ フリーズトークンあり
+      let usedFreeze = false;
+      let earnedFreeze = false;
+      if (!isUpdate && yesterdayRecord === null && getStreakFreezeCount() > 0) {
+        usedFreeze = applyStreakFreeze(yesterdayStr);
+      }
+      // フリーズ消費後の連続日数を計算し、7 の倍数なら新たにフリーズを付与
+      if (!isUpdate) {
+        const newStreak = getStreakDays();
+        earnedFreeze = tryEarnStreakFreeze(newStreak);
+      }
+      const remainingFreezes = getStreakFreezeCount();
+
       // 保存完了フィードバックは savedView カード（インライン表示）で提供するため Toast は不要
+      setFreezeUsed(usedFreeze);
+      setFreezeEarned(earnedFreeze);
+      setFreezeCountAfterSave(remainingFreezes);
       setRecordCountAfterSave(countAfterSave);
       setSavedView(saved);
       setExistingRecord(saved);
@@ -274,6 +304,8 @@ export function RecordForm(): JSX.Element {
     setSavedView(null);
     setShowManualFallback(false);
     setManual(DEFAULT_MANUAL);
+    setFreezeUsed(false);
+    setFreezeEarned(false);
   };
 
   const manualValid =
@@ -288,6 +320,8 @@ export function RecordForm(): JSX.Element {
     const isMilestone3 = recordCountAfterSave === 3;
     const isMilestone7 = recordCountAfterSave === 7;
     const remaining = Math.max(0, 7 - recordCountAfterSave);
+    const showFreezeEarned = freezeEarned;
+    const showFreezeUsed = freezeUsed;
 
     // 気象ナラティブ: 気圧変化 × 睡眠品質から個人化されたメッセージを生成
     let weatherNarrative: string | null = null;
@@ -372,6 +406,38 @@ export function RecordForm(): JSX.Element {
                 <p className="mt-1 text-xs leading-relaxed text-[#9ba3b5]">
                   ダッシュボードで気圧・月齢との相関グラフが見られるようになりました。
                 </p>
+                {showFreezeEarned && (
+                  <p className="mt-2 flex items-center justify-center gap-1 text-xs font-semibold text-amber-300">
+                    <Shield className="h-3.5 w-3.5" aria-hidden="true" />
+                    ストリークシールドを獲得しました！（残り {freezeCountAfterSave} 枚）
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* ストリークシールド獲得（7日マイルストーン以外） */}
+            {showFreezeEarned && !isMilestone7 && (
+              <div className="rounded-xl border border-amber-400/25 bg-amber-500/[0.07] p-4 text-center">
+                <p className="flex items-center justify-center gap-1.5 text-sm font-semibold text-amber-300">
+                  <Shield className="h-4 w-4" aria-hidden="true" />
+                  ストリークシールドを獲得！
+                </p>
+                <p className="mt-1 text-xs text-[#9ba3b5]">
+                  1日休んでもストリークを守れます（残り {freezeCountAfterSave} 枚）
+                </p>
+              </div>
+            )}
+
+            {/* ストリークシールド使用通知 */}
+            {showFreezeUsed && (
+              <div className="flex items-start gap-2.5 rounded-xl border border-amber-400/20 bg-amber-500/[0.05] px-4 py-3">
+                <Shield className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" aria-hidden="true" />
+                <div>
+                  <p className="text-xs font-semibold text-amber-300">シールドを使用しました</p>
+                  <p className="mt-0.5 text-xs text-[#9ba3b5]">
+                    昨日の空白をシールドで補填しました（残り {freezeCountAfterSave} 枚）
+                  </p>
+                </div>
               </div>
             )}
 
