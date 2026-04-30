@@ -15,8 +15,8 @@ test.describe("ホームページ", () => {
     // ヘッダーのロゴリンク
     await expect(page.getByRole("link", { name: /SleepForecast/ }).first()).toBeVisible();
 
-    // ヒーローセクション（CTAボタン）
-    await expect(page.getByRole("link", { name: /記録を始める/ })).toBeVisible();
+    // ヒーローセクション（CTAボタン）— 実際のテキストは「今日を記録する」
+    await expect(page.getByRole("link", { name: /今日を記録する/ }).first()).toBeVisible();
   });
 
   test("気圧感受度チェックカードのチェックボックスが動作する", async ({ page }) => {
