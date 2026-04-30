@@ -6,7 +6,7 @@ publishedAt: "2026-04-02"
 updatedAt: "2026-04-29"
 category: "気象病"
 tags: ["寒暖差疲労", "自律神経", "気象病", "体温調節"]
-relatedSlugs: ["kiatsu-zutsu", "jiritsu-shinkei", "kisho-byo-check"]
+relatedSlugs: ["tsuyu-choushi-warui", "kiatsu-zutsu", "jiritsu-shinkei"]
 wordCount: 2200
 ---
 

@@ -6,7 +6,7 @@ publishedAt: "2026-04-14"
 updatedAt: "2026-04-29"
 category: "睡眠改善"
 tags: ["睡眠の質", "生活習慣", "寝室環境", "体内時計"]
-relatedSlugs: ["kiatsu-zutsu", "tsuki-to-suimin", "suimin-fusai"]
+relatedSlugs: ["tsuyu-choushi-warui", "kiatsu-nemurenaie", "suimin-fusai"]
 wordCount: 2300
 ---
 

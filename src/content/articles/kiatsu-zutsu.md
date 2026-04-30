@@ -6,7 +6,7 @@ publishedAt: "2026-04-10"
 updatedAt: "2026-04-29"
 category: "気象病"
 tags: ["低気圧", "頭痛", "気象病", "自律神経"]
-relatedSlugs: ["suimin-shitsu-up", "tsuki-to-suimin"]
+relatedSlugs: ["tenkitsuu-taisaku", "kiatsu-nemurenaie", "suimin-shitsu-up"]
 wordCount: 2200
 ---
 
