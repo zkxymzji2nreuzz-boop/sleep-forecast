@@ -32,14 +32,14 @@ export function ComingSoon({ title, step, description }: ComingSoonProps) {
           <CardTitle className="text-xl text-[#e6e8ee]">
             {title} — 準備中
           </CardTitle>
-          <CardDescription className="text-[#9ba3b5]">
+          <CardDescription className="text-[#a8b0c2]">
             {step} で実装予定
           </CardDescription>
         </CardHeader>
-        <CardContent className="text-center text-sm leading-relaxed text-[#9ba3b5]">
+        <CardContent className="text-center text-sm leading-relaxed text-[#a8b0c2]">
           {description ??
             "この画面は現在準備中です。もう少しお待ちください。"}
-          <p className="mt-4 text-xs text-[#9ba3b5]/70">
+          <p className="mt-4 text-xs text-[#a8b0c2]/70">
             ※ 本サービスは医療行為・診断ではありません
           </p>
         </CardContent>

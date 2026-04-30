@@ -70,15 +70,15 @@ export default function AboutPage() {
           </h2>
           <dl className="space-y-3">
             <div className="flex gap-4">
-              <dt className="w-24 shrink-0 font-medium text-[#9ba3b5]">運営者名</dt>
+              <dt className="w-24 shrink-0 font-medium text-[#a8b0c2]">運営者名</dt>
               <dd>SleepForecast 運営者</dd>
             </div>
             <div className="flex gap-4">
-              <dt className="w-24 shrink-0 font-medium text-[#9ba3b5]">サービス名</dt>
+              <dt className="w-24 shrink-0 font-medium text-[#a8b0c2]">サービス名</dt>
               <dd>SleepForecast</dd>
             </div>
             <div className="flex gap-4">
-              <dt className="w-24 shrink-0 font-medium text-[#9ba3b5]">お問い合わせ</dt>
+              <dt className="w-24 shrink-0 font-medium text-[#a8b0c2]">お問い合わせ</dt>
               <dd>
                 <a
                   href="/contact"
@@ -106,8 +106,8 @@ export default function AboutPage() {
 
         {/* 医療免責 */}
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
-          <p className="flex items-start gap-2 text-xs leading-relaxed text-[#9ba3b5]">
-            <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#9ba3b5]" aria-hidden="true" />
+          <p className="flex items-start gap-2 text-xs leading-relaxed text-[#a8b0c2]">
+            <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#a8b0c2]" aria-hidden="true" />
             <span>
               本サービスは医療行為・診断を目的としたものではありません。
               体調に不安がある場合は医療機関にご相談ください。

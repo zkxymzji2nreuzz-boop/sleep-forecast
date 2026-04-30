@@ -34,6 +34,7 @@ import {
   showTestNotification,
 } from "@/lib/notifications";
 import type { SleepRecord } from "@/lib/types";
+import { SettingsFormSchema, safeParseOrNull } from "@/lib/schemas";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Skeleton（SSR・マウント前の CLS 防止）
@@ -82,14 +83,14 @@ function DeleteConfirmDialog({ open, onCancel, onConfirm, recordCount }: AlertDi
         <h2 id="delete-dialog-title" className="mb-3 text-base font-bold text-[#e6e8ee]">
           全記録を削除しますか？
         </h2>
-        <p className="mb-6 text-sm leading-relaxed text-[#9ba3b5]">
+        <p className="mb-6 text-sm leading-relaxed text-[#a8b0c2]">
           保存されている <strong className="text-[#e6e8ee]">{recordCount} 件</strong> の睡眠記録がすべて削除されます。
           この操作は取り消せません。
         </p>
         <div className="flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 rounded-full border border-white/10 py-2.5 text-sm font-medium text-[#9ba3b5] transition-colors hover:border-white/20 hover:text-[#e6e8ee]"
+            className="flex-1 rounded-full border border-white/10 py-2.5 text-sm font-medium text-[#a8b0c2] transition-colors hover:border-white/20 hover:text-[#e6e8ee]"
           >
             キャンセル
           </button>
@@ -192,6 +193,7 @@ export function SettingsForm() {
   const [notifTime, setNotifTime] = React.useState("08:00");
   const [notifTestSent, setNotifTestSent] = React.useState(false);
   const [notifTimeSaved, setNotifTimeSaved] = React.useState(false);
+  const [notifTimeError, setNotifTimeError] = React.useState<string | null>(null);
 
   // マウント後に localStorage を読み込む
   React.useEffect(() => {
@@ -268,6 +270,16 @@ export function SettingsForm() {
 
   // ── リマインダー時刻の保存 ──
   function handleSaveNotifTime() {
+    const validation = safeParseOrNull(
+      SettingsFormSchema.pick({ notificationTime: true }),
+      { notificationTime: notifTime },
+      "notificationTime"
+    );
+    if (!validation) {
+      setNotifTimeError("HH:mm 形式 (例: 08:00) で入力してください");
+      return;
+    }
+    setNotifTimeError(null);
     setNotificationTime(notifTime);
     setNotifTimeSaved(true);
     setTimeout(() => setNotifTimeSaved(false), 2000);
@@ -316,7 +328,7 @@ export function SettingsForm() {
           <MapPin className="h-4 w-4 text-indigo-300/70" aria-hidden="true" />
           地域設定
         </h2>
-        <p className="mb-3 text-sm text-[#9ba3b5]">
+        <p className="mb-3 text-sm text-[#a8b0c2]">
           天気・気圧データを取得する都道府県を選択してください。
         </p>
 
@@ -363,13 +375,13 @@ export function SettingsForm() {
             ))}
           </select>
           <ChevronDown
-            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9ba3b5]"
+            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#a8b0c2]"
             aria-hidden="true"
           />
         </div>
 
         {selectedPref && (
-          <p className="mb-4 text-xs text-[#9ba3b5]">
+          <p className="mb-4 text-xs text-[#a8b0c2]">
             {selectedPref.name}（{selectedPref.latitude.toFixed(2)}°N, {selectedPref.longitude.toFixed(2)}°E）
           </p>
         )}
@@ -404,7 +416,7 @@ export function SettingsForm() {
         >
           データ管理
         </h2>
-        <p className="mb-4 text-sm text-[#9ba3b5]">
+        <p className="mb-4 text-sm text-[#a8b0c2]">
           ブラウザに保存されている睡眠記録を管理できます。
           現在 <strong className="text-[#e6e8ee]">{recordCount} 件</strong> の記録があります。
         </p>
@@ -445,7 +457,7 @@ export function SettingsForm() {
           </button>
         </div>
 
-        <p className="mt-3 text-xs text-[#9ba3b5]">
+        <p className="mt-3 text-xs text-[#a8b0c2]">
           ※ データはブラウザの localStorage に保存されています。削除すると元に戻せません。
         </p>
       </section>
@@ -463,7 +475,7 @@ export function SettingsForm() {
             <Bell className="h-4 w-4 text-indigo-300/70" aria-hidden="true" />
             通知設定
           </h2>
-          <p className="mb-4 text-sm text-[#9ba3b5]">
+          <p className="mb-4 text-sm text-[#a8b0c2]">
             毎日の記録を忘れないよう、リマインダー通知を受け取れます。
           </p>
 
@@ -485,7 +497,7 @@ export function SettingsForm() {
                 <BellOff className="h-3.5 w-3.5" aria-hidden="true" />
                 通知がブラウザでブロックされています
               </p>
-              <p className="mt-1 text-xs text-[#9ba3b5]">
+              <p className="mt-1 text-xs text-[#a8b0c2]">
                 ブラウザのサイト設定から通知を許可してください。
               </p>
             </div>
@@ -498,7 +510,7 @@ export function SettingsForm() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-[#e6e8ee]">リマインダー通知</p>
-                  <p className="mt-0.5 text-xs text-[#9ba3b5]">
+                  <p className="mt-0.5 text-xs text-[#a8b0c2]">
                     今日の記録がない場合、設定時刻にお知らせします
                   </p>
                 </div>
@@ -526,7 +538,7 @@ export function SettingsForm() {
                 <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4 space-y-3">
                   <label
                     htmlFor="notif-time"
-                    className="block text-xs font-semibold uppercase tracking-wider text-[#9ba3b5]"
+                    className="block text-xs font-semibold uppercase tracking-wider text-[#a8b0c2]"
                   >
                     リマインダー時刻
                   </label>
@@ -553,10 +565,15 @@ export function SettingsForm() {
                     </button>
                   </div>
 
+                  {/* バリデーションエラー */}
+                  {notifTimeError && (
+                    <p className="text-xs text-red-400" role="alert">{notifTimeError}</p>
+                  )}
+
                   {/* テスト通知 */}
                   <button
                     onClick={handleTestNotif}
-                    className="inline-flex items-center gap-1.5 text-xs text-[#9ba3b5] hover:text-indigo-300 transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs text-[#a8b0c2] hover:text-indigo-300 transition-colors"
                   >
                     <BellRing className="h-3.5 w-3.5" aria-hidden="true" />
                     {notifTestSent ? "テスト通知を送信しました" : "テスト通知を送信"}
@@ -573,17 +590,17 @@ export function SettingsForm() {
         <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-base font-bold text-[#e6e8ee] leading-snug">
           アプリ情報
         </h2>
-        <dl className="space-y-2 text-sm text-[#9ba3b5]">
+        <dl className="space-y-2 text-sm text-[#a8b0c2]">
           <div className="flex gap-4">
-            <dt className="w-28 shrink-0 text-[#9ba3b5]">アプリ名</dt>
+            <dt className="w-28 shrink-0 text-[#a8b0c2]">アプリ名</dt>
             <dd className="text-[#e6e8ee]">SleepForecast</dd>
           </div>
           <div className="flex gap-4">
-            <dt className="w-28 shrink-0 text-[#9ba3b5]">データ保存先</dt>
+            <dt className="w-28 shrink-0 text-[#a8b0c2]">データ保存先</dt>
             <dd>ブラウザの localStorage（端末内）</dd>
           </div>
           <div className="flex gap-4">
-            <dt className="w-28 shrink-0 text-[#9ba3b5]">外部送信</dt>
+            <dt className="w-28 shrink-0 text-[#a8b0c2]">外部送信</dt>
             <dd>なし（気象APIリクエストを除く）</dd>
           </div>
         </dl>
@@ -635,14 +652,14 @@ function CookieSettingsSection() {
         <Cookie className="h-4 w-4 text-indigo-300/70" aria-hidden="true" />
         Cookie 設定
       </h2>
-      <p className="mb-4 text-sm text-[#9ba3b5]">
+      <p className="mb-4 text-sm text-[#a8b0c2]">
         Google Analytics（アクセス解析）の Cookie 使用に関する同意設定を変更できます。
         拒否しても、すべての機能は通常どおりご利用いただけます。
       </p>
 
       {/* 現在の状態 */}
       {consent && (
-        <p className="mb-3 text-xs text-[#9ba3b5]">
+        <p className="mb-3 text-xs text-[#a8b0c2]">
           現在の設定:{" "}
           <span className={consent === "accepted" ? "font-semibold text-emerald-400" : "font-semibold text-[#e6e8ee]/60"}>
             {consent === "accepted" ? "同意済み" : "拒否"}
@@ -669,7 +686,7 @@ function CookieSettingsSection() {
           type="button"
           onClick={() => handleChange("rejected")}
           disabled={consent === "rejected"}
-          className="inline-flex items-center gap-1.5 rounded-full border border-white/20 px-4 py-1.5 text-xs font-medium text-[#9ba3b5] transition-colors hover:border-white/40 hover:text-[#e6e8ee] disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+          className="inline-flex items-center gap-1.5 rounded-full border border-white/20 px-4 py-1.5 text-xs font-medium text-[#a8b0c2] transition-colors hover:border-white/40 hover:text-[#e6e8ee] disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
         >
           拒否する
         </button>

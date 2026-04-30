@@ -92,8 +92,8 @@ export default function ContactPage() {
 
         {/* 医療免責 */}
         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
-          <p className="flex items-start gap-2 text-xs leading-relaxed text-[#9ba3b5]">
-            <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#9ba3b5]" aria-hidden="true" />
+          <p className="flex items-start gap-2 text-xs leading-relaxed text-[#a8b0c2]">
+            <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#a8b0c2]" aria-hidden="true" />
             <span>
               本サービスは医療行為・診断を目的としたものではありません。
               健康に関するご相談は医療機関にお問い合わせください。

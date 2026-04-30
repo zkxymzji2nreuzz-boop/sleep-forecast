@@ -62,7 +62,70 @@ const withPWA = withPWAInit({
   },
 });
 
+/** セキュリティヘッダー定義 */
+const securityHeaders = [
+  {
+    // クリックジャッキング防止
+    key: "X-Frame-Options",
+    value: "DENY",
+  },
+  {
+    // MIME スニッフィング防止
+    key: "X-Content-Type-Options",
+    value: "nosniff",
+  },
+  {
+    // リファラー制限
+    key: "Referrer-Policy",
+    value: "strict-origin-when-cross-origin",
+  },
+  {
+    // XSS 保護（modern browsers）
+    key: "X-XSS-Protection",
+    value: "1; mode=block",
+  },
+  {
+    // Permissions Policy（不要な API を無効化）
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=(self), payment=()",
+  },
+  {
+    /**
+     * Content Security Policy
+     * - script-src: Next.js hydration に 'unsafe-inline'/'unsafe-eval' が必要
+     * - style-src: Tailwind CSS の動的スタイルに 'unsafe-inline' が必要
+     * - connect-src: GA4・Vercel Analytics のみ許可（天気APIはサーバーサイド経由）
+     * - frame-ancestors: 埋め込みを完全禁止
+     */
+    key: "Content-Security-Policy",
+    value: [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://va.vercel-scripts.com",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: https:",
+      "font-src 'self'",
+      "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://vitals.vercel-insights.com https://va.vercel-scripts.com",
+      "frame-src 'none'",
+      "frame-ancestors 'none'",
+      "base-uri 'self'",
+      "form-action 'self' https://formspree.io",
+      "worker-src 'self' blob:",
+      "manifest-src 'self'",
+    ].join("; "),
+  },
+];
+
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  async headers() {
+    return [
+      {
+        // 全ページにセキュリティヘッダーを適用
+        source: "/(.*)",
+        headers: securityHeaders,
+      },
+    ];
+  },
+};
 
 export default withPWA(nextConfig);

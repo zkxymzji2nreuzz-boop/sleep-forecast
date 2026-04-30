@@ -98,7 +98,7 @@ ChartJS.register(
   Legend,
   Filler
 );
-ChartJS.defaults.color = "#9ba3b5";
+ChartJS.defaults.color = "#a8b0c2";
 ChartJS.defaults.borderColor = "rgba(139, 146, 165, 0.15)";
 ChartJS.defaults.font.family = "'Inter', sans-serif";
 
@@ -129,15 +129,15 @@ const QUALITY_FULL_MAP: Record<1 | 2 | 3 | 4 | 5, string> = {
 };
 
 const PRESSURE_BUCKETS = ["急上昇 (+3以上)", "横ばい", "急低下 (-3以下)"] as const;
-const PRESSURE_BUCKET_COLORS = ["#4ade80", "#9ba3b5", "#ef4444"];
+const PRESSURE_BUCKET_COLORS = ["#4ade80", "#a8b0c2", "#ef4444"];
 
 const DOW_LABELS = ["日", "月", "火", "水", "木", "金", "土"] as const;
 const DOW_COLORS = [
   "#f87171", // 日: rose
-  "#9ba3b5", // 月
-  "#9ba3b5", // 火
-  "#9ba3b5", // 水
-  "#9ba3b5", // 木
+  "#a8b0c2", // 月
+  "#a8b0c2", // 火
+  "#a8b0c2", // 水
+  "#a8b0c2", // 木
   "#4ade80", // 金: emerald
   "#60a5fa", // 土: blue
 ];
@@ -261,7 +261,7 @@ const TOOLTIP_BASE = {
   borderColor: "#6366f1",
   borderWidth: 1,
   titleColor: "#e6e8ee",
-  bodyColor: "#9ba3b5",
+  bodyColor: "#a8b0c2",
   padding: 10,
 } as const;
 
@@ -276,7 +276,7 @@ function buildLineOptions(): ChartOptions<"line"> {
         position: "top" as const,
         align: "end" as const,
         labels: {
-          color: "#9ba3b5",
+          color: "#a8b0c2",
           font: { size: 11 },
           boxWidth: 16,
           boxHeight: 2,
@@ -307,7 +307,7 @@ function buildLineOptions(): ChartOptions<"line"> {
       x: {
         grid: { color: "rgba(139, 146, 165, 0.10)" },
         ticks: {
-          color: "#9ba3b5",
+          color: "#a8b0c2",
           maxRotation: 0,
           autoSkipPadding: 16,
         },
@@ -317,7 +317,7 @@ function buildLineOptions(): ChartOptions<"line"> {
         max: 5,
         ticks: {
           stepSize: 1,
-          color: "#9ba3b5",
+          color: "#a8b0c2",
           // Y 軸は短縮ラベルを使って横幅を節約する
           callback: (value) => {
             const v = Number(value);
@@ -354,12 +354,12 @@ function buildBarOptions(): ChartOptions<"bar"> {
     scales: {
       x: {
         grid: { color: "rgba(139, 146, 165, 0.10)" },
-        ticks: { color: "#9ba3b5", font: { size: 10 } },
+        ticks: { color: "#a8b0c2", font: { size: 10 } },
       },
       y: {
         min: 0,
         max: 5,
-        ticks: { stepSize: 0.5, color: "#9ba3b5" },
+        ticks: { stepSize: 0.5, color: "#a8b0c2" },
         grid: { color: "rgba(139, 146, 165, 0.10)" },
       },
     },
@@ -534,7 +534,7 @@ export default function DashboardPage() {
         <Breadcrumb items={[{ name: "ホーム", href: "/" }, { name: "ダッシュボード" }]} />
         <header className="mb-6">
           <h1 className="text-2xl font-bold text-[#e6e8ee]">睡眠ダッシュボード</h1>
-          <p className="mt-1 text-sm text-[#9ba3b5]">
+          <p className="mt-1 text-sm text-[#a8b0c2]">
             過去 30 日の記録から、気象と睡眠品質の関係を分析します。
           </p>
         </header>
@@ -542,7 +542,7 @@ export default function DashboardPage() {
           <Moon className="h-12 w-12 text-indigo-400 opacity-60" aria-hidden />
           <div>
             <h2 className="text-lg font-semibold text-[#e6e8ee]">まだ記録がありません</h2>
-            <p className="mt-2 text-sm text-[#9ba3b5]">
+            <p className="mt-2 text-sm text-[#a8b0c2]">
               毎日の睡眠を記録すると、気圧との関係やあなただけのパターンが見えてきます。<br />
               まずは今日の眠りを記録してみましょう。
             </p>
@@ -564,11 +564,11 @@ export default function DashboardPage() {
 
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-[#e6e8ee]">睡眠ダッシュボード</h1>
-        <p className="mt-1 text-sm text-[#9ba3b5]">
+        <p className="mt-1 text-sm text-[#a8b0c2]">
           過去 30 日の記録から、気象と睡眠品質の関係を分析します。
         </p>
         {/* データ保存場所の注記 */}
-        <p className="mt-2 text-xs text-[#9ba3b5]/70">
+        <p className="mt-2 text-xs text-[#a8b0c2]/70">
           <Info className="mb-0.5 mr-1 inline-block h-3 w-3" aria-hidden />
           記録はこのブラウザの端末内に保存されています。他の端末・ブラウザとは同期されません。
         </p>
@@ -711,19 +711,19 @@ export default function DashboardPage() {
             <TabsList className="mb-3 grid w-full grid-cols-3 gap-1 bg-[#0f1117] p-1">
               <TabsTrigger
                 value="pressure"
-                className="rounded-md text-[#9ba3b5] data-[state=active]:bg-indigo-500/10 data-[state=active]:text-indigo-300 data-[state=active]:shadow-none"
+                className="rounded-md text-[#a8b0c2] data-[state=active]:bg-indigo-500/10 data-[state=active]:text-indigo-300 data-[state=active]:shadow-none"
               >
                 気圧別
               </TabsTrigger>
               <TabsTrigger
                 value="moon"
-                className="rounded-md text-[#9ba3b5] data-[state=active]:bg-indigo-500/10 data-[state=active]:text-indigo-300 data-[state=active]:shadow-none"
+                className="rounded-md text-[#a8b0c2] data-[state=active]:bg-indigo-500/10 data-[state=active]:text-indigo-300 data-[state=active]:shadow-none"
               >
                 月齢別
               </TabsTrigger>
               <TabsTrigger
                 value="dow"
-                className="rounded-md text-[#9ba3b5] data-[state=active]:bg-indigo-500/10 data-[state=active]:text-indigo-300 data-[state=active]:shadow-none"
+                className="rounded-md text-[#a8b0c2] data-[state=active]:bg-indigo-500/10 data-[state=active]:text-indigo-300 data-[state=active]:shadow-none"
               >
                 曜日別
               </TabsTrigger>
@@ -757,7 +757,7 @@ export default function DashboardPage() {
                   role="img"
                 />
               </div>
-              <p className="mt-2 text-[10px] text-[#9ba3b5]">
+              <p className="mt-2 text-[10px] text-[#a8b0c2]">
                 曜日ごとの平均睡眠品質。週末の生活リズムの乱れや週明けの疲れを確認できます。
               </p>
             </TabsContent>
@@ -772,7 +772,7 @@ export default function DashboardPage() {
       <div className="mb-6 flex items-center justify-between gap-3 rounded-lg border border-indigo-400/20 bg-indigo-500/[0.05] p-4">
         <div>
           <p className="text-sm font-medium text-[#e6e8ee]">今日の眠りを記録する</p>
-          <p className="mt-0.5 text-xs text-[#9ba3b5]">毎日記録すると、あなただけの傾向が見えてきます</p>
+          <p className="mt-0.5 text-xs text-[#a8b0c2]">毎日記録すると、あなただけの傾向が見えてきます</p>
         </div>
         <Button
           asChild
@@ -846,7 +846,7 @@ function KpiCard({ icon, label, value, subtitle, small }: KpiCardProps) {
         {value}
       </p>
       {subtitle && (
-        <p className="text-xs text-[#9ba3b5]">{subtitle}</p>
+        <p className="text-xs text-[#a8b0c2]">{subtitle}</p>
       )}
     </div>
   );
@@ -990,13 +990,13 @@ function LockedChart({ needed, current, children }: LockedChartProps) {
       {/* ロックオーバーレイ */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="flex flex-col items-center gap-2 rounded-xl border border-gray-700/60 bg-[#0f1117]/90 px-6 py-4 text-center shadow-lg">
-          <Lock className="h-6 w-6 text-[#9ba3b5]" aria-hidden />
+          <Lock className="h-6 w-6 text-[#a8b0c2]" aria-hidden />
           <p className="text-sm font-semibold text-[#e6e8ee]">
             あと{" "}
             <span className="text-indigo-300">{remaining} 件</span>{" "}
             で解放
           </p>
-          <p className="text-xs text-[#9ba3b5]">記録を続けると分析が見えてきます</p>
+          <p className="text-xs text-[#a8b0c2]">記録を続けると分析が見えてきます</p>
         </div>
       </div>
     </div>

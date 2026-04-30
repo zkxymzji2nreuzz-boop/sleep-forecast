@@ -15,7 +15,7 @@ export default function OfflinePage() {
       <h1 className="mb-3 text-2xl font-bold text-[#e6e8ee]">
         オフラインです
       </h1>
-      <p className="mb-8 max-w-sm text-sm leading-relaxed text-[#9ba3b5]">
+      <p className="mb-8 max-w-sm text-sm leading-relaxed text-[#a8b0c2]">
         インターネット接続が見つかりません。
         接続を確認してから再度お試しください。
       </p>

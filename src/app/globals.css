@@ -8,11 +8,11 @@
  * - カード    #1a1f2e
  * - アクセント #6366f1
  * - 本文      #e6e8ee
- * - 補助      #9ba3b5
+ * - 補助      #a8b0c2
  */
 @layer base {
   :root {
-    --color-muted: #9ba3b5;
+    --color-muted: #a8b0c2;
     /* HSL 値は shadcn/ui 互換のため各トークンを hsl() で定義 */
     --background: 225 24% 8%; /* #0f1117 */
     --foreground: 225 18% 91%; /* #e6e8ee */

@@ -185,7 +185,7 @@ export function HomeClient() {
         <h1 className="mb-4 text-3xl font-bold leading-tight tracking-tight text-[#e6e8ee] sm:text-4xl md:text-5xl">
           気象病・低気圧から、明日の眠りを予報する
         </h1>
-        <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed text-[#9ba3b5] sm:text-base">
+        <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed text-[#a8b0c2] sm:text-base">
           気圧・気温・月齢からあなたの睡眠を読み解く
         </p>
         {isLoaded && (
@@ -255,7 +255,7 @@ export function HomeClient() {
                 <Smartphone className="h-4 w-4 text-indigo-400" aria-hidden="true" />
                 iOSアプリ開発中
               </p>
-              <p className="mt-1 text-xs text-[#9ba3b5]">
+              <p className="mt-1 text-xs text-[#a8b0c2]">
                 気圧急落アラートなど、通知機能を準備中です
               </p>
             </div>
@@ -263,7 +263,7 @@ export function HomeClient() {
 
           {/* 今日の気象コンディション（prediction があれば表示） */}
           {prediction && currentPressure != null && (
-            <p className="mt-3 text-xs text-[#9ba3b5]">
+            <p className="mt-3 text-xs text-[#a8b0c2]">
               今日の気圧: {Math.round(currentPressure)}hPaです
             </p>
           )}
@@ -274,7 +274,7 @@ export function HomeClient() {
               <p className="text-sm text-indigo-400">登録ありがとうございます！</p>
             ) : (
               <>
-                <p className="mb-2 text-xs text-[#9ba3b5]">リリース時に通知を受け取る</p>
+                <p className="mb-2 text-xs text-[#a8b0c2]">リリース時に通知を受け取る</p>
                 <form
                   action={`https://formspree.io/f/${process.env.NEXT_PUBLIC_FORMSPREE_ID || "YOUR_FORM_ID"}`}
                   method="POST"
@@ -288,7 +288,7 @@ export function HomeClient() {
                     placeholder="メールアドレス"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="border-white/10 bg-[#0f1117] text-[#e6e8ee] placeholder:text-[#9ba3b5]"
+                    className="border-white/10 bg-[#0f1117] text-[#e6e8ee] placeholder:text-[#a8b0c2]"
                   />
                   <Button type="submit" className="h-10 whitespace-nowrap">
                     通知を受け取る
@@ -344,7 +344,7 @@ export function HomeClient() {
                     </a>
                   ) : title}
                 </p>
-                <p className="mt-0.5 text-xs leading-relaxed text-[#9ba3b5]">{desc}</p>
+                <p className="mt-0.5 text-xs leading-relaxed text-[#a8b0c2]">{desc}</p>
               </div>
             </li>
           ))}
@@ -378,7 +378,7 @@ export function HomeClient() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-sm leading-relaxed text-[#9ba3b5]">
+                  <CardDescription className="text-sm leading-relaxed text-[#a8b0c2]">
                     {feature.description}
                   </CardDescription>
                 </CardContent>
@@ -422,7 +422,7 @@ export function HomeClient() {
               <dd
                 id={`faq-answer-${i}`}
                 hidden={openFaq !== i}
-                className="px-4 pb-4 text-sm leading-relaxed text-[#9ba3b5]"
+                className="px-4 pb-4 text-sm leading-relaxed text-[#a8b0c2]"
               >
                 {item.a}
               </dd>
@@ -431,7 +431,7 @@ export function HomeClient() {
         </dl>
       </section>
 
-      <p className="text-center text-xs text-[#9ba3b5]/80">
+      <p className="text-center text-xs text-[#a8b0c2]/80">
         ※ 本サービスは医療行為・診断ではありません
       </p>
     </div>

@@ -209,7 +209,7 @@ export function RecordForm(): JSX.Element {
   const yesterdayBadge = yesterdayScore === null ? null
     : yesterdayScore >= 80 ? { label: "とても良い夜", color: "#10b981" }
     : yesterdayScore >= 65 ? { label: "良い夜", color: "#4a90d9" }
-    : yesterdayScore >= 45 ? { label: "普通の夜", color: "#9ba3b5" }
+    : yesterdayScore >= 45 ? { label: "普通の夜", color: "#a8b0c2" }
     : yesterdayScore >= 25 ? { label: "注意の夜", color: "#f59e0b" }
     : { label: "難しい夜", color: "#f87070" };
 
@@ -383,7 +383,7 @@ export function RecordForm(): JSX.Element {
                 ? "7日達成！"
                 : "記録しました"}
             </CardTitle>
-            <p className="mt-1 text-sm text-[#9ba3b5]">
+            <p className="mt-1 text-sm text-[#a8b0c2]">
               {new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "short" })}
             </p>
           </CardHeader>
@@ -395,7 +395,7 @@ export function RecordForm(): JSX.Element {
                 <p className="text-sm font-semibold text-emerald-300">
                   最初の一歩、おめでとうございます！
                 </p>
-                <p className="mt-1.5 text-xs leading-relaxed text-[#9ba3b5]">
+                <p className="mt-1.5 text-xs leading-relaxed text-[#a8b0c2]">
                   あと6日続けると気象との相関分析がスタートします。<br />
                   毎朝15秒でOK。気圧が変わった日ほど記録の価値があります。
                 </p>
@@ -406,7 +406,7 @@ export function RecordForm(): JSX.Element {
             {isMilestone3 && (
               <div className="rounded-xl border border-indigo-400/25 bg-indigo-500/[0.07] p-4 text-center">
                 <p className="text-sm font-semibold text-indigo-300">3日連続！いいペースです</p>
-                <p className="mt-1 text-xs text-[#9ba3b5]">あと4日で気圧との相関グラフが解放されます</p>
+                <p className="mt-1 text-xs text-[#a8b0c2]">あと4日で気圧との相関グラフが解放されます</p>
               </div>
             )}
 
@@ -416,7 +416,7 @@ export function RecordForm(): JSX.Element {
                 <p className="text-sm font-semibold text-purple-300">
                   7日分のデータが揃いました！
                 </p>
-                <p className="mt-1 text-xs leading-relaxed text-[#9ba3b5]">
+                <p className="mt-1 text-xs leading-relaxed text-[#a8b0c2]">
                   ダッシュボードで気圧・月齢との相関グラフが見られるようになりました。
                 </p>
                 {showFreezeEarned && (
@@ -435,7 +435,7 @@ export function RecordForm(): JSX.Element {
                   <Shield className="h-4 w-4" aria-hidden="true" />
                   ストリークシールドを獲得！
                 </p>
-                <p className="mt-1 text-xs text-[#9ba3b5]">
+                <p className="mt-1 text-xs text-[#a8b0c2]">
                   1日休んでもストリークを守れます（残り {freezeCountAfterSave} 枚）
                 </p>
               </div>
@@ -447,7 +447,7 @@ export function RecordForm(): JSX.Element {
                 <Shield className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" aria-hidden="true" />
                 <div>
                   <p className="text-xs font-semibold text-amber-300">シールドを使用しました</p>
-                  <p className="mt-0.5 text-xs text-[#9ba3b5]">
+                  <p className="mt-0.5 text-xs text-[#a8b0c2]">
                     昨日の空白をシールドで補填しました（残り {freezeCountAfterSave} 枚）
                   </p>
                 </div>
@@ -457,24 +457,24 @@ export function RecordForm(): JSX.Element {
             {/* 気象コンテキスト */}
             <dl className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
               <div>
-                <dt className="text-[11px] uppercase tracking-wider text-[#9ba3b5]">昨晩の眠り</dt>
+                <dt className="text-[11px] uppercase tracking-wider text-[#a8b0c2]">昨晩の眠り</dt>
                 <dd className="mt-1 text-xl font-semibold text-[#e6e8ee]">{qualityLabel}</dd>
               </div>
               <div>
-                <dt className="text-[11px] uppercase tracking-wider text-[#9ba3b5]">気圧 (24h 差)</dt>
+                <dt className="text-[11px] uppercase tracking-wider text-[#a8b0c2]">気圧 (24h 差)</dt>
                 <dd className="mt-1 text-xl font-semibold tabular-nums text-[#e6e8ee]">
                   {w.pressureHpa.toFixed(1)}{" "}
-                  <span className={`text-sm tabular-nums ${w.pressureDeltaHpa <= -3 ? "text-rose-400" : w.pressureDeltaHpa >= 3 ? "text-emerald-400" : "text-[#9ba3b5]"}`}>
+                  <span className={`text-sm tabular-nums ${w.pressureDeltaHpa <= -3 ? "text-rose-400" : w.pressureDeltaHpa >= 3 ? "text-emerald-400" : "text-[#a8b0c2]"}`}>
                     {w.pressureDeltaHpa >= 0 ? "+" : ""}{w.pressureDeltaHpa.toFixed(1)}
                   </span>
                 </dd>
               </div>
               <div>
-                <dt className="text-[11px] uppercase tracking-wider text-[#9ba3b5]">気温</dt>
+                <dt className="text-[11px] uppercase tracking-wider text-[#a8b0c2]">気温</dt>
                 <dd className="mt-1 text-xl font-semibold tabular-nums text-[#e6e8ee]">{w.temperatureC.toFixed(1)}°C</dd>
               </div>
               <div>
-                <dt className="text-[11px] uppercase tracking-wider text-[#9ba3b5]">湿度</dt>
+                <dt className="text-[11px] uppercase tracking-wider text-[#a8b0c2]">湿度</dt>
                 <dd className="mt-1 text-xl font-semibold tabular-nums text-[#e6e8ee]">{w.humidity}%</dd>
               </div>
             </dl>
@@ -491,7 +491,7 @@ export function RecordForm(): JSX.Element {
             {recordCountAfterSave > 0 && recordCountAfterSave < 7 && (
               <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] px-4 py-3">
                 <div className="mb-2 flex items-center justify-between text-xs">
-                  <span className="text-[#9ba3b5]">相関分析まで</span>
+                  <span className="text-[#a8b0c2]">相関分析まで</span>
                   <span className="font-semibold text-indigo-300">{recordCountAfterSave} / 7日</span>
                 </div>
                 <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
@@ -505,7 +505,7 @@ export function RecordForm(): JSX.Element {
                     aria-label="相関分析解禁まで"
                   />
                 </div>
-                <p className="mt-1.5 text-[11px] text-[#9ba3b5]">あと {remaining} 日で気象との相関グラフが解放されます</p>
+                <p className="mt-1.5 text-[11px] text-[#a8b0c2]">あと {remaining} 日で気象との相関グラフが解放されます</p>
               </div>
             )}
 
@@ -516,18 +516,18 @@ export function RecordForm(): JSX.Element {
                   ホームへ戻る
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="w-full border-white/10 text-[#9ba3b5] hover:border-indigo-400/40 hover:text-indigo-300">
+              <Button asChild variant="outline" className="w-full border-white/10 text-[#a8b0c2] hover:border-indigo-400/40 hover:text-indigo-300">
                 <Link href="/dashboard">
                   <BarChart3 className="mr-2 h-4 w-4" aria-hidden="true" />
                   ダッシュボードを見る
                 </Link>
               </Button>
-              <Button type="button" variant="ghost" className="w-full text-[#9ba3b5]/60 hover:bg-white/[0.03] hover:text-[#9ba3b5]" onClick={handleEditAgain}>
+              <Button type="button" variant="ghost" className="w-full text-[#a8b0c2]/60 hover:bg-white/[0.03] hover:text-[#a8b0c2]" onClick={handleEditAgain}>
                 <RefreshCcw className="mr-2 h-4 w-4" aria-hidden="true" />
                 今日の記録を修正する
               </Button>
             </div>
-            <p className="pt-1 text-center text-xs text-[#9ba3b5]/70">
+            <p className="pt-1 text-center text-xs text-[#a8b0c2]/70">
               本サービスは医療行為・診断を目的としたものではありません。
             </p>
           </CardContent>
@@ -539,7 +539,7 @@ export function RecordForm(): JSX.Element {
   return (
     <div className="container mx-auto max-w-screen-md px-4 py-8 pb-24 sm:py-12 sm:pb-0">
       <div className="mb-6 text-center">
-        <div className="mb-4 flex items-center justify-center gap-4 text-xs tabular-nums text-[#9ba3b5]">
+        <div className="mb-4 flex items-center justify-center gap-4 text-xs tabular-nums text-[#a8b0c2]">
           <span className="inline-flex items-center gap-1.5">
             <TrendingUp className="h-3.5 w-3.5" aria-hidden="true" />
             今月 {metrics.monthCount}/30
@@ -548,50 +548,50 @@ export function RecordForm(): JSX.Element {
           <span>連続 {metrics.streak} 日</span>
         </div>
         <h1 className="text-2xl font-bold text-[#e6e8ee] sm:text-3xl">今日の睡眠を記録する</h1>
-        <p className="mt-2 text-sm text-[#9ba3b5]">毎朝15秒でOK。気象データは自動で取得します。</p>
+        <p className="mt-2 text-sm text-[#a8b0c2]">毎朝15秒でOK。気象データは自動で取得します。</p>
       </div>
 
       {/* ⑥ 昨夜の予報との照合 */}
       {yesterdayBadge && yesterdayScore !== null && (
         <div className="mb-4 rounded-xl border border-white/8 bg-white/4 px-4 py-3">
-          <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-[#9ba3b5]">昨夜の予報</p>
+          <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-[#a8b0c2]">昨夜の予報</p>
           <p className="text-sm text-[#e6e8ee]">
             <span className="font-semibold" style={{ color: yesterdayBadge.color }}>{yesterdayBadge.label}</span>
-            <span className="ml-1.5 tabular-nums text-[#9ba3b5]">（{yesterdayScore}点）</span>
+            <span className="ml-1.5 tabular-nums text-[#a8b0c2]">（{yesterdayScore}点）</span>
           </p>
-          <p className="mt-1 text-xs text-[#9ba3b5]">実際はどうでしたか？↓</p>
+          <p className="mt-1 text-xs text-[#a8b0c2]">実際はどうでしたか？↓</p>
         </div>
       )}
 
       {/* 今日の気象サマリー */}
       {todayWeather === "loading" ? (
         <div className="mb-4 flex items-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.02] px-4 py-3">
-          <Loader2 className="h-3.5 w-3.5 animate-spin text-[#9ba3b5]" aria-hidden="true" />
-          <span className="text-xs text-[#9ba3b5]">気象データを取得中…</span>
+          <Loader2 className="h-3.5 w-3.5 animate-spin text-[#a8b0c2]" aria-hidden="true" />
+          <span className="text-xs text-[#a8b0c2]">気象データを取得中…</span>
         </div>
       ) : todayWeather ? (
         <div className="mb-4 rounded-xl border border-white/[0.07] bg-white/[0.02] px-4 py-3">
-          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[#9ba3b5]">今日の気象</p>
+          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[#a8b0c2]">今日の気象</p>
           <div className="flex flex-wrap gap-x-5 gap-y-1.5 tabular-nums text-sm">
             <span className="flex items-baseline gap-1.5">
-              <span className="text-[10px] text-[#9ba3b5]">気圧</span>
+              <span className="text-[10px] text-[#a8b0c2]">気圧</span>
               <span className="text-[#e6e8ee]">{todayWeather.pressureHpa.toFixed(1)} hPa</span>
               <span className={
                 todayWeather.pressureDeltaHpa <= -3
                   ? "text-xs text-rose-400"
                   : todayWeather.pressureDeltaHpa >= 3
                   ? "text-xs text-emerald-400"
-                  : "text-xs text-[#9ba3b5]"
+                  : "text-xs text-[#a8b0c2]"
               }>
                 {todayWeather.pressureDeltaHpa >= 0 ? "+" : ""}{todayWeather.pressureDeltaHpa.toFixed(1)}
               </span>
             </span>
             <span className="flex items-baseline gap-1.5">
-              <span className="text-[10px] text-[#9ba3b5]">気温</span>
+              <span className="text-[10px] text-[#a8b0c2]">気温</span>
               <span className="text-[#e6e8ee]">{todayWeather.temperatureC.toFixed(1)}°C</span>
             </span>
             <span className="flex items-baseline gap-1.5">
-              <span className="text-[10px] text-[#9ba3b5]">湿度</span>
+              <span className="text-[10px] text-[#a8b0c2]">湿度</span>
               <span className="text-[#e6e8ee]">{todayWeather.humidity}%</span>
             </span>
           </div>
@@ -623,7 +623,7 @@ export function RecordForm(): JSX.Element {
                       aria-label={opt.aria}
                       onClick={() => handleQualityPick(opt.value)}
                       className={[
-                        "flex min-h-[88px] min-w-[44px] flex-col items-center justify-center gap-2 rounded-xl bg-white/[0.03] p-3 text-[#9ba3b5] transition-colors hover:bg-white/[0.06] hover:text-[#e6e8ee] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
+                        "flex min-h-[88px] min-w-[44px] flex-col items-center justify-center gap-2 rounded-xl bg-white/[0.03] p-3 text-[#a8b0c2] transition-colors hover:bg-white/[0.06] hover:text-[#e6e8ee] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
                         selected ? "bg-indigo-500/10 text-[#e6e8ee] ring-1 ring-inset ring-indigo-500/60 shadow-[0_0_24px_-8px_rgba(99,102,241,0.55)]" : "",
                       ].join(" ")}
                     >
@@ -641,7 +641,7 @@ export function RecordForm(): JSX.Element {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label htmlFor="bedtime" className="flex items-center text-sm font-medium text-[#e6e8ee]">
-                  <Moon className="mr-1 h-3.5 w-3.5 text-[#9ba3b5]" aria-hidden="true" />
+                  <Moon className="mr-1 h-3.5 w-3.5 text-[#a8b0c2]" aria-hidden="true" />
                   就寝時刻 (任意)
                 </Label>
                 <Input id="bedtime" type="time" inputMode="numeric" autoComplete="off" value={form.bedtime}
@@ -652,7 +652,7 @@ export function RecordForm(): JSX.Element {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="wakeTime" className="flex items-center text-sm font-medium text-[#e6e8ee]">
-                  <Sunrise className="mr-1 h-3.5 w-3.5 text-[#9ba3b5]" aria-hidden="true" />
+                  <Sunrise className="mr-1 h-3.5 w-3.5 text-[#a8b0c2]" aria-hidden="true" />
                   起床時刻 (任意)
                 </Label>
                 <Input id="wakeTime" type="time" inputMode="numeric" autoComplete="off" value={form.wakeTime}
@@ -671,7 +671,7 @@ export function RecordForm(): JSX.Element {
               <textarea
                 id="note" maxLength={280} rows={3} value={form.note}
                 onChange={(e) => setForm((prev) => ({ ...prev, note: e.target.value }))}
-                className="w-full rounded-md border-0 bg-white/[0.03] px-3 py-2 text-sm text-[#e6e8ee] placeholder:text-[#9ba3b5]/70 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-md border-0 bg-white/[0.03] px-3 py-2 text-sm text-[#e6e8ee] placeholder:text-[#a8b0c2]/70 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 placeholder="例: 夜中に一度目が覚めた / 寝る前にスマホを見すぎた"
               />
               {errors.note ? <p className="text-xs text-[#f87171]" role="alert">{errors.note}</p> : null}
@@ -683,21 +683,21 @@ export function RecordForm(): JSX.Element {
                 <p className="text-xs text-[#f59e0b]">気象 API に接続できませんでした。以下に手動で入力して保存できます。</p>
                 <div className="grid grid-cols-3 gap-2">
                   <div className="space-y-1">
-                    <Label htmlFor="manual-temp" className="text-xs text-[#9ba3b5]">気温 (°C)</Label>
+                    <Label htmlFor="manual-temp" className="text-xs text-[#a8b0c2]">気温 (°C)</Label>
                     <Input id="manual-temp" type="number" step="0.1" inputMode="decimal" value={manual.temperatureC}
                       onChange={(e) => setManual((prev) => ({ ...prev, temperatureC: e.target.value }))}
                       className="h-11 rounded-none border-0 border-b border-white/10 bg-transparent px-0 text-[#e6e8ee] tabular-nums focus-visible:border-indigo-500 focus-visible:ring-0"
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label htmlFor="manual-hum" className="text-xs text-[#9ba3b5]">湿度 (%)</Label>
+                    <Label htmlFor="manual-hum" className="text-xs text-[#a8b0c2]">湿度 (%)</Label>
                     <Input id="manual-hum" type="number" step="1" inputMode="numeric" value={manual.humidity}
                       onChange={(e) => setManual((prev) => ({ ...prev, humidity: e.target.value }))}
                       className="h-11 rounded-none border-0 border-b border-white/10 bg-transparent px-0 text-[#e6e8ee] tabular-nums focus-visible:border-indigo-500 focus-visible:ring-0"
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label htmlFor="manual-pre" className="text-xs text-[#9ba3b5]">気圧 (hPa)</Label>
+                    <Label htmlFor="manual-pre" className="text-xs text-[#a8b0c2]">気圧 (hPa)</Label>
                     <Input id="manual-pre" type="number" step="0.1" inputMode="decimal" value={manual.pressureHpa}
                       onChange={(e) => setManual((prev) => ({ ...prev, pressureHpa: e.target.value }))}
                       className="h-11 rounded-none border-0 border-b border-white/10 bg-transparent px-0 text-[#e6e8ee] tabular-nums focus-visible:border-indigo-500 focus-visible:ring-0"
@@ -714,7 +714,7 @@ export function RecordForm(): JSX.Element {
                   <><Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />保存中...</>
                 ) : isUpdate ? "今日の記録を更新する" : "記録する"}
               </Button>
-              <p className="mt-2 text-center text-[11px] text-[#9ba3b5]">
+              <p className="mt-2 text-center text-[11px] text-[#a8b0c2]">
                 {allRecords.length === 0
                   ? "毎朝の記録が予報の精度を上げます"
                   : allRecords.length < 4
@@ -724,13 +724,13 @@ export function RecordForm(): JSX.Element {
                       : "記録が増えるほど予測が精緻になります"}
               </p>
               <div className="mt-6 text-center">
-                <Link href="/" className="text-sm text-[#9ba3b5] underline-offset-4 hover:text-[#9ba3b5]/70 hover:underline">
+                <Link href="/" className="text-sm text-[#a8b0c2] underline-offset-4 hover:text-[#a8b0c2]/70 hover:underline">
                   今日はスキップ
                 </Link>
               </div>
             </div>
 
-            <p className="text-center text-xs text-[#9ba3b5]">
+            <p className="text-center text-xs text-[#a8b0c2]">
               本サービスは医療行為・診断を目的としたものではありません。記録は健康管理の参考としてご利用ください。
             </p>
           </CardContent>

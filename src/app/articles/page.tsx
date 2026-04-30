@@ -47,14 +47,14 @@ export default function ArticlesIndexPage() {
           <h1 className="text-3xl font-bold tracking-tight text-[#e6e8ee] sm:text-4xl">
             気象病・低気圧と睡眠の関係
           </h1>
-          <p className="mt-3 text-sm leading-relaxed text-[#9ba3b5] sm:text-base">
+          <p className="mt-3 text-sm leading-relaxed text-[#a8b0c2] sm:text-base">
             気圧、気温、月のリズム。眠りの奥にある自然の声に、そっと耳を澄ませる読みものを集めました。
           </p>
         </header>
       </div>
 
       {articles.length === 0 ? (
-        <p className="text-sm text-[#9ba3b5]">
+        <p className="text-sm text-[#a8b0c2]">
           今夜はまだ、新しい読みものは届いていません。
         </p>
       ) : (
@@ -80,7 +80,7 @@ export default function ArticlesIndexPage() {
                 <h2 className="text-lg font-semibold text-[#e6e8ee] sm:text-xl">
                   {a.title}
                 </h2>
-                <p className="mt-1.5 line-clamp-2 text-sm text-[#9ba3b5]">
+                <p className="mt-1.5 line-clamp-2 text-sm text-[#a8b0c2]">
                   {a.description}
                 </p>
 
@@ -98,10 +98,10 @@ export default function ArticlesIndexPage() {
       <div className="mt-14 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
         <div className="flex items-start gap-2">
           <Info
-            className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#9ba3b5]"
+            className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#a8b0c2]"
             aria-hidden="true"
           />
-          <p className="text-xs leading-relaxed text-[#9ba3b5]">
+          <p className="text-xs leading-relaxed text-[#a8b0c2]">
             本サービスで提供する記事は一般的な情報提供を目的としたものであり、医学的な診断・治療の代替ではありません。
             体調に不安がある場合は、必ず医療機関にご相談ください。
           </p>

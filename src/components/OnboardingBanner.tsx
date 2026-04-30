@@ -43,7 +43,7 @@ export function OnboardingBanner() {
             <Moon className="h-4 w-4 text-indigo-300" aria-hidden="true" />
             はじめましょう
           </p>
-          <p className="mb-3 text-xs leading-relaxed text-[#9ba3b5]">
+          <p className="mb-3 text-xs leading-relaxed text-[#a8b0c2]">
             まずは今日の眠りを記録してみましょう。15秒で完了します。
           </p>
           <Link
@@ -57,7 +57,7 @@ export function OnboardingBanner() {
         <button
           onClick={handleDismiss}
           aria-label="バナーを閉じる"
-          className="flex flex-shrink-0 items-center justify-center min-h-[44px] min-w-[44px] rounded-full p-3 text-[#9ba3b5] transition-colors hover:text-[#e6e8ee]"
+          className="flex flex-shrink-0 items-center justify-center min-h-[44px] min-w-[44px] rounded-full p-3 text-[#a8b0c2] transition-colors hover:text-[#e6e8ee]"
         >
           <X className="h-4 w-4" aria-hidden="true" />
         </button>

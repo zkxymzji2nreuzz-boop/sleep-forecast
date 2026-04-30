@@ -104,13 +104,13 @@ export function PwaInstallPrompt() {
             ホーム画面に追加して、さらに使いやすく
           </p>
           {showIosHint ? (
-            <p className="mt-1 text-xs text-[#9ba3b5] leading-relaxed">
+            <p className="mt-1 text-xs text-[#a8b0c2] leading-relaxed">
               Safariの共有ボタン（
               <span className="font-mono text-indigo-300">⬆</span>
               ）→「ホーム画面に追加」でアプリとして使えます。
             </p>
           ) : (
-            <p className="mt-1 text-xs text-[#9ba3b5] leading-relaxed">
+            <p className="mt-1 text-xs text-[#a8b0c2] leading-relaxed">
               インストールするとオフラインでも閲覧でき、通知も確実に届きます。
             </p>
           )}
@@ -125,7 +125,7 @@ export function PwaInstallPrompt() {
         </div>
         <button
           onClick={handleDismiss}
-          className="p-1 rounded-full text-[#9ba3b5] hover:text-[#e6e8ee] flex-shrink-0"
+          className="p-1 rounded-full text-[#a8b0c2] hover:text-[#e6e8ee] flex-shrink-0"
           aria-label="閉じる"
         >
           <X className="h-4 w-4" />

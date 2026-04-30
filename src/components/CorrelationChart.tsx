@@ -140,7 +140,7 @@ export function CorrelationChart({
         borderColor: "#6366f1",
         borderWidth: 1,
         titleColor: "#e6e8ee",
-        bodyColor: "#9ba3b5",
+        bodyColor: "#a8b0c2",
         padding: 10,
         callbacks: {
           title: (items: TooltipItem<"scatter">[]) => {
@@ -169,11 +169,11 @@ export function CorrelationChart({
         title: {
           display: true,
           text: "前日比気圧 (hPa)",
-          color: "#9ba3b5",
+          color: "#a8b0c2",
           font: { size: 11 },
         },
         grid: { color: "rgba(139, 146, 165, 0.10)" },
-        ticks: { color: "#9ba3b5" },
+        ticks: { color: "#a8b0c2" },
       },
       y: {
         type: "linear",
@@ -181,7 +181,7 @@ export function CorrelationChart({
         max: 5,
         ticks: {
           stepSize: 1,
-          color: "#9ba3b5",
+          color: "#a8b0c2",
           callback: (value) => {
             const v = Number(value);
             if (!Number.isInteger(v) || v < 1 || v > 5) return "";
@@ -196,7 +196,7 @@ export function CorrelationChart({
   if (records.length === 0) {
     return (
       <div
-        className="flex items-center justify-center text-sm text-[#9ba3b5]"
+        className="flex items-center justify-center text-sm text-[#a8b0c2]"
         style={{ height }}
       >
         データがありません
@@ -217,13 +217,13 @@ export function CorrelationChart({
         />
       </div>
       {/* フッター: 相関係数 + 凡例 */}
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-y-2 text-[11px] text-[#9ba3b5]">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-y-2 text-[11px] text-[#a8b0c2]">
         {validR && (
           <span className="shrink-0">
             相関係数 r = <span className={
               pearsonR! <= -0.3 ? "font-semibold text-rose-400"
               : pearsonR! >= 0.3 ? "font-semibold text-emerald-400"
-              : "text-[#9ba3b5]"
+              : "text-[#a8b0c2]"
             }>{pearsonR!.toFixed(2)}</span>
           </span>
         )}

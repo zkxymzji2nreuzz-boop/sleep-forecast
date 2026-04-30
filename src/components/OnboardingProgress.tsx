@@ -62,7 +62,7 @@ export function OnboardingProgress({ recordCount }: OnboardingProgressProps) {
           次の解放まであと{" "}
           <span className="text-indigo-300">{nextStage.count - recordCount} 件</span>
         </span>
-        <span className="text-xs text-[#9ba3b5]">
+        <span className="text-xs text-[#a8b0c2]">
           {recordCount} / {nextStage.count} 件
         </span>
       </div>
@@ -108,7 +108,7 @@ export function OnboardingProgress({ recordCount }: OnboardingProgressProps) {
                       ? "bg-indigo-500 text-white"
                       : isNext
                       ? "bg-white/10 text-indigo-300"
-                      : "bg-white/5 text-[#9ba3b5]"
+                      : "bg-white/5 text-[#a8b0c2]"
                   )}
                 >
                   {done ? (
@@ -120,7 +120,7 @@ export function OnboardingProgress({ recordCount }: OnboardingProgressProps) {
                 <Icon
                   className={cn(
                     "h-4 w-4",
-                    done ? "text-indigo-400" : "text-[#9ba3b5]/50"
+                    done ? "text-indigo-400" : "text-[#a8b0c2]/50"
                   )}
                   aria-hidden="true"
                 />
@@ -134,14 +134,14 @@ export function OnboardingProgress({ recordCount }: OnboardingProgressProps) {
                     ? "text-indigo-300"
                     : isNext
                     ? "text-[#e6e8ee]"
-                    : "text-[#9ba3b5]"
+                    : "text-[#a8b0c2]"
                 )}
               >
                 {stage.label}
               </p>
 
               {/* 説明 */}
-              <p className="mt-0.5 text-[10px] leading-tight text-[#9ba3b5]">
+              <p className="mt-0.5 text-[10px] leading-tight text-[#a8b0c2]">
                 {stage.detail}
               </p>
             </div>

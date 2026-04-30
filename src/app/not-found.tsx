@@ -18,7 +18,7 @@ export default function NotFound() {
         <h1 className="text-xl font-semibold text-[#e6e8ee]">
           ページが見つかりません
         </h1>
-        <p className="text-sm text-[#9ba3b5]">
+        <p className="text-sm text-[#a8b0c2]">
           お探しのページは存在しないか、移動した可能性があります。
         </p>
       </div>

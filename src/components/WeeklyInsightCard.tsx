@@ -104,20 +104,20 @@ export function WeeklyInsightCard() {
     <div className="mb-8 rounded-2xl border border-white/5 bg-[#1a1f2e] p-5">
       {/* ヘッダー */}
       <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-semibold text-[#9ba3b5] uppercase tracking-wide">
+        <p className="text-xs font-semibold text-[#a8b0c2] uppercase tracking-wide">
           この7日間の振り返り
         </p>
-        <span className="text-[10px] text-[#9ba3b5]">{stats.records.length}日分の記録</span>
+        <span className="text-[10px] text-[#a8b0c2]">{stats.records.length}日分の記録</span>
       </div>
 
       {/* メインスコア + 前週比 */}
       <div className="flex items-end gap-3 mb-4">
         <div>
-          <p className="text-[10px] text-[#9ba3b5] mb-0.5">平均品質</p>
+          <p className="text-[10px] text-[#a8b0c2] mb-0.5">平均品質</p>
           <span className="text-4xl font-bold tabular-nums" style={{ color: avgColor }}>
             {stats.avg.toFixed(1)}
           </span>
-          <span className="text-sm text-[#9ba3b5] ml-1">/ 5.0</span>
+          <span className="text-sm text-[#a8b0c2] ml-1">/ 5.0</span>
         </div>
         {diff !== null && (
           <div className="flex items-center gap-1 mb-1.5">
@@ -126,15 +126,15 @@ export function WeeklyInsightCard() {
             ) : diff < -0.1 ? (
               <TrendingDown className="h-4 w-4 text-rose-400" />
             ) : (
-              <Minus className="h-4 w-4 text-[#9ba3b5]" />
+              <Minus className="h-4 w-4 text-[#a8b0c2]" />
             )}
             <span
               className="text-sm font-semibold tabular-nums"
-              style={{ color: diff > 0.1 ? "#4ade80" : diff < -0.1 ? "#f87171" : "#9ba3b5" }}
+              style={{ color: diff > 0.1 ? "#4ade80" : diff < -0.1 ? "#f87171" : "#a8b0c2" }}
             >
               {diff > 0 ? "+" : ""}{diff.toFixed(1)}
             </span>
-            <span className="text-[10px] text-[#9ba3b5]">前週比</span>
+            <span className="text-[10px] text-[#a8b0c2]">前週比</span>
           </div>
         )}
       </div>
@@ -142,28 +142,28 @@ export function WeeklyInsightCard() {
       {/* 最良日・最悪日 */}
       <div className="flex gap-2 mb-4">
         <div className="flex-1 rounded-lg bg-white/5 px-3 py-2">
-          <p className="text-[10px] text-[#9ba3b5] mb-0.5">今週の最良日</p>
+          <p className="text-[10px] text-[#a8b0c2] mb-0.5">今週の最良日</p>
           <p className="text-sm font-bold text-emerald-300">{formatMD(stats.best.date)}</p>
-          <p className="text-[10px] text-[#9ba3b5]">品質 {stats.best.quality}</p>
+          <p className="text-[10px] text-[#a8b0c2]">品質 {stats.best.quality}</p>
         </div>
         <div className="flex-1 rounded-lg bg-white/5 px-3 py-2">
-          <p className="text-[10px] text-[#9ba3b5] mb-0.5">今週の最悪日</p>
+          <p className="text-[10px] text-[#a8b0c2] mb-0.5">今週の最悪日</p>
           <p className="text-sm font-bold text-rose-300">{formatMD(stats.worst.date)}</p>
-          <p className="text-[10px] text-[#9ba3b5]">品質 {stats.worst.quality}</p>
+          <p className="text-[10px] text-[#a8b0c2]">品質 {stats.worst.quality}</p>
         </div>
         {stats.pressureDropDays > 0 && (
           <div className="flex-1 rounded-lg bg-white/5 px-3 py-2">
-            <p className="text-[10px] text-[#9ba3b5] mb-0.5">気圧急落日</p>
+            <p className="text-[10px] text-[#a8b0c2] mb-0.5">気圧急落日</p>
             <p className="text-sm font-bold text-indigo-300">{stats.pressureDropDays}日</p>
             {stats.pressureDropAvg !== null && (
-              <p className="text-[10px] text-[#9ba3b5]">平均 {stats.pressureDropAvg.toFixed(1)}</p>
+              <p className="text-[10px] text-[#a8b0c2]">平均 {stats.pressureDropAvg.toFixed(1)}</p>
             )}
           </div>
         )}
       </div>
 
       {/* インサイト文 */}
-      <p className="text-xs text-[#9ba3b5] leading-relaxed border-t border-white/5 pt-3">
+      <p className="text-xs text-[#a8b0c2] leading-relaxed border-t border-white/5 pt-3">
         {buildInsight(stats)}
       </p>
     </div>

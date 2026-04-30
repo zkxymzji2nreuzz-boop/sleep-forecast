@@ -68,7 +68,7 @@ function BadgeCard({ status }: BadgeCardProps) {
       {/* バッジ名 */}
       <p
         className="text-[11px] font-semibold leading-tight"
-        style={{ color: earned ? badge.color : "#9ba3b5" }}
+        style={{ color: earned ? badge.color : "#a8b0c2" }}
       >
         {badge.name}
       </p>
@@ -93,7 +93,7 @@ function BadgeCard({ status }: BadgeCardProps) {
               }}
             />
           </div>
-          <p className="text-[9px] text-[#9ba3b5] mt-0.5">{progressLabel}</p>
+          <p className="text-[9px] text-[#a8b0c2] mt-0.5">{progressLabel}</p>
         </div>
       )}
     </div>
@@ -149,7 +149,7 @@ export function AchievementsSection({ records }: AchievementsSectionProps) {
           <Trophy className="h-4 w-4 text-indigo-400" aria-hidden="true" />
           <h2 className="text-sm font-bold text-[#e6e8ee]">実績バッジ</h2>
         </div>
-        <span className="text-xs text-[#9ba3b5]">
+        <span className="text-xs text-[#a8b0c2]">
           <span className="text-indigo-300 font-semibold">{earnedCount}</span>
           {" / "}
           {statuses.length} 達成
@@ -168,7 +168,7 @@ export function AchievementsSection({ records }: AchievementsSectionProps) {
               style={
                 isActive
                   ? { background: "rgba(99,102,241,0.25)", color: "#a5b4fc" }
-                  : { background: "rgba(255,255,255,0.06)", color: "#9ba3b5" }
+                  : { background: "rgba(255,255,255,0.06)", color: "#a8b0c2" }
               }
             >
               {label}
@@ -179,7 +179,7 @@ export function AchievementsSection({ records }: AchievementsSectionProps) {
 
       {/* バッジグリッド */}
       {records.length === 0 ? (
-        <p className="text-sm text-[#9ba3b5] text-center py-6">
+        <p className="text-sm text-[#a8b0c2] text-center py-6">
           記録を始めるとバッジが解放されます
         </p>
       ) : (
@@ -193,12 +193,12 @@ export function AchievementsSection({ records }: AchievementsSectionProps) {
       {/* 達成バッジあり: サマリー + シェアボタン */}
       {earnedCount > 0 && records.length > 0 && (
         <div className="mt-3 flex items-center justify-between">
-          <p className="text-[11px] text-[#9ba3b5] leading-relaxed">
+          <p className="text-[11px] text-[#a8b0c2] leading-relaxed">
             {earnedCount}個のバッジを獲得中。記録を続けてさらに解放しましょう！
           </p>
           <button
             onClick={() => shareAchievements(earnedCount, statuses)}
-            className="ml-2 flex-shrink-0 flex items-center gap-1 text-[11px] text-[#9ba3b5] hover:text-indigo-300 hover:bg-indigo-500/10 px-2 py-1 rounded-full transition-colors"
+            className="ml-2 flex-shrink-0 flex items-center gap-1 text-[11px] text-[#a8b0c2] hover:text-indigo-300 hover:bg-indigo-500/10 px-2 py-1 rounded-full transition-colors"
             aria-label="X（Twitter）でシェア"
           >
             <Share2 className="h-3 w-3" />

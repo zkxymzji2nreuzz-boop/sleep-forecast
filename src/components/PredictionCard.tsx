@@ -66,7 +66,7 @@ export function PredictionCard({
         <p className="text-sm font-semibold text-[#e6e8ee] mb-1">
           予測データがありません
         </p>
-        <p className="text-xs text-[#9ba3b5]">
+        <p className="text-xs text-[#a8b0c2]">
           記録を追加すると、明日の眠気予報が表示されます
         </p>
       </div>

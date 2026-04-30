@@ -15,7 +15,7 @@ const FOOTER_LINKS = [
 export function Footer() {
   return (
     <footer className="mt-12 hidden border-t border-border/60 bg-[#0f1117] md:block">
-      <div className="container mx-auto max-w-screen-md px-4 py-8 text-sm text-[#9ba3b5]">
+      <div className="container mx-auto max-w-screen-md px-4 py-8 text-sm text-[#a8b0c2]">
         <nav
           className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2"
           aria-label="フッターナビゲーション"
@@ -36,7 +36,7 @@ export function Footer() {
           体調に不安がある場合は医療機関にご相談ください。
         </p>
 
-        <p className="text-xs text-[#9ba3b5]/70">
+        <p className="text-xs text-[#a8b0c2]/70">
           © 2026 SleepForecast
         </p>
       </div>

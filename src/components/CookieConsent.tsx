@@ -95,7 +95,7 @@ export function CookieConsent() {
           <button
             type="button"
             onClick={handleReject}
-            className="rounded-full border border-white/20 px-4 py-1.5 text-xs font-medium text-[#9ba3b5] transition-colors hover:border-white/40 hover:text-[#e6e8ee] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e]"
+            className="rounded-full border border-white/20 px-4 py-1.5 text-xs font-medium text-[#a8b0c2] transition-colors hover:border-white/40 hover:text-[#e6e8ee] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e]"
           >
             拒否する
           </button>
@@ -104,7 +104,7 @@ export function CookieConsent() {
             type="button"
             onClick={() => setShow(false)}
             aria-label="バナーを閉じる（後で設定から変更できます）"
-            className="rounded-full p-1 text-[#9ba3b5] transition-colors hover:text-[#e6e8ee] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+            className="rounded-full p-1 text-[#a8b0c2] transition-colors hover:text-[#e6e8ee] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
           >
             <X className="h-3.5 w-3.5" aria-hidden="true" />
           </button>

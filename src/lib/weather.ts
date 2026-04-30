@@ -9,6 +9,7 @@
 import SunCalc from "suncalc";
 
 import type { WeatherData, FullWeatherData, HourlyPressureData, HourlyWeatherData, DailyForecast, AQIData } from "./types";
+import { WeatherDataSchema, FullWeatherDataSchema, safeParseOrNull } from "./schemas";
 
 /** Open-Meteo API ベース URL (認証不要、非商用無料) */
 export const OPEN_METEO_BASE_URL = "https://api.open-meteo.com/v1/forecast";
@@ -182,7 +183,11 @@ export async function fetchWeather(
       res.status
     );
   }
-  const json = (await res.json()) as WeatherData;
+  const raw = await res.json();
+  const json = safeParseOrNull(WeatherDataSchema, raw, "fetchWeather");
+  if (!json) {
+    throw new WeatherFetchError("気象データの形式が不正です (Zod validation failed)");
+  }
   return json;
 }
 
@@ -216,7 +221,11 @@ export async function fetchWeatherForecast(
       res.status
     );
   }
-  const json = (await res.json()) as WeatherData;
+  const raw = await res.json();
+  const json = safeParseOrNull(WeatherDataSchema, raw, "fetchWeatherForecast");
+  if (!json) {
+    throw new WeatherFetchError("明日の予報データの形式が不正です (Zod validation failed)");
+  }
   return json;
 }
 
@@ -430,7 +439,11 @@ export async function fetchFullWeather(
       res.status
     );
   }
-  const json = (await res.json()) as FullWeatherData;
+  const raw = await res.json();
+  const json = safeParseOrNull(FullWeatherDataSchema, raw, "fetchFullWeather");
+  if (!json) {
+    throw new WeatherFetchError("完全気象データの形式が不正です (Zod validation failed)");
+  }
   return json;
 }
 

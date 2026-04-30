@@ -117,37 +117,37 @@ export function PersonalPressureInsight({ currentDelta }: PersonalPressureInsigh
         {/* スコア比較 */}
         <div className="flex items-center gap-4 mb-2">
           <div className="flex-1 rounded-lg px-3 py-2 text-center" style={{ background: "rgba(0,0,0,0.2)" }}>
-            <p className="text-[10px] text-[#9ba3b5] mb-0.5">気圧急落日の平均</p>
+            <p className="text-[10px] text-[#a8b0c2] mb-0.5">気圧急落日の平均</p>
             <p
               className="text-xl font-bold tabular-nums"
               style={{ color: isSensitive ? "#fb923c" : "#c4b5fd" }}
             >
               {insight.dropAvg.toFixed(1)}
             </p>
-            <p className="text-[10px] text-[#9ba3b5]">{insight.dropCount}日分</p>
+            <p className="text-[10px] text-[#a8b0c2]">{insight.dropCount}日分</p>
           </div>
-          <div className="text-[#9ba3b5] text-xs font-bold">vs</div>
+          <div className="text-[#a8b0c2] text-xs font-bold">vs</div>
           <div className="flex-1 rounded-lg px-3 py-2 text-center" style={{ background: "rgba(0,0,0,0.2)" }}>
-            <p className="text-[10px] text-[#9ba3b5] mb-0.5">通常日の平均</p>
+            <p className="text-[10px] text-[#a8b0c2] mb-0.5">通常日の平均</p>
             <p className="text-xl font-bold tabular-nums text-[#e6e8ee]">
               {insight.normalAvg.toFixed(1)}
             </p>
-            <p className="text-[10px] text-[#9ba3b5]">{insight.normalCount}日分</p>
+            <p className="text-[10px] text-[#a8b0c2]">{insight.normalCount}日分</p>
           </div>
           <div className="flex-1 rounded-lg px-3 py-2 text-center" style={{ background: "rgba(0,0,0,0.2)" }}>
-            <p className="text-[10px] text-[#9ba3b5] mb-0.5">差</p>
+            <p className="text-[10px] text-[#a8b0c2] mb-0.5">差</p>
             <p
               className="text-xl font-bold tabular-nums"
               style={{ color: insight.diff < 0 ? "#f87171" : "#4ade80" }}
             >
               {insight.diff > 0 ? "+" : ""}{insight.diff.toFixed(1)}
             </p>
-            <p className="text-[10px] text-[#9ba3b5]">ポイント</p>
+            <p className="text-[10px] text-[#a8b0c2]">ポイント</p>
           </div>
         </div>
 
         {/* アドバイス */}
-        <p className="text-xs text-[#9ba3b5] leading-relaxed">
+        <p className="text-xs text-[#a8b0c2] leading-relaxed">
           {isSensitive
             ? "今日のような気圧急落の日は、早めに就寝・カフェイン控えめ・入浴でケアを。"
             : "気圧変化の影響は人それぞれ。記録を続けることで傾向がより明確になります。"}
@@ -168,7 +168,7 @@ export function PersonalPressureInsight({ currentDelta }: PersonalPressureInsigh
           <p className="text-sm font-semibold text-indigo-300">
             今日は気圧が急落しています
           </p>
-          <p className="mt-1 text-xs text-[#9ba3b5] leading-relaxed">
+          <p className="mt-1 text-xs text-[#a8b0c2] leading-relaxed">
             {totalRecords < MIN_TOTAL_RECORDS
               ? `記録を続けると、あなた個人の気圧感度が分かります（あと${MIN_TOTAL_RECORDS - totalRecords}件で分析開始）`
               : "気圧急落日のデータが蓄積されると、あなた個人の傾向を分析できます"}

@@ -48,7 +48,7 @@ export function Breadcrumb({ items }: Props) {
       {/* 視覚的パンくず */}
       <nav
         aria-label="パンくずリスト"
-        className="mb-6 flex flex-wrap items-center gap-1.5 text-xs text-[#9ba3b5]"
+        className="mb-6 flex flex-wrap items-center gap-1.5 text-xs text-[#a8b0c2]"
       >
         {items.map((item, index) => {
           const isLast = index === items.length - 1;

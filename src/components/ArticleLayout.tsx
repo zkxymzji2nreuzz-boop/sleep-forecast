@@ -103,7 +103,7 @@ function RelatedActions({ article }: { article: ArticleFull }) {
               <span className="mt-0.5 flex-shrink-0">{action.icon}</span>
               <div>
                 <p className="text-sm font-semibold text-[#e6e8ee]">{action.label}</p>
-                <p className="mt-0.5 text-xs leading-relaxed text-[#9ba3b5]">{action.description}</p>
+                <p className="mt-0.5 text-xs leading-relaxed text-[#a8b0c2]">{action.description}</p>
               </div>
             </Link>
           </li>
@@ -120,7 +120,7 @@ export function ArticleLayout({ article, related }: Props) {
       <div>
         <Link
           href="/articles"
-          className="mb-10 inline-flex min-h-[44px] items-center gap-1.5 rounded-sm text-[13px] text-[#9ba3b5] transition-colors hover:text-[#e6e8ee] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1117]"
+          className="mb-10 inline-flex min-h-[44px] items-center gap-1.5 rounded-sm text-[13px] text-[#a8b0c2] transition-colors hover:text-[#e6e8ee] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1117]"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           ほかの読みものを見る
@@ -140,11 +140,11 @@ export function ArticleLayout({ article, related }: Props) {
         <h1 className="text-[28px] font-bold leading-[1.35] tracking-tight text-[#e6e8ee] sm:text-[34px]">
           {article.title}
         </h1>
-        <p className="mt-3 text-sm text-[#9ba3b5] sm:text-base">
+        <p className="mt-3 text-sm text-[#a8b0c2] sm:text-base">
           {article.description}
         </p>
 
-        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3 text-xs text-[#9ba3b5]">
+        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3 text-xs text-[#a8b0c2]">
           {article.tags.length > 0 && (
             <span className="inline-flex flex-wrap items-center gap-1.5">
               <Tag className="h-3.5 w-3.5" aria-hidden="true" />
@@ -258,7 +258,7 @@ export function ArticleLayout({ article, related }: Props) {
                   <div className="mt-1 text-sm font-semibold text-[#e6e8ee]">
                     {r.title}
                   </div>
-                  <p className="mt-1 line-clamp-2 text-xs text-[#9ba3b5]">
+                  <p className="mt-1 line-clamp-2 text-xs text-[#a8b0c2]">
                     {r.description}
                   </p>
                 </Link>
@@ -275,10 +275,10 @@ export function ArticleLayout({ article, related }: Props) {
       <div className="mt-14 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
         <div className="flex items-start gap-2">
           <Info
-            className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#9ba3b5]"
+            className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#a8b0c2]"
             aria-hidden="true"
           />
-          <p className="text-xs leading-relaxed text-[#9ba3b5]">
+          <p className="text-xs leading-relaxed text-[#a8b0c2]">
             本記事は一般的な情報提供を目的としたものであり、医学的な診断・治療の代替ではありません。
             体調に不安がある場合は、必ず医療機関にご相談ください。
           </p>

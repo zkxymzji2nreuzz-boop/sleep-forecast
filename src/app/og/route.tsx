@@ -123,7 +123,7 @@ export async function GET(req: NextRequest) {
                 style={{
                   marginTop: "24px",
                   fontSize: "24px",
-                  color: "#9ba3b5",
+                  color: "#a8b0c2",
                   lineHeight: 1.6,
                 }}
               >
