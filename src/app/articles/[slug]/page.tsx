@@ -95,8 +95,14 @@ export default async function ArticlePage({ params }: Params) {
     "@type": "Article",
     headline: article.title,
     description: article.description,
-    datePublished: article.publishedAt,
-    dateModified: article.updatedAt,
+    // ISO 8601 フル形式（+09:00 タイムゾーン付き）に変換
+    // Google Rich Results Test: タイムゾーンなし警告を解消
+    datePublished: article.publishedAt.length === 10
+      ? `${article.publishedAt}T00:00:00+09:00`
+      : article.publishedAt,
+    dateModified: article.updatedAt.length === 10
+      ? `${article.updatedAt}T00:00:00+09:00`
+      : article.updatedAt,
     inLanguage: "ja",
     image: {
       "@type": "ImageObject",
