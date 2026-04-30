@@ -22,7 +22,8 @@ import {
   setDefaultPrefectureCode,
   clearAllRecords,
   getRecords,
-} from "@/lib/storage";
+} from "@/lib/db";
+import { AccountSection } from "@/components/AccountSection";
 import {
   getNotificationEnabled,
   getNotificationPermission,
@@ -644,14 +645,17 @@ export function SettingsForm() {
           </div>
           <div className="flex gap-4">
             <dt className="w-28 shrink-0 text-[#a8b0c2]">データ保存先</dt>
-            <dd>ブラウザの localStorage（端末内）</dd>
+            <dd>localStorage（端末内）+ クラウド同期（任意）</dd>
           </div>
           <div className="flex gap-4">
             <dt className="w-28 shrink-0 text-[#a8b0c2]">外部送信</dt>
-            <dd>なし（気象APIリクエストを除く）</dd>
+            <dd>なし（気象 API・クラウド同期を除く）</dd>
           </div>
         </dl>
       </section>
+
+      {/* ── セクション: クラウド同期・アカウント ── */}
+      <AccountSection />
 
       {/* ── セクション: Cookie 設定 ── */}
       <CookieSettingsSection />

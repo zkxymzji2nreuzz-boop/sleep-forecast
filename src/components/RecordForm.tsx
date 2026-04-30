@@ -46,7 +46,7 @@ import {
   getTodayRecord,
   saveRecord,
   tryEarnStreakFreeze,
-} from "@/lib/storage";
+} from "@/lib/db";
 import type { SleepQuality, SleepRecord, WeatherData } from "@/lib/types";
 import { fetchWeather, getMoonData } from "@/lib/weather";
 import { computeWSIScore100 } from "@/lib/wsi";

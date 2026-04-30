@@ -8,6 +8,7 @@ import { NotificationChecker } from "@/components/NotificationChecker";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { CookieConsent } from "@/components/CookieConsent";
+import { AuthProvider } from "@/components/AuthProvider";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/react";
 
@@ -85,24 +86,26 @@ export default function RootLayout({
   return (
     <html lang="ja" className="dark">
       <body className="bg-[#0f1117] text-[#e6e8ee] antialiased">
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-indigo-500 focus:px-4 focus:py-2 focus:text-white focus:outline-none"
-        >
-          メインコンテンツへスキップ
-        </a>
-        <div className="flex min-h-screen flex-col pb-20 md:pb-0">
-          <Header />
-          <main id="main-content" className="min-h-[calc(100vh-128px)] flex-1">{children}</main>
-          <Footer />
-        </div>
-        <BottomNav />
-        <PwaInstallPrompt />
-        <NotificationChecker />
-        <CookieConsent />
-        <GoogleAnalytics />
-        <Toaster />
-        <Analytics />
+        <AuthProvider>
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-indigo-500 focus:px-4 focus:py-2 focus:text-white focus:outline-none"
+          >
+            メインコンテンツへスキップ
+          </a>
+          <div className="flex min-h-screen flex-col pb-20 md:pb-0">
+            <Header />
+            <main id="main-content" className="min-h-[calc(100vh-128px)] flex-1">{children}</main>
+            <Footer />
+          </div>
+          <BottomNav />
+          <PwaInstallPrompt />
+          <NotificationChecker />
+          <CookieConsent />
+          <GoogleAnalytics />
+          <Toaster />
+          <Analytics />
+        </AuthProvider>
       </body>
     </html>
   );
