@@ -240,6 +240,46 @@ export function HomeClient() {
         )}
       </section>
 
+      {/* 気圧感受度チェックカード（記録ゼロの新規ユーザー向け） */}
+      {isLoaded && recordCount === 0 && (
+        <section
+          aria-labelledby="pressure-check-heading"
+          className="mb-10 rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-5 sm:p-6"
+        >
+          <h2
+            id="pressure-check-heading"
+            className="mb-3 text-sm font-bold text-[#e6e8ee]"
+          >
+            🌀 あなたは気圧に敏感？ — 3つのチェック
+          </h2>
+          <ul className="mb-4 space-y-2 text-sm text-[#a8b0c2]">
+            <li className="flex items-start gap-2">
+              <span className="mt-0.5 text-indigo-400" aria-hidden="true">✓</span>
+              雨の前日や台風が近づくと、頭痛やだるさを感じる
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-0.5 text-indigo-400" aria-hidden="true">✓</span>
+              天気が悪い日は睡眠が浅くなる・寝つきが悪いと感じる
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-0.5 text-indigo-400" aria-hidden="true">✓</span>
+              「天気のせいかも？」と思うことが月に2回以上ある
+            </li>
+          </ul>
+          <p className="mb-4 text-xs leading-relaxed text-[#a8b0c2]">
+            1つでも当てはまる方は、気圧変化が睡眠に影響している可能性があります。
+            毎朝15秒の記録で、あなただけのパターンを確かめましょう。
+          </p>
+          <Link
+            href="/record"
+            className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-400"
+          >
+            <Activity className="h-4 w-4" aria-hidden="true" />
+            記録して確かめる
+          </Link>
+        </section>
+      )}
+
       {/* 広告スロット: ヒーロー下 */}
       <AdBanner slot="hero-bottom" format="horizontal" className="mb-8" />
 
