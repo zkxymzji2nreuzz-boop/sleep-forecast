@@ -10,7 +10,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Activity, Moon, Smartphone, Timer, Watch } from "lucide-react";
+import { Activity, ChevronDown, Moon, Smartphone, Timer, Watch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -35,6 +35,33 @@ import { fetchWeatherForecast } from "@/lib/weather";
 import { getPrefectureByCode } from "@/lib/prefectures";
 import { calculateStats } from "@/lib/correlation";
 import type { PredictionResult } from "@/lib/types";
+
+const FAQ_ITEMS = [
+  {
+    q: "SleepForecastとはどんなアプリですか？",
+    a: "気圧・気温・湿度・月齢などの気象データを自動取得し、翌日の睡眠質を予測するWebアプリです。毎朝15秒の記録を続けることで、あなただけの「眠れない夜のパターン」が可視化されます。",
+  },
+  {
+    q: "低気圧が来ると眠れなくなるのはなぜですか？",
+    a: "気圧が下がると自律神経のバランスが乱れやすく、交感神経が優位になることで興奮状態が続き、入眠しにくくなります。SleepForecastは気圧変化を事前に検知し、対策を促します。",
+  },
+  {
+    q: "登録や料金は必要ですか？",
+    a: "完全無料・登録不要でご利用いただけます。記録データはお使いのブラウザの端末内にのみ保存され、外部サーバーへの送信は行いません。",
+  },
+  {
+    q: "データはどこに保存されますか？",
+    a: "すべての記録データはブラウザのlocalStorageに保存されます。外部サーバーや第三者への送信は行わないため、プライバシーが守られます。",
+  },
+  {
+    q: "何日記録すると予測の精度が上がりますか？",
+    a: "7日間以上の記録で相関分析が開始され、予測の信頼度が「中」になります。15日以上で「高」となり、気象パターンとあなたの睡眠との個人的な相関が分かるようになります。",
+  },
+  {
+    q: "気象病の診断ができますか？",
+    a: "SleepForecastは統計的な傾向をお伝えする情報提供サービスであり、医療行為・診断を目的としたものではありません。体調に不安がある場合は医療機関にご相談ください。",
+  },
+] as const;
 
 const FEATURES = [
   {
@@ -66,6 +93,7 @@ export function HomeClient() {
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [currentPressure, setCurrentPressure] = useState<number | null>(null);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   useEffect(() => {
     const loadPrediction = async () => {
@@ -358,6 +386,49 @@ export function HomeClient() {
             );
           })}
         </div>
+      </section>
+
+      {/* よくある質問 */}
+      <section aria-labelledby="faq-heading" className="mb-12 sm:mb-16">
+        <h2
+          id="faq-heading"
+          className="mb-6 text-center text-xl font-semibold text-[#e6e8ee] sm:text-2xl"
+        >
+          よくある質問
+        </h2>
+        <dl className="space-y-2">
+          {FAQ_ITEMS.map((item, i) => (
+            <div
+              key={i}
+              className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden"
+            >
+              <dt>
+                <button
+                  type="button"
+                  aria-expanded={openFaq === i}
+                  aria-controls={`faq-answer-${i}`}
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left"
+                >
+                  <span className="text-sm font-medium text-[#e6e8ee]">{item.q}</span>
+                  <ChevronDown
+                    className={`h-4 w-4 flex-shrink-0 text-indigo-400 transition-transform duration-200 ${
+                      openFaq === i ? "rotate-180" : ""
+                    }`}
+                    aria-hidden="true"
+                  />
+                </button>
+              </dt>
+              <dd
+                id={`faq-answer-${i}`}
+                hidden={openFaq !== i}
+                className="px-4 pb-4 text-sm leading-relaxed text-[#9ba3b5]"
+              >
+                {item.a}
+              </dd>
+            </div>
+          ))}
+        </dl>
       </section>
 
       <p className="text-center text-xs text-[#9ba3b5]/80">
