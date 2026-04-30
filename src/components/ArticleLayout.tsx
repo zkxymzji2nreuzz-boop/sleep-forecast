@@ -114,8 +114,47 @@ function RelatedActions({ article }: { article: ArticleFull }) {
 }
 
 export function ArticleLayout({ article, related }: Props) {
+  const SITE_URL =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://sleep-forecast.vercel.app";
+
+  /** Article 構造化データ（E-E-A-T / Google リッチリザルト対応） */
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: article.description,
+    datePublished: article.publishedAt,
+    dateModified: article.updatedAt,
+    url: `${SITE_URL}/articles/${article.slug}`,
+    inLanguage: "ja",
+    author: {
+      "@type": "Person",
+      name: "SleepForecast 運営者",
+      url: SITE_URL,
+      sameAs: ["https://twitter.com/Sleep_Forecast"],
+    },
+    publisher: {
+      "@type": "Person",
+      name: "SleepForecast 運営者",
+      url: SITE_URL,
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${SITE_URL}/articles/${article.slug}`,
+    },
+    keywords: article.tags.join(", "),
+    articleSection: article.category,
+  };
+
   return (
     <article className="container mx-auto max-w-[680px] px-5 pb-20 pt-10 sm:pt-14">
+      {/* Article 構造化データ（SSR 出力） */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(articleJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       {/* 戻るリンク (柔らかいトーンの「ほかの読みものを見る」) */}
       <div>
         <Link
