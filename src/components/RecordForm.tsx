@@ -19,6 +19,7 @@ import Link from "next/link";
 import {
   BarChart3,
   CheckCircle2,
+  Home,
   Loader2,
   RefreshCcw,
   Moon,
@@ -497,13 +498,19 @@ export function RecordForm(): JSX.Element {
             )}
 
             <div className="flex flex-col gap-2 pt-1">
-              <Button asChild className="w-full bg-indigo-500 text-white hover:bg-indigo-600">
+              <Button asChild className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-400 hover:to-purple-400">
+                <Link href="/">
+                  <Home className="mr-2 h-4 w-4" aria-hidden="true" />
+                  ホームへ戻る
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="w-full border-white/10 text-[#9ba3b5] hover:border-indigo-400/40 hover:text-indigo-300">
                 <Link href="/dashboard">
                   <BarChart3 className="mr-2 h-4 w-4" aria-hidden="true" />
                   ダッシュボードを見る
                 </Link>
               </Button>
-              <Button type="button" variant="ghost" className="w-full text-[#9ba3b5] hover:bg-white/[0.04] hover:text-indigo-400" onClick={handleEditAgain}>
+              <Button type="button" variant="ghost" className="w-full text-[#9ba3b5]/60 hover:bg-white/[0.03] hover:text-[#9ba3b5]" onClick={handleEditAgain}>
                 <RefreshCcw className="mr-2 h-4 w-4" aria-hidden="true" />
                 今日の記録を修正する
               </Button>

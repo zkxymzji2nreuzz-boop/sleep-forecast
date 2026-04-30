@@ -128,18 +128,6 @@ export function PredictionCard({
         </div>
       </div>
 
-      {/* サンプルフラグ */}
-      {prediction.isSample && (
-        <div className="mt-4 border-l-4 border-orange-400 bg-orange-500/10 rounded-md p-3">
-          <p className="text-white text-xs font-medium">
-            🎓 初回のためサンプル表示
-          </p>
-          <p className="text-white/70 text-xs mt-0.5">
-            7日以上記録するとあなた専用の予測に切り替わります
-          </p>
-        </div>
-      )}
-
       {/* 要因表示 (full バージョン) */}
       {variant === "full" && prediction.factors.length > 0 && (
         <div className="mt-4">
