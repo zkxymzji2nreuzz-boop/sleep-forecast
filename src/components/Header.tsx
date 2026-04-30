@@ -1,21 +1,17 @@
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
-import { Menu, Moon } from "lucide-react";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Moon } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 /**
  * ヘッダーのナビゲーション定義。
- * F001 ではこの 4 リンクのみを表示する。
+ * - デスクトップ (md 以上): 横並びナビを表示
+ * - モバイル (md 未満): BottomNav がナビを担うため、ここではロゴのみ表示
+ *
+ * REQ-P1-01: ハンバーガーメニューの死んだコードを除去し、
+ *            モバイル/デスクトップ双方で正しくナビが表示されることを確認済み。
  */
 const NAV_ITEMS = [
   { label: "ホーム", href: "/" },
@@ -26,11 +22,15 @@ const NAV_ITEMS = [
 ] as const;
 
 export function Header() {
-  const [open, setOpen] = React.useState(false);
+  const pathname = usePathname();
+
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-[#0f1117]/90 backdrop-blur supports-[backdrop-filter]:bg-[#0f1117]/75">
       <div className="container mx-auto flex h-16 max-w-screen-md items-center justify-between px-4">
+        {/* ロゴ: モバイル・デスクトップ共通 */}
         <Link
           href="/"
           className="flex items-center gap-2 text-[#e6e8ee] transition-opacity hover:opacity-80"
@@ -42,7 +42,7 @@ export function Header() {
           </span>
         </Link>
 
-        {/* デスクトップ: 横並びナビ */}
+        {/* デスクトップのみ: 横並びナビ（モバイルは BottomNav が担当） */}
         <nav
           className="hidden items-center gap-1 md:flex"
           aria-label="グローバルナビゲーション"
@@ -51,49 +51,18 @@ export function Header() {
             <Link
               key={item.href}
               href={item.href}
+              aria-current={isActive(item.href) ? "page" : undefined}
               className={cn(
-                "rounded-md px-3 py-2 text-sm font-medium text-[#e6e8ee]/80 transition-colors",
-                "hover:bg-white/5 hover:text-[#e6e8ee]"
+                "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                isActive(item.href)
+                  ? "text-indigo-300"
+                  : "text-[#e6e8ee]/80 hover:bg-white/5 hover:text-[#e6e8ee]"
               )}
             >
               {item.label}
             </Link>
           ))}
         </nav>
-
-        {/* モバイル: ハンバーガーメニュー（BottomNav で代替するため非表示） */}
-        <div className="hidden">
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="メニューを開く"
-                className="text-[#e6e8ee] hover:bg-white/5"
-              >
-                <Menu className="h-6 w-6" aria-hidden="true" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="top-[10%] translate-y-0 sm:top-[50%] sm:translate-y-[-50%]">
-              <DialogTitle className="text-[#e6e8ee]">メニュー</DialogTitle>
-              <nav
-                className="mt-4 flex flex-col gap-1"
-                aria-label="モバイルナビゲーション"
-              >
-                {NAV_ITEMS.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                    className="flex min-h-[44px] items-center rounded-md px-3 py-2 text-base font-medium text-[#e6e8ee] transition-colors hover:bg-white/5"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </nav>
-            </DialogContent>
-          </Dialog>
-        </div>
       </div>
     </header>
   );
