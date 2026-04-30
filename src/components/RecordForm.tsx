@@ -509,19 +509,49 @@ export function RecordForm(): JSX.Element {
               </div>
             )}
 
+            {/* 7件以上: ダッシュボードnudge */}
+            {recordCountAfterSave >= 7 && w.pressureDeltaHpa <= -3 && (
+              <div className="flex items-start gap-2.5 rounded-xl border border-indigo-400/20 bg-indigo-500/[0.05] px-4 py-3">
+                <BarChart3 className="mt-0.5 h-4 w-4 shrink-0 text-indigo-300" aria-hidden="true" />
+                <p className="text-xs leading-relaxed text-[#b0b8cc]">
+                  気圧が下がった日のパターンをダッシュボードで確認してみましょう。あなたの傾向が見えてきます。
+                </p>
+              </div>
+            )}
+
             <div className="flex flex-col gap-2 pt-1">
-              <Button asChild className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-400 hover:to-purple-400">
-                <Link href="/">
-                  <Home className="mr-2 h-4 w-4" aria-hidden="true" />
-                  ホームへ戻る
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="w-full border-white/10 text-[#a8b0c2] hover:border-indigo-400/40 hover:text-indigo-300">
-                <Link href="/dashboard">
-                  <BarChart3 className="mr-2 h-4 w-4" aria-hidden="true" />
-                  ダッシュボードを見る
-                </Link>
-              </Button>
+              {/* 7件以上ではダッシュボードをプライマリCTAに昇格 */}
+              {recordCountAfterSave >= 7 ? (
+                <>
+                  <Button asChild className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-400 hover:to-purple-400">
+                    <Link href="/dashboard">
+                      <BarChart3 className="mr-2 h-4 w-4" aria-hidden="true" />
+                      ダッシュボードで傾向を確認
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full border-white/10 text-[#a8b0c2] hover:border-indigo-400/40 hover:text-indigo-300">
+                    <Link href="/">
+                      <Home className="mr-2 h-4 w-4" aria-hidden="true" />
+                      ホームへ戻る
+                    </Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button asChild className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-400 hover:to-purple-400">
+                    <Link href="/">
+                      <Home className="mr-2 h-4 w-4" aria-hidden="true" />
+                      ホームへ戻る
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full border-white/10 text-[#a8b0c2] hover:border-indigo-400/40 hover:text-indigo-300">
+                    <Link href="/dashboard">
+                      <BarChart3 className="mr-2 h-4 w-4" aria-hidden="true" />
+                      ダッシュボードを見る
+                    </Link>
+                  </Button>
+                </>
+              )}
               <Button type="button" variant="ghost" className="w-full text-[#a8b0c2]/60 hover:bg-white/[0.03] hover:text-[#a8b0c2]" onClick={handleEditAgain}>
                 <RefreshCcw className="mr-2 h-4 w-4" aria-hidden="true" />
                 今日の記録を修正する
