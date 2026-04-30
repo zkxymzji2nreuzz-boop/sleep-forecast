@@ -57,6 +57,7 @@ import { AdBanner } from "@/components/AdBanner";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { CorrelationChart } from "@/components/CorrelationChart";
 import { OnboardingProgress } from "@/components/OnboardingProgress";
+import { AchievementsSection } from "@/components/AchievementsSection";
 import { PredictionCard } from "@/components/PredictionCard";
 import { Button } from "@/components/ui/button";
 import {
@@ -659,6 +660,11 @@ export default function DashboardPage() {
       </div>
 
       {/* ── ⑦ 下部記録促進バナーは OnboardingProgress に統合済み ── */}
+
+      {/* ── ⑧ 実績バッジ ── */}
+      <div className="mt-8">
+        <AchievementsSection records={records} />
+      </div>
 
       {/* 医療免責 — C案要素取り込み: AlertCircle + amber テキスト */}
       <div className="mt-2 rounded-md border border-amber-700/30 bg-amber-900/10 px-4 py-3">
