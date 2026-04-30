@@ -5,20 +5,64 @@ import { usePathname } from "next/navigation";
 import { Home, PenLine, BarChart2, Settings, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-/**
- * モバイル用ボトムナビゲーション。
- * デスクトップ (md 以上) では非表示にし、Header のデスクトップナビを利用する。
- */
-const NAV_ITEMS = [
+type NavItem = {
+  href: string;
+  label: string;
+  icon: typeof Home;
+};
+
+const LEFT_NAV: NavItem[] = [
   { href: "/", label: "ホーム", icon: Home },
-  { href: "/record", label: "記録", icon: PenLine },
   { href: "/articles", label: "記事", icon: BookOpen },
+];
+
+const RIGHT_NAV: NavItem[] = [
   { href: "/dashboard", label: "グラフ", icon: BarChart2 },
   { href: "/settings", label: "設定", icon: Settings },
-] as const;
+];
 
+/**
+ * モバイル用ボトムナビゲーション。
+ * 4タブ + 中央FAB（記録ボタン）構成。
+ *
+ * pt-5 で上部に 20px の余白を設けることで FAB が nav の bounding box 内に収まり、
+ * タップ可能領域が正しく確保される。視覚的なセパレーターは absolute div で再現。
+ *
+ * デスクトップ (md 以上) では非表示にし、Header のデスクトップナビを利用する。
+ */
 export function BottomNav() {
   const pathname = usePathname();
+
+  const checkActive = (href: string) =>
+    href === "/"
+      ? pathname === "/"
+      : pathname === href || pathname.startsWith(`${href}/`);
+
+  const isRecordActive = checkActive("/record");
+
+  const renderTab = (item: NavItem) => {
+    const isActive = checkActive(item.href);
+    const Icon = item.icon;
+    return (
+      <li key={item.href} className="flex-1">
+        <Link
+          href={item.href}
+          aria-current={isActive ? "page" : undefined}
+          className={cn(
+            "flex min-h-[44px] flex-col items-center justify-center gap-1 px-2 py-2 text-xs font-medium transition-colors",
+            isActive ? "text-indigo-400" : "text-[#9ba3b5] hover:text-[#e6e8ee]"
+          )}
+        >
+          <Icon
+            className="h-5 w-5"
+            aria-hidden="true"
+            strokeWidth={isActive ? 2.5 : 2}
+          />
+          <span className="leading-none">{item.label}</span>
+        </Link>
+      </li>
+    );
+  };
 
   return (
     <nav
@@ -26,38 +70,56 @@ export function BottomNav() {
       aria-label="ボトムナビゲーション"
       className={cn(
         "fixed bottom-0 left-0 right-0 z-50 md:hidden",
-        "border-t border-white/10 bg-[#0f1117]",
-        "pb-[env(safe-area-inset-bottom)]"
+        "bg-[#0f1117]",
+        // pt-5 = 20px: FAB が nav の bounding box 内に収まりタップ可能になる
+        "pt-5 pb-[env(safe-area-inset-bottom)]"
       )}
     >
-      <ul className="flex items-stretch justify-around">
-        {NAV_ITEMS.map((item) => {
-          const Icon = item.icon;
-          const isActive =
-            item.href === "/"
-              ? pathname === "/"
-              : pathname === item.href || pathname.startsWith(`${item.href}/`);
+      {/* border-t 代替: pt-5 の位置に視覚的セパレーターを配置 */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-5 h-px bg-white/10"
+        aria-hidden="true"
+      />
 
-          return (
-            <li key={item.href} className="flex-1">
-              <Link
-                href={item.href}
-                aria-current={isActive ? "page" : undefined}
-                className={cn(
-                  "flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 px-2 py-2 text-xs font-medium transition-colors",
-                  isActive ? "text-indigo-400" : "text-[#9ba3b5] hover:text-[#e6e8ee]"
-                )}
-              >
-                <Icon
-                  className="h-5 w-5"
-                  aria-hidden="true"
-                  strokeWidth={isActive ? 2.5 : 2}
-                />
-                <span className="leading-none">{item.label}</span>
-              </Link>
-            </li>
-          );
-        })}
+      <ul className="flex items-end justify-around">
+        {/* 左側 2タブ */}
+        {LEFT_NAV.map(renderTab)}
+
+        {/* 中央 FAB：記録ボタン */}
+        <li className="flex-1 flex flex-col items-center pb-1">
+          <Link
+            href="/record"
+            aria-current={isRecordActive ? "page" : undefined}
+            aria-label="今日の睡眠を記録する"
+            className="flex flex-col items-center gap-1 -mt-5"
+          >
+            <span
+              className={cn(
+                "flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-all duration-150 active:scale-95",
+                isRecordActive
+                  ? "bg-indigo-600 shadow-indigo-500/40"
+                  : "bg-indigo-500 shadow-indigo-500/30 hover:bg-indigo-600"
+              )}
+            >
+              <PenLine
+                className="h-6 w-6 text-white"
+                aria-hidden="true"
+                strokeWidth={2.5}
+              />
+            </span>
+            <span
+              className={cn(
+                "text-xs font-medium leading-none",
+                isRecordActive ? "text-indigo-400" : "text-[#9ba3b5]"
+              )}
+            >
+              記録
+            </span>
+          </Link>
+        </li>
+
+        {/* 右側 2タブ */}
+        {RIGHT_NAV.map(renderTab)}
       </ul>
     </nav>
   );

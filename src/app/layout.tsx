@@ -88,7 +88,7 @@ export default function RootLayout({
         >
           メインコンテンツへスキップ
         </a>
-        <div className="flex min-h-screen flex-col pb-16 md:pb-0">
+        <div className="flex min-h-screen flex-col pb-20 md:pb-0">
           <Header />
           <main id="main-content" className="min-h-[calc(100vh-128px)] flex-1">{children}</main>
           <Footer />
