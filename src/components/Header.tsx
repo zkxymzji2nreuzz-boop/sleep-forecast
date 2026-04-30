@@ -36,7 +36,7 @@ export function Header() {
           className="flex items-center gap-2 text-[#e6e8ee] transition-opacity hover:opacity-80"
           aria-label="SleepForecast ホーム"
         >
-          <Moon className="h-6 w-6 text-[#1d9bf0]" aria-hidden="true" />
+          <Moon className="h-6 w-6 text-indigo-400" aria-hidden="true" />
           <span className="text-base font-semibold tracking-tight sm:text-lg">
             SleepForecast
           </span>

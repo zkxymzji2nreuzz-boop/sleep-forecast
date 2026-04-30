@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 export default function NotFound() {
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 px-4 text-center">
-      <Moon className="h-12 w-12 text-[#1d9bf0]/40" aria-hidden="true" />
+      <Moon className="h-12 w-12 text-indigo-400/40" aria-hidden="true" />
       <div className="space-y-2">
-        <p className="text-5xl font-bold text-[#1d9bf0]">404</p>
+        <p className="text-5xl font-bold text-indigo-400">404</p>
         <h1 className="text-xl font-semibold text-[#e6e8ee]">
           ページが見つかりません
         </h1>

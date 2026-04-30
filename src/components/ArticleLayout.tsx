@@ -252,7 +252,7 @@ export function ArticleLayout({ article, related }: Props) {
                   href={`/articles/${r.slug}`}
                   className="block rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 transition-all duration-500 hover:-translate-y-0.5 hover:border-indigo-300/25 hover:bg-gradient-to-br hover:from-indigo-500/[0.08] hover:to-purple-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1117]"
                 >
-                  <div className="text-[10px] font-medium text-[#1d9bf0]">
+                  <div className="text-[10px] font-medium text-indigo-400">
                     {r.category}
                   </div>
                   <div className="mt-1 text-sm font-semibold text-[#e6e8ee]">

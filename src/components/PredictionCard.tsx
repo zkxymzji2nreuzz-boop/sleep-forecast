@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AlertCircle, Info, CheckCircle, ChevronDown } from "lucide-react";
+import { AlertCircle, ChevronDown, CheckCircle, Info, Moon } from "lucide-react";
 import type { PredictionResult } from "@/lib/types";
 
 interface PredictionCardProps {
@@ -62,7 +62,7 @@ export function PredictionCard({
           ${className}
         `}
       >
-        <p className="text-3xl mb-2" aria-hidden="true">🌙</p>
+        <Moon className="h-8 w-8 mb-2 text-indigo-300/60 mx-auto" aria-hidden="true" />
         <p className="text-sm font-semibold text-[#e6e8ee] mb-1">
           予測データがありません
         </p>

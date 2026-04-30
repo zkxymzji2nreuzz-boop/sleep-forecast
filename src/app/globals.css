@@ -6,7 +6,7 @@
  * SleepForecast ダークテーマ固定
  * - 背景      #0f1117
  * - カード    #1a1f2e
- * - アクセント #1d9bf0
+ * - アクセント #6366f1
  * - 本文      #e6e8ee
  * - 補助      #9ba3b5
  */
@@ -23,7 +23,7 @@
     --popover: 223 25% 14%;
     --popover-foreground: 225 18% 91%;
 
-    --primary: 205 89% 53%; /* #1d9bf0 */
+    --primary: 239 84% 67%; /* #6366f1 indigo-500 */
     --primary-foreground: 0 0% 100%;
 
     --secondary: 223 20% 20%;
@@ -32,7 +32,7 @@
     --muted: 223 20% 22%;
     --muted-foreground: 218 13% 65%; /* #9aa0b2 — contrast ratio ≥4.5:1 */
 
-    --accent: 205 89% 53%; /* #1d9bf0 */
+    --accent: 239 84% 67%; /* #6366f1 indigo-500 */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
@@ -40,7 +40,7 @@
 
     --border: 223 20% 22%;
     --input: 223 20% 22%;
-    --ring: 205 89% 53%;
+    --ring: 239 84% 67%;
 
     --radius: 0.75rem;
   }
@@ -53,19 +53,19 @@
     --card-foreground: 225 18% 91%;
     --popover: 223 25% 14%;
     --popover-foreground: 225 18% 91%;
-    --primary: 205 89% 53%;
+    --primary: 239 84% 67%;
     --primary-foreground: 0 0% 100%;
     --secondary: 223 20% 20%;
     --secondary-foreground: 225 18% 91%;
     --muted: 223 20% 22%;
     --muted-foreground: 218 13% 60%;
-    --accent: 205 89% 53%;
+    --accent: 239 84% 67%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
     --border: 223 20% 22%;
     --input: 223 20% 22%;
-    --ring: 205 89% 53%;
+    --ring: 239 84% 67%;
   }
 }
 
@@ -81,6 +81,13 @@
 
   body {
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* iOS でのズームを防止するため input 系は最低 16px に設定 */
+  input,
+  select,
+  textarea {
+    font-size: max(16px, 1rem);
   }
 }
 

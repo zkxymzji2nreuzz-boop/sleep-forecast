@@ -51,7 +51,7 @@ const QUALITY_COLORS: Record<1 | 2 | 3 | 4 | 5, string> = {
   2: "#f97316",
   3: "#facc15",
   4: "#4ade80",
-  5: "#1d9bf0",
+  5: "#6366f1",
 };
 
 const QUALITY_LABELS: Record<1 | 2 | 3 | 4 | 5, string> = {
@@ -134,7 +134,7 @@ export function CorrelationChart({
       },
       tooltip: {
         backgroundColor: "#1a1f2e",
-        borderColor: "#1d9bf0",
+        borderColor: "#6366f1",
         borderWidth: 1,
         titleColor: "#e6e8ee",
         bodyColor: "#9ba3b5",

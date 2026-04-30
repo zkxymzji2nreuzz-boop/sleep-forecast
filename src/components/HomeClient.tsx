@@ -10,7 +10,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Activity, Moon, Timer, Watch } from "lucide-react";
+import { Activity, Moon, Smartphone, Timer, Watch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -149,7 +149,7 @@ export function HomeClient() {
       )}
 
       <section className="mb-12 text-center sm:mb-16">
-        <p className="mb-3 text-xs uppercase tracking-widest text-[#1d9bf0]">
+        <p className="mb-3 text-xs uppercase tracking-widest text-indigo-400">
           SleepForecast
         </p>
         <h1 className="mb-4 text-3xl font-bold leading-tight tracking-tight text-[#e6e8ee] sm:text-4xl md:text-5xl">
@@ -182,7 +182,7 @@ export function HomeClient() {
                   asChild
                   variant="outline"
                   size="sm"
-                  className="h-9 border-[#1d9bf0]/40 text-sm text-[#e6e8ee] hover:bg-[#1d9bf0]/10 hover:text-[#e6e8ee]"
+                  className="h-9 border-indigo-400/40 text-sm text-[#e6e8ee] hover:bg-indigo-500/10 hover:text-[#e6e8ee]"
                 >
                   <Link href="/dashboard">ダッシュボードを見る</Link>
                 </Button>
@@ -200,7 +200,7 @@ export function HomeClient() {
                   asChild
                   variant="outline"
                   size="sm"
-                  className="h-9 border-[#1d9bf0]/40 text-sm text-[#e6e8ee] hover:bg-[#1d9bf0]/10 hover:text-[#e6e8ee]"
+                  className="h-9 border-indigo-400/40 text-sm text-[#e6e8ee] hover:bg-indigo-500/10 hover:text-[#e6e8ee]"
                 >
                   <Link href="/record">今日を記録する</Link>
                 </Button>
@@ -221,7 +221,10 @@ export function HomeClient() {
         <div className="mt-8 rounded-2xl border border-white/10 bg-[#1a1f2e] p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-base font-semibold text-[#e6e8ee]">📱 iOSアプリ開発中</p>
+              <p className="flex items-center gap-2 text-base font-semibold text-[#e6e8ee]">
+                <Smartphone className="h-4 w-4 text-indigo-400" aria-hidden="true" />
+                iOSアプリ開発中
+              </p>
               <p className="mt-1 text-xs text-[#9ba3b5]">
                 気圧急落アラートなど、通知機能を準備中です
               </p>
@@ -238,7 +241,7 @@ export function HomeClient() {
           {/* 通知登録フォーム */}
           <div className="mt-4 border-t border-white/10 pt-4">
             {submitted ? (
-              <p className="text-sm text-[#1d9bf0]">登録ありがとうございます！</p>
+              <p className="text-sm text-indigo-400">登録ありがとうございます！</p>
             ) : (
               <>
                 <p className="mb-2 text-xs text-[#9ba3b5]">リリース時に通知を受け取る</p>
@@ -337,7 +340,7 @@ export function HomeClient() {
                 className="border-white/5 bg-[#1a1f2e]"
               >
                 <CardHeader className="space-y-2 pb-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[#1d9bf0]/15 text-[#1d9bf0]">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-indigo-500/15 text-indigo-400">
                     <Icon className="h-5 w-5" aria-hidden="true" />
                   </div>
                   <CardTitle className="text-base text-[#e6e8ee]">

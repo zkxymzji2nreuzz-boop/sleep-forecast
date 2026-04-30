@@ -18,9 +18,11 @@ import * as React from "react";
 import Link from "next/link";
 import {
   BarChart3,
+  CheckCircle2,
   Loader2,
   RefreshCcw,
   Moon,
+  Sparkles,
   Sunrise,
   TrendingUp,
 } from "lucide-react";
@@ -283,112 +285,165 @@ export function RecordForm(): JSX.Element {
     const w = savedView.weather;
     const qualityLabel = QUALITY_OPTIONS.find((o) => o.value === savedView.quality)?.label ?? String(savedView.quality);
     const isFirstRecord = recordCountAfterSave === 1;
-    const isMilestone = recordCountAfterSave === 3 || recordCountAfterSave === 7;
+    const isMilestone3 = recordCountAfterSave === 3;
+    const isMilestone7 = recordCountAfterSave === 7;
     const remaining = Math.max(0, 7 - recordCountAfterSave);
+
+    // 気象ナラティブ: 気圧変化 × 睡眠品質から個人化されたメッセージを生成
+    let weatherNarrative: string | null = null;
+    if (recordCountAfterSave >= 2) {
+      const delta = w.pressureDeltaHpa;
+      const q = savedView.quality;
+      if (delta <= -5) {
+        weatherNarrative = q <= 2
+          ? "気圧が急落した夜でした。低気圧の影響が出やすいパターンかもしれません。記録を続けて傾向を確認しましょう。"
+          : "気圧が急落する中でも眠れた夜でした。引き続き記録して、あなたの耐性パターンを掴みましょう。";
+      } else if (delta <= -3) {
+        weatherNarrative = q <= 2
+          ? "低気圧の夜は眠りに影響が出やすい傾向があります。データが増えると相関がはっきり見えてきます。"
+          : "気圧がやや低めでも眠れましたね。気象と睡眠の関係を引き続き記録で確認しましょう。";
+      } else if (delta >= 3) {
+        weatherNarrative = "気圧が上昇した安定した夜でした。高気圧の日は比較的眠りやすい傾向があります。";
+      }
+    }
+
     return (
-      <div className="container mx-auto max-w-screen-md px-4 py-10 sm:py-14">
+      <div className="container mx-auto max-w-screen-md px-4 py-10 sm:py-14 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <Card className="border-0 bg-transparent shadow-none">
-          <CardHeader className="items-center text-center">
-            <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#1d9bf0]/10 shadow-[0_0_40px_-10px_rgba(29,155,240,0.5)] ring-1 ring-[#1d9bf0]/30">
-              <Moon className="h-7 w-7 text-[#1d9bf0]" aria-hidden="true" />
+          <CardHeader className="items-center text-center pb-2">
+            {/* アイコン: 初回はSparkles、通常はCheckCircle2 */}
+            <div className={[
+              "mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full ring-1",
+              isFirstRecord
+                ? "bg-emerald-500/10 shadow-[0_0_40px_-10px_rgba(16,185,129,0.6)] ring-emerald-400/40"
+                : isMilestone7
+                ? "bg-purple-500/10 shadow-[0_0_40px_-10px_rgba(168,85,247,0.5)] ring-purple-400/30"
+                : "bg-indigo-500/10 shadow-[0_0_40px_-10px_rgba(99,102,241,0.5)] ring-indigo-400/30"
+            ].join(" ")}>
+              {isFirstRecord
+                ? <Sparkles className="h-7 w-7 text-emerald-400" aria-hidden="true" />
+                : isMilestone7
+                ? <Sparkles className="h-7 w-7 text-purple-400" aria-hidden="true" />
+                : <CheckCircle2 className="h-7 w-7 text-indigo-400" aria-hidden="true" />
+              }
             </div>
             <CardTitle className="text-xl text-[#e6e8ee]">
               {isFirstRecord
-                ? "はじめての記録！ 🎉"
-                : isMilestone
-                ? `${recordCountAfterSave}日目の記録 ✨`
-                : "記録しました 🌙"}
+                ? "はじめての記録"
+                : isMilestone3
+                ? `${recordCountAfterSave}日目の記録`
+                : isMilestone7
+                ? "7日達成！"
+                : "記録しました"}
             </CardTitle>
+            <p className="mt-1 text-sm text-[#9ba3b5]">
+              {new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "short" })}
+            </p>
           </CardHeader>
           <CardContent className="space-y-4 text-sm text-[#e6e8ee]">
 
-            {/* 初回特別メッセージ */}
+            {/* 初回特別セレブレーション */}
             {isFirstRecord && (
-              <div className="rounded-xl border border-emerald-400/25 bg-emerald-500/8 p-4 text-center">
-                <p className="text-sm font-medium text-emerald-300">
-                  おめでとうございます！最初の一歩を踏み出しました 🎉
+              <div className="rounded-xl border border-emerald-400/25 bg-emerald-500/[0.07] p-4 text-center">
+                <p className="text-sm font-semibold text-emerald-300">
+                  最初の一歩、おめでとうございます！
                 </p>
-                <p className="mt-1 text-xs text-[#9ba3b5]">
-                  あと6日続けると気象との相関分析が始まります
+                <p className="mt-1.5 text-xs leading-relaxed text-[#9ba3b5]">
+                  あと6日続けると気象との相関分析がスタートします。<br />
+                  毎朝15秒でOK。気圧が変わった日ほど記録の価値があります。
                 </p>
               </div>
             )}
 
-            {/* 3日目メッセージ */}
-            {recordCountAfterSave === 3 && (
-              <div className="rounded-xl border border-indigo-400/25 bg-indigo-500/8 p-4 text-center">
-                <p className="text-sm font-medium text-indigo-300">3日連続！いいペースです 👍</p>
-                <p className="mt-1 text-xs text-[#9ba3b5]">あと4日で相関分析が始まります</p>
+            {/* 3日目マイルストーン */}
+            {isMilestone3 && (
+              <div className="rounded-xl border border-indigo-400/25 bg-indigo-500/[0.07] p-4 text-center">
+                <p className="text-sm font-semibold text-indigo-300">3日連続！いいペースです</p>
+                <p className="mt-1 text-xs text-[#9ba3b5]">あと4日で気圧との相関グラフが解放されます</p>
               </div>
             )}
 
-            {/* 7日目メッセージ */}
-            {recordCountAfterSave === 7 && (
-              <div className="rounded-xl border border-purple-400/25 bg-purple-500/8 p-4 text-center">
-                <p className="text-sm font-medium text-purple-300">
-                  7日分のデータが揃いました！🎊 相関分析スタート
+            {/* 7日達成マイルストーン */}
+            {isMilestone7 && (
+              <div className="rounded-xl border border-purple-400/25 bg-purple-500/[0.07] p-4 text-center">
+                <p className="text-sm font-semibold text-purple-300">
+                  7日分のデータが揃いました！
                 </p>
-                <p className="mt-1 text-xs text-[#9ba3b5]">
-                  ダッシュボードで気圧との関係が見えてきます
+                <p className="mt-1 text-xs leading-relaxed text-[#9ba3b5]">
+                  ダッシュボードで気圧・月齢との相関グラフが見られるようになりました。
                 </p>
               </div>
             )}
 
             {/* 気象コンテキスト */}
-            <dl className="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-white/5 pt-4">
-              <div className="border-0 bg-transparent py-2">
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
+              <div>
                 <dt className="text-[11px] uppercase tracking-wider text-[#9ba3b5]">昨晩の眠り</dt>
-                <dd className="mt-1 text-2xl font-semibold text-[#e6e8ee]">{qualityLabel}</dd>
+                <dd className="mt-1 text-xl font-semibold text-[#e6e8ee]">{qualityLabel}</dd>
               </div>
-              <div className="border-0 bg-transparent py-2">
+              <div>
                 <dt className="text-[11px] uppercase tracking-wider text-[#9ba3b5]">気圧 (24h 差)</dt>
-                <dd className="mt-1 text-2xl font-semibold tabular-nums text-[#e6e8ee]">
+                <dd className="mt-1 text-xl font-semibold tabular-nums text-[#e6e8ee]">
                   {w.pressureHpa.toFixed(1)}{" "}
-                  <span className={`text-sm tabular-nums ${w.pressureDeltaHpa <= -3 ? "text-rose-400" : "text-[#9ba3b5]"}`}>
-                    ({w.pressureDeltaHpa >= 0 ? "+" : ""}{w.pressureDeltaHpa.toFixed(1)})
+                  <span className={`text-sm tabular-nums ${w.pressureDeltaHpa <= -3 ? "text-rose-400" : w.pressureDeltaHpa >= 3 ? "text-emerald-400" : "text-[#9ba3b5]"}`}>
+                    {w.pressureDeltaHpa >= 0 ? "+" : ""}{w.pressureDeltaHpa.toFixed(1)}
                   </span>
                 </dd>
               </div>
-              <div className="border-0 bg-transparent py-2">
+              <div>
                 <dt className="text-[11px] uppercase tracking-wider text-[#9ba3b5]">気温</dt>
-                <dd className="mt-1 text-2xl font-semibold tabular-nums text-[#e6e8ee]">{w.temperatureC.toFixed(1)}°C</dd>
+                <dd className="mt-1 text-xl font-semibold tabular-nums text-[#e6e8ee]">{w.temperatureC.toFixed(1)}°C</dd>
               </div>
-              <div className="border-0 bg-transparent py-2">
+              <div>
                 <dt className="text-[11px] uppercase tracking-wider text-[#9ba3b5]">湿度</dt>
-                <dd className="mt-1 text-2xl font-semibold tabular-nums text-[#e6e8ee]">{w.humidity}%</dd>
+                <dd className="mt-1 text-xl font-semibold tabular-nums text-[#e6e8ee]">{w.humidity}%</dd>
               </div>
             </dl>
 
-            {/* 分析までの進捗（7件未満） */}
-            {recordCountAfterSave > 0 && recordCountAfterSave < 7 && (
-              <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3">
-                <div className="mb-1.5 flex items-center justify-between text-xs">
-                  <span className="text-[#9ba3b5]">相関分析まで</span>
-                  <span className="text-indigo-300 font-medium">あと {remaining} 日</span>
-                </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
-                  <div
-                    className="h-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500"
-                    style={{ width: `${(recordCountAfterSave / 7) * 100}%` }}
-                  />
-                </div>
+            {/* 気象ナラティブ（2件目以降のみ表示） */}
+            {weatherNarrative && (
+              <div className="flex items-start gap-2.5 rounded-xl border border-white/[0.07] bg-white/[0.02] px-4 py-3">
+                <Moon className="mt-0.5 h-4 w-4 shrink-0 text-indigo-300" aria-hidden="true" />
+                <p className="text-xs leading-relaxed text-[#b0b8cc]">{weatherNarrative}</p>
               </div>
             )}
 
-            <div className="flex flex-col gap-2">
-              <Button asChild className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600">
+            {/* 分析までの進捗（7件未満） */}
+            {recordCountAfterSave > 0 && recordCountAfterSave < 7 && (
+              <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] px-4 py-3">
+                <div className="mb-2 flex items-center justify-between text-xs">
+                  <span className="text-[#9ba3b5]">相関分析まで</span>
+                  <span className="font-semibold text-indigo-300">{recordCountAfterSave} / 7日</span>
+                </div>
+                <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+                  <div
+                    className="h-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-700"
+                    style={{ width: `${(recordCountAfterSave / 7) * 100}%` }}
+                    role="progressbar"
+                    aria-valuenow={recordCountAfterSave}
+                    aria-valuemin={0}
+                    aria-valuemax={7}
+                    aria-label="相関分析解禁まで"
+                  />
+                </div>
+                <p className="mt-1.5 text-[11px] text-[#9ba3b5]">あと {remaining} 日で気象との相関グラフが解放されます</p>
+              </div>
+            )}
+
+            <div className="flex flex-col gap-2 pt-1">
+              <Button asChild className="w-full bg-indigo-500 text-white hover:bg-indigo-600">
                 <Link href="/dashboard">
                   <BarChart3 className="mr-2 h-4 w-4" aria-hidden="true" />
                   ダッシュボードを見る
                 </Link>
               </Button>
-              <Button type="button" variant="ghost" className="w-full text-[#9ba3b5] hover:bg-transparent hover:text-[#1d9bf0]" onClick={handleEditAgain}>
+              <Button type="button" variant="ghost" className="w-full text-[#9ba3b5] hover:bg-white/[0.04] hover:text-indigo-400" onClick={handleEditAgain}>
                 <RefreshCcw className="mr-2 h-4 w-4" aria-hidden="true" />
                 今日の記録を修正する
               </Button>
             </div>
-            <p className="pt-2 text-center text-xs text-[#9ba3b5]">
-              本サービスは医療行為・診断を目的としたものではありません。記録は健康管理の参考としてご利用ください。
+            <p className="pt-1 text-center text-xs text-[#9ba3b5]/70">
+              本サービスは医療行為・診断を目的としたものではありません。
             </p>
           </CardContent>
         </Card>
@@ -443,13 +498,13 @@ export function RecordForm(): JSX.Element {
                       aria-label={opt.aria}
                       onClick={() => handleQualityPick(opt.value)}
                       className={[
-                        "flex min-h-[88px] min-w-[44px] flex-col items-center justify-center gap-2 rounded-xl bg-white/[0.03] p-3 text-[#9ba3b5] transition-colors hover:bg-white/[0.06] hover:text-[#e6e8ee] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d9bf0]",
-                        selected ? "bg-[#1d9bf0]/10 text-[#e6e8ee] ring-1 ring-inset ring-[#1d9bf0]/60 shadow-[0_0_24px_-8px_rgba(29,155,240,0.55)]" : "",
+                        "flex min-h-[88px] min-w-[44px] flex-col items-center justify-center gap-2 rounded-xl bg-white/[0.03] p-3 text-[#9ba3b5] transition-colors hover:bg-white/[0.06] hover:text-[#e6e8ee] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
+                        selected ? "bg-indigo-500/10 text-[#e6e8ee] ring-1 ring-inset ring-indigo-500/60 shadow-[0_0_24px_-8px_rgba(99,102,241,0.55)]" : "",
                       ].join(" ")}
                     >
                       <span className="text-3xl" aria-hidden="true">{opt.emoji}</span>
                       <span className="text-xs font-medium leading-tight sm:text-sm">{opt.label}</span>
-                      {selected ? <span className="block h-0.5 w-6 rounded-full bg-[#1d9bf0]" aria-hidden="true" /> : null}
+                      {selected ? <span className="block h-0.5 w-6 rounded-full bg-indigo-400" aria-hidden="true" /> : null}
                     </button>
                   );
                 })}
@@ -466,7 +521,7 @@ export function RecordForm(): JSX.Element {
                 </Label>
                 <Input id="bedtime" type="time" inputMode="numeric" autoComplete="off" value={form.bedtime}
                   onChange={(e) => setForm((prev) => ({ ...prev, bedtime: e.target.value }))}
-                  className="h-11 rounded-none border-0 border-b border-white/10 bg-transparent px-0 text-[#e6e8ee] tabular-nums focus-visible:border-[#1d9bf0] focus-visible:ring-0"
+                  className="h-11 rounded-none border-0 border-b border-white/10 bg-transparent px-0 text-[#e6e8ee] tabular-nums focus-visible:border-indigo-500 focus-visible:ring-0"
                 />
                 {errors.bedtime ? <p className="text-xs text-[#f87171]" role="alert">{errors.bedtime}</p> : null}
               </div>
@@ -477,7 +532,7 @@ export function RecordForm(): JSX.Element {
                 </Label>
                 <Input id="wakeTime" type="time" inputMode="numeric" autoComplete="off" value={form.wakeTime}
                   onChange={(e) => setForm((prev) => ({ ...prev, wakeTime: e.target.value }))}
-                  className="h-11 rounded-none border-0 border-b border-white/10 bg-transparent px-0 text-[#e6e8ee] tabular-nums focus-visible:border-[#1d9bf0] focus-visible:ring-0"
+                  className="h-11 rounded-none border-0 border-b border-white/10 bg-transparent px-0 text-[#e6e8ee] tabular-nums focus-visible:border-indigo-500 focus-visible:ring-0"
                 />
                 {errors.wakeTime ? <p className="text-xs text-[#f87171]" role="alert">{errors.wakeTime}</p> : null}
               </div>
@@ -491,7 +546,7 @@ export function RecordForm(): JSX.Element {
               <textarea
                 id="note" maxLength={280} rows={3} value={form.note}
                 onChange={(e) => setForm((prev) => ({ ...prev, note: e.target.value }))}
-                className="w-full rounded-md border-0 bg-white/[0.03] px-3 py-2 text-sm text-[#e6e8ee] placeholder:text-[#9ba3b5]/70 focus:outline-none focus:ring-1 focus:ring-[#1d9bf0]"
+                className="w-full rounded-md border-0 bg-white/[0.03] px-3 py-2 text-sm text-[#e6e8ee] placeholder:text-[#9ba3b5]/70 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 placeholder="例: 夜中に一度目が覚めた / 寝る前にスマホを見すぎた"
               />
               {errors.note ? <p className="text-xs text-[#f87171]" role="alert">{errors.note}</p> : null}
@@ -506,21 +561,21 @@ export function RecordForm(): JSX.Element {
                     <Label htmlFor="manual-temp" className="text-xs text-[#9ba3b5]">気温 (°C)</Label>
                     <Input id="manual-temp" type="number" step="0.1" inputMode="decimal" value={manual.temperatureC}
                       onChange={(e) => setManual((prev) => ({ ...prev, temperatureC: e.target.value }))}
-                      className="h-11 rounded-none border-0 border-b border-white/10 bg-transparent px-0 text-[#e6e8ee] tabular-nums focus-visible:border-[#1d9bf0] focus-visible:ring-0"
+                      className="h-11 rounded-none border-0 border-b border-white/10 bg-transparent px-0 text-[#e6e8ee] tabular-nums focus-visible:border-indigo-500 focus-visible:ring-0"
                     />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="manual-hum" className="text-xs text-[#9ba3b5]">湿度 (%)</Label>
                     <Input id="manual-hum" type="number" step="1" inputMode="numeric" value={manual.humidity}
                       onChange={(e) => setManual((prev) => ({ ...prev, humidity: e.target.value }))}
-                      className="h-11 rounded-none border-0 border-b border-white/10 bg-transparent px-0 text-[#e6e8ee] tabular-nums focus-visible:border-[#1d9bf0] focus-visible:ring-0"
+                      className="h-11 rounded-none border-0 border-b border-white/10 bg-transparent px-0 text-[#e6e8ee] tabular-nums focus-visible:border-indigo-500 focus-visible:ring-0"
                     />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="manual-pre" className="text-xs text-[#9ba3b5]">気圧 (hPa)</Label>
                     <Input id="manual-pre" type="number" step="0.1" inputMode="decimal" value={manual.pressureHpa}
                       onChange={(e) => setManual((prev) => ({ ...prev, pressureHpa: e.target.value }))}
-                      className="h-11 rounded-none border-0 border-b border-white/10 bg-transparent px-0 text-[#e6e8ee] tabular-nums focus-visible:border-[#1d9bf0] focus-visible:ring-0"
+                      className="h-11 rounded-none border-0 border-b border-white/10 bg-transparent px-0 text-[#e6e8ee] tabular-nums focus-visible:border-indigo-500 focus-visible:ring-0"
                     />
                   </div>
                 </div>
@@ -529,19 +584,19 @@ export function RecordForm(): JSX.Element {
 
             {/* 送信ボタン + スキップリンク */}
             <div className="sticky bottom-0 -mx-4 mt-2 border-t border-white/5 bg-[#0f1117]/90 p-4 pb-[env(safe-area-inset-bottom)] backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
-              <Button type="submit" className="h-12 w-full bg-[#1d9bf0] text-base font-semibold text-white hover:bg-[#1d9bf0]/90 disabled:opacity-50" disabled={submitDisabled}>
+              <Button type="submit" className="h-12 w-full bg-indigo-500 text-base font-semibold text-white hover:bg-indigo-600 disabled:opacity-50" disabled={submitDisabled}>
                 {isSubmitting ? (
                   <><Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />保存中...</>
                 ) : isUpdate ? "今日の記録を更新する" : "記録する"}
               </Button>
               <p className="mt-2 text-center text-[11px] text-[#9ba3b5]">
                 {allRecords.length === 0
-                  ? "毎朝の記録が予報の精度を上げます 📈"
+                  ? "毎朝の記録が予報の精度を上げます"
                   : allRecords.length < 4
-                    ? `あと${7 - allRecords.length}件で気圧との相関グラフが表示されます 📊`
+                    ? `あと${7 - allRecords.length}件で気圧との相関グラフが表示されます`
                     : allRecords.length < 7
-                      ? `もうすぐ！あと${7 - allRecords.length}件でグラフ解禁です 📊`
-                      : "記録が増えるほど予測が精緻になります 🎯"}
+                      ? `もうすぐ！あと${7 - allRecords.length}件でグラフ解禁です`
+                      : "記録が増えるほど予測が精緻になります"}
               </p>
               <div className="mt-6 text-center">
                 <Link href="/" className="text-sm text-[#9ba3b5] underline-offset-4 hover:text-[#9ba3b5]/70 hover:underline">

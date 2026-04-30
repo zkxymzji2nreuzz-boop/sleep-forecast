@@ -10,7 +10,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { X, ArrowRight } from "lucide-react";
+import { ArrowRight, Moon, X } from "lucide-react";
 import { getRecords, ONBOARDING_DISMISSED_KEY } from "@/lib/storage";
 
 export function OnboardingBanner() {
@@ -39,8 +39,9 @@ export function OnboardingBanner() {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1">
-          <p className="mb-1 text-sm font-bold text-[#e6e8ee]">
-            🌙 はじめましょう
+          <p className="mb-1 flex items-center gap-2 text-sm font-bold text-[#e6e8ee]">
+            <Moon className="h-4 w-4 text-indigo-300" aria-hidden="true" />
+            はじめましょう
           </p>
           <p className="mb-3 text-xs leading-relaxed text-[#9ba3b5]">
             まずは今日の眠りを記録してみましょう。15秒で完了します。

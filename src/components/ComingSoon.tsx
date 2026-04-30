@@ -26,7 +26,7 @@ export function ComingSoon({ title, step, description }: ComingSoonProps) {
     <div className="container mx-auto max-w-screen-md px-4 py-10 sm:py-14">
       <Card className="border-white/5 bg-[#1a1f2e]">
         <CardHeader className="items-center text-center">
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[#1d9bf0]/15 text-[#1d9bf0]">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-indigo-500/15 text-indigo-400">
             <Construction className="h-6 w-6" aria-hidden="true" />
           </div>
           <CardTitle className="text-xl text-[#e6e8ee]">

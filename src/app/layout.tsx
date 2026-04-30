@@ -71,6 +71,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -83,7 +84,7 @@ export default function RootLayout({
       <body className="bg-[#0f1117] text-[#e6e8ee] antialiased">
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-[#1d9bf0] focus:px-4 focus:py-2 focus:text-white focus:outline-none"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-indigo-500 focus:px-4 focus:py-2 focus:text-white focus:outline-none"
         >
           メインコンテンツへスキップ
         </a>

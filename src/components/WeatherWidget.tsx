@@ -201,8 +201,8 @@ function TodayWeatherSection({ hourlyWeather }: { hourlyWeather: HourlyWeatherDa
               const pa = pressureArrow(hourlyDeltas[i]);
               const hourLabel = hour === 0 ? "翌0時" : `${hour}時`;
               return (
-                <div key={time} style={{ flexShrink: 0, width: "54px", display: "flex", flexDirection: "column", borderLeft: isCurrent ? "1px solid rgba(167,139,250,0.30)" : "1px solid rgba(255,255,255,0.04)", background: isCurrent ? "rgba(167,139,250,0.08)" : "transparent" }}>
-                  <div style={{ height: `${HEADER_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 600, color: isCurrent ? "#a78bfa" : "#9ba3b5" }}>{hourLabel}</div>
+                <div key={time} style={{ flexShrink: 0, width: "54px", display: "flex", flexDirection: "column", borderLeft: isCurrent ? "1px solid rgba(99,102,241,0.30)" : "1px solid rgba(255,255,255,0.04)", background: isCurrent ? "rgba(99,102,241,0.08)" : "transparent" }}>
+                  <div style={{ height: `${HEADER_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 600, color: isCurrent ? "#818cf8" : "#9ba3b5" }}>{hourLabel}</div>
                   <div style={{ height: `${ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "17px" }}>{w.emoji}</div>
                   <div style={{ height: `${ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "#e6e8ee" }}>{Math.round(hourlyWeather.temps[i])}°</div>
                   <div style={{ height: `${ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", color: precipColor(hourlyWeather.precipProbs[i]) }}>{hourlyWeather.precipProbs[i]}%</div>
@@ -269,7 +269,7 @@ function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
             return (
               <div key={day.date} style={{ display: "flex", flexDirection: "column", borderLeft: columnBorder, background: columnBg }}>
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: "10px", fontWeight: 700, color: isDangerDay ? "#f87171" : isCurrentDay ? "#1d9bf0" : "#9ba3b5" }}>{dayLabel}</span>
+                  <span style={{ fontSize: "10px", fontWeight: 700, color: isDangerDay ? "#f87171" : isCurrentDay ? "#818cf8" : "#9ba3b5" }}>{dayLabel}</span>
                   <span style={{ fontSize: "9px", color: "#9ba3b5" }}>{weekLabel}</span>
                 </div>
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px" }}>{weather.emoji}</div>
@@ -328,7 +328,7 @@ function SleepScoreHero({ score100, wsiScore, hints }: { score100: number; wsiSc
         }
       }}
     >
-      <p className="text-xs font-semibold text-[#9ba3b5] mb-3">🌙 今夜の睡眠スコア</p>
+      <p className="text-xs font-semibold text-[#9ba3b5] mb-3">今夜の睡眠スコア</p>
 
       {/* バッジ（主役）*/}
       <div className="flex items-center gap-3 mb-2">
@@ -397,7 +397,7 @@ function SleepScoreHero({ score100, wsiScore, hints }: { score100: number; wsiSc
           {/* ケアヒント（インライン - 指摘K）*/}
           {hints.length > 0 && (
             <div className="mt-3 pt-3 border-t border-white/10 flex gap-2 text-xs leading-relaxed text-[#b0b8cc]">
-              <span className="mt-0.5 shrink-0 text-[#1d9bf0]">💡</span>
+              <span className="mt-0.5 shrink-0 text-indigo-400">💡</span>
               <span>{hints[0]}</span>
             </div>
           )}
@@ -1002,7 +1002,6 @@ function CorrelationChart() {
   if (points.length === 0) {
     return (
       <div className="rounded-xl border border-white/10 bg-black/20 p-5 text-center">
-        <p className="text-2xl mb-2">📊</p>
         <p className="text-sm font-semibold text-[#e6e8ee] mb-1">7件記録すると表示されます</p>
         <p className="text-xs text-[#9ba3b5]">気圧と睡眠品質の相関を可視化します</p>
       </div>
@@ -1225,7 +1224,7 @@ export function WeatherWidget() {
         <button
           type="button"
           onClick={() => window.location.reload()}
-          className="inline-flex h-9 items-center justify-center rounded-md border border-[#1d9bf0]/40 bg-transparent px-4 text-xs font-medium text-[#e6e8ee] hover:bg-[#1d9bf0]/10"
+          className="inline-flex h-9 items-center justify-center rounded-md border border-indigo-400/40 bg-transparent px-4 text-xs font-medium text-[#e6e8ee] hover:bg-indigo-500/10"
         >
           リトライ
         </button>
@@ -1237,7 +1236,6 @@ export function WeatherWidget() {
   if (!data || !wsiScore) {
     return (
       <div className="rounded-2xl border border-white/5 bg-[#1a1f2e] p-5 text-center">
-        <p className="text-2xl mb-2" aria-hidden="true">📭</p>
         <p className="text-sm font-semibold text-[#e6e8ee] mb-1">
           データを読み込めませんでした
         </p>
@@ -1247,7 +1245,7 @@ export function WeatherWidget() {
         <button
           type="button"
           onClick={() => window.location.reload()}
-          className="inline-flex h-9 items-center justify-center rounded-md border border-[#1d9bf0]/40 bg-transparent px-4 text-xs font-medium text-[#e6e8ee] hover:bg-[#1d9bf0]/10"
+          className="inline-flex h-9 items-center justify-center rounded-md border border-indigo-400/40 bg-transparent px-4 text-xs font-medium text-[#e6e8ee] hover:bg-indigo-500/10"
         >
           リトライ
         </button>

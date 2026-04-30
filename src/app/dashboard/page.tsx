@@ -49,6 +49,7 @@ import {
   CheckCircle2,
   Flame,
   Info,
+  Lock,
   Moon,
   TrendingUp,
 } from "lucide-react";
@@ -132,7 +133,7 @@ const MOON_BUCKETS = [
   "満月期 (0.45〜0.55)",
   "下弦期 (0.55〜0.9)",
 ] as const;
-const MOON_BUCKET_COLORS = ["#7c4dff", "#1d9bf0", "#facc15", "#4ade80"];
+const MOON_BUCKET_COLORS = ["#7c4dff", "#6366f1", "#facc15", "#4ade80"];
 
 // B案: 感情別カラー (warning=rose / info=sky / positive=emerald)
 const INSIGHT_BORDER: Record<InsightItem["severity"], string> = {
@@ -218,7 +219,7 @@ function groupByMoonPhase(records: SleepRecord[]) {
 /** カード共通の tooltip スタイル (プレーンオブジェクトで型幅を維持) */
 const TOOLTIP_BASE = {
   backgroundColor: "#1a1f2e",
-  borderColor: "#1d9bf0",
+  borderColor: "#6366f1",
   borderWidth: 1,
   titleColor: "#e6e8ee",
   bodyColor: "#9ba3b5",
@@ -374,11 +375,10 @@ export default function DashboardPage() {
         {
           label: "品質",
           data: values,
-          // B案: violet (#a78bfa) ライン
-          borderColor: "#a78bfa",
-          backgroundColor: "rgba(167, 139, 250, 0.12)",
+          borderColor: "#6366f1",
+          backgroundColor: "rgba(99, 102, 241, 0.12)",
           borderWidth: 2,
-          pointBackgroundColor: "#a78bfa",
+          pointBackgroundColor: "#6366f1",
           pointBorderColor: "#1a1f2e",
           pointBorderWidth: 2,
           pointRadius: 4,
@@ -452,7 +452,7 @@ export default function DashboardPage() {
           </p>
         </header>
         <div className="flex flex-col items-center justify-center gap-6 rounded-xl border border-gray-700/50 bg-[#1a1f2e] px-6 py-16 text-center">
-          <Moon className="h-12 w-12 text-violet-400 opacity-60" aria-hidden />
+          <Moon className="h-12 w-12 text-indigo-400 opacity-60" aria-hidden />
           <div>
             <h2 className="text-lg font-semibold text-[#e6e8ee]">まだ記録がありません</h2>
             <p className="mt-2 text-sm text-[#9ba3b5]">
@@ -460,7 +460,7 @@ export default function DashboardPage() {
               まずは今日の眠りを記録してみましょう。
             </p>
           </div>
-          <Button asChild size="lg" className="bg-[#1d9bf0] text-white hover:bg-[#1a8cd8]">
+          <Button asChild size="lg" className="bg-indigo-500 text-white hover:bg-indigo-600">
             <Link href="/record">
               今日を記録する
               <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
@@ -515,7 +515,7 @@ export default function DashboardPage() {
             {records.length === 2 && "2日分の記録！続けることで、あなただけのパターンが浮かび上がります。"}
             {records.length === 3 && "3日目！折り返し地点が近づいています。低気圧の夜もぜひ記録してみてください。"}
             {(records.length === 4 || records.length === 5) && "もうすぐです！気象と睡眠の相関グラフが解放されます。"}
-            {records.length === 6 && "あと1日！明日の記録で相関分析がスタートします 🎉"}
+            {records.length === 6 && "あと1日！明日の記録で相関分析がスタートします"}
           </p>
           <Link
             href="/record"
@@ -638,13 +638,13 @@ export default function DashboardPage() {
             <TabsList className="mb-3 grid w-full grid-cols-2 gap-1 bg-[#0f1117] p-1">
               <TabsTrigger
                 value="pressure"
-                className="rounded-md text-[#9ba3b5] data-[state=active]:bg-[#1d9bf0]/10 data-[state=active]:text-[#1d9bf0] data-[state=active]:shadow-none"
+                className="rounded-md text-[#9ba3b5] data-[state=active]:bg-indigo-500/10 data-[state=active]:text-indigo-300 data-[state=active]:shadow-none"
               >
                 気圧別
               </TabsTrigger>
               <TabsTrigger
                 value="moon"
-                className="rounded-md text-[#9ba3b5] data-[state=active]:bg-[#1d9bf0]/10 data-[state=active]:text-[#1d9bf0] data-[state=active]:shadow-none"
+                className="rounded-md text-[#9ba3b5] data-[state=active]:bg-indigo-500/10 data-[state=active]:text-indigo-300 data-[state=active]:shadow-none"
               >
                 月齢別
               </TabsTrigger>
@@ -677,7 +677,7 @@ export default function DashboardPage() {
       <AdBanner slot="dashboard-charts" format="horizontal" className="mb-6" />
 
       {/* ── ⑥ 「今日を記録する」CTA — 常時表示 ── */}
-      <div className="mb-6 flex items-center justify-between gap-3 rounded-lg border border-violet-400/20 bg-violet-500/5 p-4">
+      <div className="mb-6 flex items-center justify-between gap-3 rounded-lg border border-indigo-400/20 bg-indigo-500/[0.05] p-4">
         <div>
           <p className="text-sm font-medium text-[#e6e8ee]">今日の眠りを記録する</p>
           <p className="mt-0.5 text-xs text-[#9ba3b5]">毎日記録すると、あなただけの傾向が見えてきます</p>
@@ -685,7 +685,7 @@ export default function DashboardPage() {
         <Button
           asChild
           size="sm"
-          className="flex-shrink-0 bg-[#a78bfa] text-white hover:bg-[#9061f9]"
+          className="flex-shrink-0 bg-indigo-500 text-white hover:bg-indigo-600"
         >
           <Link href="/record">
             記録する
@@ -698,7 +698,7 @@ export default function DashboardPage() {
       {records.length > 0 && records.length < DEMO_THRESHOLD && (
         <div className="mb-6 rounded-lg border border-sky-400/30 bg-sky-500/5 p-3">
           <p className="text-sm text-gray-200">
-            📈 あと{" "}
+            あと{" "}
             <span className="font-bold text-sky-400">
               {DEMO_THRESHOLD - records.length} 日
             </span>{" "}
@@ -742,14 +742,14 @@ type KpiCardProps = {
 function KpiCard({ icon, label, value, subtitle, small }: KpiCardProps) {
   return (
     // B案: グラデーション背景 + ホバー時 violet ボーダー
-    <div className="flex flex-col gap-2 rounded-xl border border-gray-700/50 bg-gradient-to-br from-gray-900 to-[#161a24] p-4 shadow-md transition-all duration-200 hover:border-violet-400/30 hover:shadow-lg">
+    <div className="flex flex-col gap-2 rounded-xl border border-gray-700/50 bg-gradient-to-br from-gray-900 to-[#161a24] p-4 shadow-md transition-all duration-200 hover:border-indigo-400/30 hover:shadow-lg">
       <div className="flex items-center gap-2 text-gray-400">
-        <span className="text-violet-400">{icon}</span>
+        <span className="text-indigo-400">{icon}</span>
         <span className="text-xs font-medium">{label}</span>
       </div>
       <p
         className={`font-bold tabular-nums text-gray-100 ${
-          small ? "text-lg" : "text-2xl"
+          small ? "text-xl" : "text-3xl"
         }`}
       >
         {value}
@@ -899,10 +899,10 @@ function LockedChart({ needed, current, children }: LockedChartProps) {
       {/* ロックオーバーレイ */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="flex flex-col items-center gap-2 rounded-xl border border-gray-700/60 bg-[#0f1117]/90 px-6 py-4 text-center shadow-lg">
-          <span className="text-2xl" aria-hidden>🔒</span>
+          <Lock className="h-6 w-6 text-[#9ba3b5]" aria-hidden />
           <p className="text-sm font-semibold text-[#e6e8ee]">
             あと{" "}
-            <span className="text-violet-400">{remaining} 件</span>{" "}
+            <span className="text-indigo-300">{remaining} 件</span>{" "}
             で解放
           </p>
           <p className="text-xs text-[#9ba3b5]">記録を続けると分析が見えてきます</p>

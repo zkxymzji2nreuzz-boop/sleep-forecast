@@ -45,7 +45,7 @@ export function BottomNav() {
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
                   "flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 px-2 py-2 text-xs font-medium transition-colors",
-                  isActive ? "text-[#1d9bf0]" : "text-[#9ba3b5] hover:text-[#e6e8ee]"
+                  isActive ? "text-indigo-400" : "text-[#9ba3b5] hover:text-[#e6e8ee]"
                 )}
               >
                 <Icon
