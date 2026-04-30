@@ -52,6 +52,7 @@ import {
   Lock,
   Moon,
   TrendingUp,
+  Wind,
 } from "lucide-react";
 import { AdBanner } from "@/components/AdBanner";
 import { Breadcrumb } from "@/components/Breadcrumb";
@@ -622,17 +623,29 @@ export default function DashboardPage() {
           label="最長連続"
           value={stats.longestStreak > 0 ? `${stats.longestStreak}日` : "--"}
         />
-        {/* worstDay: 日付をメイン値・品質をサブラベルに分けてスッキリ表示 */}
-        <KpiCard
-          icon={<Moon className="h-4 w-4" aria-hidden />}
-          label="最も浅かった日"
-          value={stats.worstDay ? toShortLabel(stats.worstDay.date) : "--"}
-          subtitle={
-            stats.worstDay
-              ? QUALITY_FULL_MAP[stats.worstDay.quality as 1 | 2 | 3 | 4 | 5]
-              : undefined
-          }
-        />
+        {/* 気圧感受性スコア: データ十分なら表示、不足なら最も浅かった日 */}
+        {stats.pressureSensitivity !== null ? (
+          <KpiCard
+            icon={<Wind className="h-4 w-4" aria-hidden />}
+            label="気圧感受性"
+            value={`${stats.pressureSensitivity} / 10`}
+            subtitle={
+              stats.pressureSensitivity >= 7 ? "高感受性" :
+              stats.pressureSensitivity >= 4 ? "中感受性" : "低感受性"
+            }
+          />
+        ) : (
+          <KpiCard
+            icon={<Moon className="h-4 w-4" aria-hidden />}
+            label="最も浅かった日"
+            value={stats.worstDay ? toShortLabel(stats.worstDay.date) : "--"}
+            subtitle={
+              stats.worstDay
+                ? QUALITY_FULL_MAP[stats.worstDay.quality as 1 | 2 | 3 | 4 | 5]
+                : undefined
+            }
+          />
+        )}
       </section>
 
       {/* ── ② インサイト（KPI直下・グラフより先に表示） ── */}
@@ -648,9 +661,20 @@ export default function DashboardPage() {
                 className={`flex items-start gap-3 rounded-r-lg border-l-4 p-3 transition-colors duration-150 hover:opacity-90 ${INSIGHT_BORDER[item.severity]}`}
               >
                 {INSIGHT_ICON[item.severity]}
-                <p className="text-sm leading-relaxed text-[#e6e8ee]">
-                  {item.message}
-                </p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm leading-relaxed text-[#e6e8ee]">
+                    {item.message}
+                  </p>
+                  {item.articleSlug && item.articleLabel && (
+                    <Link
+                      href={`/articles/${item.articleSlug}`}
+                      className="mt-1.5 inline-flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 hover:underline"
+                    >
+                      {item.articleLabel}
+                      <ArrowRight className="h-3 w-3" aria-hidden />
+                    </Link>
+                  )}
+                </div>
               </li>
             ))}
           </ul>

@@ -16,7 +16,7 @@ import type { SleepRecord } from "./types";
 // 型定義
 // ---------------------------------------------------------------------------
 
-/** ダッシュボード上部に並ぶ 4 つの KPI の集計結果。 */
+/** ダッシュボード上部に並ぶ KPI の集計結果。 */
 export type DashboardStats = {
   /** 直近 7 件 (最新寄り) の quality 平均、小数 1 桁。0 件なら null。 */
   avg7Days: number | null;
@@ -26,6 +26,11 @@ export type DashboardStats = {
   longestStreak: number;
   /** quality が最小のレコード (同点なら最新 date)。0 件なら null。 */
   worstDay: { date: string; quality: number } | null;
+  /**
+   * 気圧感受性スコア 0〜10（急落日 vs 通常日の平均品質差から算出）。
+   * データ不足（急落日 < 2 件 or 通常日 < 2 件）なら null。
+   */
+  pressureSensitivity: number | null;
 };
 
 /** 自然言語インサイト 1 件。 */
@@ -41,6 +46,10 @@ export type InsightItem = {
   message: string;
   /** 表示スタイル: 警告 / 情報 / ポジティブ */
   severity: "info" | "warning" | "positive";
+  /** 関連記事スラッグ（あれば記事リンクを表示） */
+  articleSlug?: string;
+  /** 関連記事のリンクラベル */
+  articleLabel?: string;
 };
 
 // ---------------------------------------------------------------------------
@@ -217,11 +226,25 @@ export function calculateStats(records: SleepRecord[]): DashboardStats {
     ? { date: worst.date, quality: worst.quality }
     : null;
 
+  // --- 気圧感受性スコア (0〜10) ---
+  // 急落日（-3hPa以下）と通常日の平均品質差を 0〜10 にスケーリング
+  // 差 0 → スコア 0、差 2.0 以上 → スコア 10（最大品質差は 4 なので 2.0 = 中程度）
+  const dropRecs = records.filter((r) => r.weather.pressureDeltaHpa <= -3);
+  const normalRecs = records.filter((r) => r.weather.pressureDeltaHpa > -3);
+  let pressureSensitivity: number | null = null;
+  if (dropRecs.length >= 2 && normalRecs.length >= 2) {
+    const dropAvg = dropRecs.reduce((s, r) => s + r.quality, 0) / dropRecs.length;
+    const normalAvg = normalRecs.reduce((s, r) => s + r.quality, 0) / normalRecs.length;
+    const diff = Math.max(0, normalAvg - dropAvg); // 通常日の方が良い場合のみ
+    pressureSensitivity = Math.min(10, Math.round((diff / 2.0) * 10));
+  }
+
   return {
     avg7Days,
     recordCountThisMonth,
     longestStreak,
     worstDay,
+    pressureSensitivity,
   };
 }
 
@@ -267,6 +290,8 @@ export function generateInsights(records: SleepRecord[]): InsightItem[] {
       key: "pressure_drop",
       severity: "warning",
       message: `気圧が 3hPa 以上下がる日は、そうでない日と比べて睡眠品質が約 ${dropPct}% 低下しています。`,
+      articleSlug: "kiatsu-jiritsu-shinkei",
+      articleLabel: "自律神経の整え方を読む",
     });
   }
 
@@ -285,6 +310,8 @@ export function generateInsights(records: SleepRecord[]): InsightItem[] {
       key: "moon_phase",
       severity: "info",
       message: "満月の前後 2 日間は睡眠が浅い傾向があります。",
+      articleSlug: "suimin-shitsu-up",
+      articleLabel: "睡眠の質を上げる方法を読む",
     });
   }
 
@@ -304,12 +331,16 @@ export function generateInsights(records: SleepRecord[]): InsightItem[] {
           key: "temperature",
           severity: "info",
           message: "気温が高い日ほど眠りが浅い傾向が見られます。",
+          articleSlug: "kandansa-hirou",
+          articleLabel: "寒暖差疲労の対策を読む",
         });
       } else if (hotAvg - coldAvg >= 0.5) {
         insights.push({
           key: "temperature",
           severity: "info",
           message: "気温が低い日ほど眠りが浅い傾向が見られます。",
+          articleSlug: "kandansa-hirou",
+          articleLabel: "寒暖差疲労の対策を読む",
         });
       }
     }
