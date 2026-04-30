@@ -415,7 +415,7 @@ function SleepScoreHero({ score100, wsiScore, hints }: { score100: number; wsiSc
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** JST で「今日の日付文字列 YYYY-MM-DD」を返す */
-function getTodayJST(): string {
+function formatDateJst(new Date()): string {
   const d = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
@@ -425,7 +425,7 @@ function getTodayJST(): string {
  * hourlyPressureTimes は ISO 8601（+09:00 付き推奨）を想定。
  */
 function checkTonightPressureDrop(times: string[], pressures: number[]): boolean {
-  const todayStr = getTodayJST();
+  const todayStr = formatDateJst(new Date());
   const todayBase = new Date(`${todayStr}T00:00:00+09:00`);
   const tomorrowBase = new Date(todayBase.getTime() + 24 * 60 * 60 * 1000);
   const tomorrowStr = `${tomorrowBase.getFullYear()}-${String(tomorrowBase.getMonth() + 1).padStart(2, "0")}-${String(tomorrowBase.getDate()).padStart(2, "0")}`;
@@ -468,7 +468,7 @@ function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: Pres
     if (typeof window === "undefined") return;
     if (!("Notification" in window)) return; // iOS Safari 等は非対応
 
-    const today = getTodayJST();
+    const today = formatDateJst(new Date());
     const hasDrop = checkTonightPressureDrop(hourlyPressureTimes, hourlyPressureValues);
     const alreadyNotifiedToday = localStorage.getItem(ALERT_STORAGE_KEY) === today;
     const perm = Notification.permission;
@@ -513,14 +513,14 @@ function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: Pres
         body: "気圧急変の夜です。眠れなかったら明朝記録してみてください",
         icon: "/icon-192.png",
       });
-      localStorage.setItem(ALERT_STORAGE_KEY, getTodayJST());
+      localStorage.setItem(ALERT_STORAGE_KEY, formatDateJst(new Date()));
     }
     // 拒否されても mode を "none" にして閉じる（拒否フォールバックは急変時のみ）
     setMode("none");
   };
 
   const dismiss = () => {
-    if (mode === "drop") localStorage.setItem(ALERT_STORAGE_KEY, getTodayJST());
+    if (mode === "drop") localStorage.setItem(ALERT_STORAGE_KEY, formatDateJst(new Date()));
     if (mode === "optin") localStorage.setItem(OPTIN_ASKED_KEY, "true");
     setMode("none");
   };
