@@ -13,6 +13,59 @@ import type { ArticleFull, ArticleMeta } from "@/lib/types";
 import { AdBanner } from "@/components/AdBanner";
 import { Button } from "@/components/ui/button";
 
+// ---------------------------------------------------------------------------
+// Inline CTA helpers (REQ-P2-03)
+// ---------------------------------------------------------------------------
+
+/**
+ * contentHtml を第 n 番目の </h2> タグの直後で前半・後半に分割する。
+ * 見つからない場合は [html, ""] を返す。
+ */
+function splitHtmlAtNthH2(html: string, n: number): [string, string] {
+  let count = 0;
+  let idx = 0;
+  while (count < n) {
+    const pos = html.indexOf("</h2>", idx);
+    if (pos === -1) return [html, ""];
+    idx = pos + 5; // "</h2>".length === 5
+    count++;
+  }
+  return [html.slice(0, idx), html.slice(idx)];
+}
+
+/** 記事本文中に差し込む小型 CTA バナー */
+function ArticleInlineCta() {
+  return (
+    <aside
+      aria-label="SleepForecast アプリのご案内"
+      className="not-prose my-10 flex flex-col gap-3 rounded-2xl border border-indigo-300/20 bg-gradient-to-br from-indigo-500/10 via-purple-500/6 to-transparent p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+    >
+      <div className="flex items-start gap-3">
+        <Moon
+          className="mt-0.5 h-5 w-5 shrink-0 text-indigo-300"
+          aria-hidden="true"
+        />
+        <p className="text-sm leading-relaxed text-[#e6e8ee]/90">
+          <span className="font-semibold text-[#e6e8ee]">
+            毎朝 15 秒の記録で
+          </span>
+          、気圧があなたの眠りにどう影響しているかがわかります。
+          <span className="ml-1 text-xs text-[#a8b0c2]">
+            無料・登録不要
+          </span>
+        </p>
+      </div>
+      <Button
+        asChild
+        size="sm"
+        className="shrink-0 rounded-full bg-indigo-500 px-5 text-sm font-medium text-white hover:bg-indigo-400 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1117]"
+      >
+        <Link href="/record">今すぐ無料で始める →</Link>
+      </Button>
+    </aside>
+  );
+}
+
 type Props = {
   article: ArticleFull;
   related: ArticleMeta[];
@@ -114,47 +167,8 @@ function RelatedActions({ article }: { article: ArticleFull }) {
 }
 
 export function ArticleLayout({ article, related }: Props) {
-  const SITE_URL =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://sleep-forecast.vercel.app";
-
-  /** Article 構造化データ（E-E-A-T / Google リッチリザルト対応） */
-  const articleJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: article.title,
-    description: article.description,
-    datePublished: article.publishedAt,
-    dateModified: article.updatedAt,
-    url: `${SITE_URL}/articles/${article.slug}`,
-    inLanguage: "ja",
-    author: {
-      "@type": "Person",
-      name: "SleepForecast 運営者",
-      url: SITE_URL,
-      sameAs: ["https://twitter.com/Sleep_Forecast"],
-    },
-    publisher: {
-      "@type": "Person",
-      name: "SleepForecast 運営者",
-      url: SITE_URL,
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `${SITE_URL}/articles/${article.slug}`,
-    },
-    keywords: article.tags.join(", "),
-    articleSection: article.category,
-  };
-
   return (
     <article className="container mx-auto max-w-[680px] px-5 pb-20 pt-10 sm:pt-14">
-      {/* Article 構造化データ（SSR 出力） */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(articleJsonLd).replace(/</g, "\\u003c"),
-        }}
-      />
       {/* 戻るリンク (柔らかいトーンの「ほかの読みものを見る」) */}
       <div>
         <Link
@@ -236,11 +250,27 @@ export function ArticleLayout({ article, related }: Props) {
         </nav>
       )}
 
-      {/* 本文 (remark 変換済み HTML) — prose-lg + leading-[1.9] の月夜文庫 */}
-      <div
-        className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-[#e6e8ee] prose-h2:mb-5 prose-h2:mt-14 prose-h2:border-l-[3px] prose-h2:border-indigo-400/70 prose-h2:pl-4 prose-h2:text-2xl prose-h2:leading-snug prose-h3:mt-10 prose-h3:text-xl prose-h3:text-[#e6e8ee] prose-p:leading-[1.9] prose-p:text-[#e6e8ee]/90 prose-a:text-indigo-300 prose-a:decoration-indigo-400/40 prose-a:underline-offset-4 hover:prose-a:decoration-indigo-300 prose-blockquote:rounded-r-xl prose-blockquote:border-l-indigo-400/60 prose-blockquote:bg-indigo-500/[0.04] prose-blockquote:py-2 prose-blockquote:pr-4 prose-blockquote:text-[#e6e8ee]/80 prose-strong:font-semibold prose-strong:text-[#e6e8ee] prose-code:rounded-md prose-code:bg-white/[0.06] prose-code:px-1.5 prose-code:py-0.5 prose-code:text-indigo-200 prose-code:before:content-none prose-code:after:content-none prose-li:my-1 prose-li:leading-[1.85] prose-li:text-[#e6e8ee]/90"
-        dangerouslySetInnerHTML={{ __html: article.contentHtml }}
-      />
+      {/* 本文 (remark 変換済み HTML) — インライン CTA を第2 h2 直後に挿入 (REQ-P2-03) */}
+      {(() => {
+        const proseClass =
+          "prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-[#e6e8ee] prose-h2:mb-5 prose-h2:mt-14 prose-h2:border-l-[3px] prose-h2:border-indigo-400/70 prose-h2:pl-4 prose-h2:text-2xl prose-h2:leading-snug prose-h3:mt-10 prose-h3:text-xl prose-h3:text-[#e6e8ee] prose-p:leading-[1.9] prose-p:text-[#e6e8ee]/90 prose-a:text-indigo-300 prose-a:decoration-indigo-400/40 prose-a:underline-offset-4 hover:prose-a:decoration-indigo-300 prose-blockquote:rounded-r-xl prose-blockquote:border-l-indigo-400/60 prose-blockquote:bg-indigo-500/[0.04] prose-blockquote:py-2 prose-blockquote:pr-4 prose-blockquote:text-[#e6e8ee]/80 prose-strong:font-semibold prose-strong:text-[#e6e8ee] prose-code:rounded-md prose-code:bg-white/[0.06] prose-code:px-1.5 prose-code:py-0.5 prose-code:text-indigo-200 prose-code:before:content-none prose-code:after:content-none prose-li:my-1 prose-li:leading-[1.85] prose-li:text-[#e6e8ee]/90";
+        const [part1, part2] = splitHtmlAtNthH2(article.contentHtml, 2);
+        return (
+          <>
+            <div
+              className={proseClass}
+              dangerouslySetInnerHTML={{ __html: part1 }}
+            />
+            {part2 && <ArticleInlineCta />}
+            {part2 && (
+              <div
+                className={proseClass}
+                dangerouslySetInnerHTML={{ __html: part2 }}
+              />
+            )}
+          </>
+        );
+      })()}
 
       {/* 広告スロット: 記事中間〜末尾 */}
       <AdBanner slot="article-mid" format="rectangle" className="mt-10" />

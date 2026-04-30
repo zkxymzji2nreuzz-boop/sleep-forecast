@@ -6,7 +6,7 @@ publishedAt: "2026-05-01"
 updatedAt: "2026-05-01"
 category: "気象病"
 tags: ["低気圧", "眠れない", "不眠", "気象病", "睡眠対策"]
-relatedSlugs: ["kiatsu-zutsu", "jiritsu-shinkei", "suimin-shitsu-up"]
+relatedSlugs: ["kishoubyou-kanzen-guide", "kiatsu-zutsu", "jiritsu-shinkei", "suimin-shitsu-up"]
 wordCount: 2400
 ---
 

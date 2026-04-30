@@ -7,6 +7,9 @@ import { getAllArticlesMeta } from "@/lib/articles";
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://sleep-forecast.vercel.app";
 
+/** ISR: 24時間ごとに再検証 */
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: "記事一覧",
   description:

@@ -6,7 +6,7 @@ publishedAt: "2026-05-01"
 updatedAt: "2026-05-01"
 category: "気象病"
 tags: ["天気痛", "気象病", "対策", "頭痛", "自律神経", "内耳"]
-relatedSlugs: ["kiatsu-zutsu", "kiatsu-nemurenaie", "jiritsu-shinkei"]
+relatedSlugs: ["kishoubyou-kanzen-guide", "kiatsu-zutsu", "kiatsu-nemurenaie", "jiritsu-shinkei"]
 wordCount: 2500
 ---
 

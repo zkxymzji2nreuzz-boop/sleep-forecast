@@ -12,6 +12,9 @@ type Params = {
   params: { slug: string };
 };
 
+/** ISR: 24時間ごとに再検証（markdown ファイルはデプロイ時に変更） */
+export const revalidate = 86400;
+
 /** 静的生成: ビルド時に全スラッグをプリレンダリング */
 export function generateStaticParams() {
   return getAllArticleSlugs().map((slug) => ({ slug }));
@@ -103,8 +106,9 @@ export default async function ArticlePage({ params }: Params) {
     },
     author: {
       "@type": "Person",
-      name: "SleepForecast 開発チーム",
+      name: "SleepForecast 運営者",
       url: SITE_URL,
+      sameAs: ["https://twitter.com/Sleep_Forecast"],
     },
     publisher: {
       "@type": "Organization",
@@ -117,6 +121,8 @@ export default async function ArticlePage({ params }: Params) {
         height: 60,
       },
     },
+    keywords: article.tags.join(", "),
+    articleSection: article.category,
     url,
     mainEntityOfPage: {
       "@type": "WebPage",

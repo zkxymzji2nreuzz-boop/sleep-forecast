@@ -6,7 +6,7 @@ publishedAt: "2026-05-01"
 updatedAt: "2026-05-01"
 category: "自律神経"
 tags: ["低気圧", "自律神経", "整える", "気象病", "交感神経", "副交感神経"]
-relatedSlugs: ["jiritsu-shinkei", "kiatsu-nemurenaie", "tenkitsuu-taisaku"]
+relatedSlugs: ["kishoubyou-kanzen-guide", "jiritsu-shinkei", "kiatsu-nemurenaie", "tenkitsuu-taisaku"]
 wordCount: 2500
 ---
 

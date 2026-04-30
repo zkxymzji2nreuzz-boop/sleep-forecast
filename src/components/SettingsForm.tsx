@@ -174,6 +174,21 @@ function downloadCsv(csv: string, filename: string) {
   URL.revokeObjectURL(url);
 }
 
+/** JSON をファイルダウンロードさせる (REQ-P2-05) */
+function downloadJson(data: unknown, filename: string) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: "application/json;charset=utf-8;",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 export function SettingsForm() {
   const [mounted, setMounted] = React.useState(false);
   const [prefCode, setPrefCode] = React.useState<string>("13");
@@ -185,6 +200,7 @@ export function SettingsForm() {
   const [geoError, setGeoError] = React.useState<string | null>(null);
   const [geoDetected, setGeoDetected] = React.useState<string | null>(null);
   const [csvExported, setCsvExported] = React.useState(false);
+  const [jsonExported, setJsonExported] = React.useState(false);
 
   // 通知設定
   const [notifSupported, setNotifSupported] = React.useState(false);
@@ -301,6 +317,19 @@ export function SettingsForm() {
     downloadCsv(csv, `sleep_forecast_${dateStr}.csv`);
     setCsvExported(true);
     setTimeout(() => setCsvExported(false), 3000);
+  }
+
+  // ── JSON エクスポート (REQ-P2-05) ──
+  function handleExportJson() {
+    const records = getRecords();
+    if (records.length === 0) return;
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    downloadJson(
+      { exportedAt: new Date().toISOString(), records },
+      `sleep_forecast_${dateStr}.json`
+    );
+    setJsonExported(true);
+    setTimeout(() => setJsonExported(false), 3000);
   }
 
   // ── 全記録削除 ──
@@ -443,6 +472,24 @@ export function SettingsForm() {
               <>
                 <Download className="h-4 w-4" aria-hidden="true" />
                 CSVでダウンロード
+              </>
+            )}
+          </button>
+
+          <button
+            onClick={handleExportJson}
+            disabled={recordCount === 0}
+            className="inline-flex items-center gap-2 rounded-full border border-indigo-400/40 px-5 py-2.5 text-sm font-medium text-indigo-300 transition-colors hover:border-indigo-400/70 hover:text-indigo-200 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {jsonExported ? (
+              <>
+                <Check className="h-4 w-4" aria-hidden="true" />
+                ダウンロード完了
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4" aria-hidden="true" />
+                JSONでダウンロード
               </>
             )}
           </button>
