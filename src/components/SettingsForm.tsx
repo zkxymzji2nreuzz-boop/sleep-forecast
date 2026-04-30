@@ -10,7 +10,12 @@
  */
 
 import * as React from "react";
-import { Settings, MapPin, Trash2, Check, ChevronDown, LocateFixed, Loader2, Download, Bell, BellOff, BellRing } from "lucide-react";
+import { Settings, MapPin, Trash2, Check, ChevronDown, LocateFixed, Loader2, Download, Bell, BellOff, BellRing, Cookie } from "lucide-react";
+import {
+  COOKIE_CONSENT_KEY,
+  setCookieConsent,
+  type CookieConsentValue,
+} from "@/components/CookieConsent";
 import { PREFECTURES, findNearestPrefecture } from "@/lib/prefectures";
 import {
   getDefaultPrefectureCode,
@@ -584,6 +589,9 @@ export function SettingsForm() {
         </dl>
       </section>
 
+      {/* ── セクション: Cookie 設定 ── */}
+      <CookieSettingsSection />
+
       {/* 削除確認ダイアログ */}
       <DeleteConfirmDialog
         open={deleteOpen}
@@ -592,5 +600,87 @@ export function SettingsForm() {
         onConfirm={handleDeleteConfirm}
       />
     </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Cookie 設定セクション（独立 Client Component）
+// ─────────────────────────────────────────────────────────────────────────────
+
+function CookieSettingsSection() {
+  const [consent, setConsent] = React.useState<CookieConsentValue | null>(null);
+  const [saved, setSaved] = React.useState(false);
+
+  React.useEffect(() => {
+    const stored = localStorage.getItem(COOKIE_CONSENT_KEY) as CookieConsentValue | null;
+    if (stored === "accepted" || stored === "rejected") setConsent(stored);
+  }, []);
+
+  function handleChange(value: CookieConsentValue) {
+    setCookieConsent(value);
+    setConsent(value);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
+  }
+
+  return (
+    <section
+      aria-labelledby="settings-cookie-heading"
+      className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6"
+    >
+      <h2
+        id="settings-cookie-heading"
+        className="mb-4 flex items-center gap-2 border-l-[3px] border-indigo-400/70 pl-4 text-base font-bold text-[#e6e8ee] leading-snug"
+      >
+        <Cookie className="h-4 w-4 text-indigo-300/70" aria-hidden="true" />
+        Cookie 設定
+      </h2>
+      <p className="mb-4 text-sm text-[#9ba3b5]">
+        Google Analytics（アクセス解析）の Cookie 使用に関する同意設定を変更できます。
+        拒否しても、すべての機能は通常どおりご利用いただけます。
+      </p>
+
+      {/* 現在の状態 */}
+      {consent && (
+        <p className="mb-3 text-xs text-[#9ba3b5]">
+          現在の設定:{" "}
+          <span className={consent === "accepted" ? "font-semibold text-emerald-400" : "font-semibold text-[#e6e8ee]/60"}>
+            {consent === "accepted" ? "同意済み" : "拒否"}
+          </span>
+        </p>
+      )}
+      {consent === null && (
+        <p className="mb-3 text-xs text-amber-400/80">
+          まだ選択されていません。
+        </p>
+      )}
+
+      {/* ボタン */}
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={() => handleChange("accepted")}
+          disabled={consent === "accepted"}
+          className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500 px-4 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-indigo-400 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300"
+        >
+          同意する
+        </button>
+        <button
+          type="button"
+          onClick={() => handleChange("rejected")}
+          disabled={consent === "rejected"}
+          className="inline-flex items-center gap-1.5 rounded-full border border-white/20 px-4 py-1.5 text-xs font-medium text-[#9ba3b5] transition-colors hover:border-white/40 hover:text-[#e6e8ee] disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+        >
+          拒否する
+        </button>
+      </div>
+
+      {saved && (
+        <p className="mt-2 flex items-center gap-1 text-xs text-emerald-400">
+          <Check className="h-3.5 w-3.5" aria-hidden="true" />
+          保存しました
+        </p>
+      )}
+    </section>
   );
 }

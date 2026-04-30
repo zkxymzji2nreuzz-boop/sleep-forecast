@@ -7,6 +7,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { NotificationChecker } from "@/components/NotificationChecker";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import { CookieConsent } from "@/components/CookieConsent";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/react";
 
@@ -98,6 +99,7 @@ export default function RootLayout({
         <BottomNav />
         <PwaInstallPrompt />
         <NotificationChecker />
+        <CookieConsent />
         <GoogleAnalytics />
         <Toaster />
         <Analytics />
