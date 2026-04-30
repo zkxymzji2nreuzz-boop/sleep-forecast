@@ -240,8 +240,14 @@ function isToday(dateStr: string): boolean {
 
 ### N-03: 記事投稿後の CTA ナビゲーション改善
 
-**ファイル**: `src/components/RecordForm.tsx`（推定）  
-**問題**: 記録完了後のナビゲーションが弱い。ダッシュボードへの誘導や「次の気圧変化まで〇時間」を表示するとリテンションが向上する。
+**ファイル**: `src/components/RecordForm.tsx`  
+**問題**: 記録完了後のナビゲーションが弱い。ダッシュボードへの誘導や「次の気圧変化まで〇時間」を表示するとリテンションが向上する。  
+**実装内容**:
+- 記録数 ≥ 7 のユーザー: ダッシュボードボタンをプライマリ（上）に昇格、ホームをセカンダリ（下）に
+- 記録数 < 7 のユーザー: 従来通りホームがプライマリ
+- 気圧急落日（pressureDeltaHpa ≤ −3）かつ記録数 ≥ 7: ダッシュボード誘導 nudge カードを表示
+
+> 完了日: 2026-05-01 / コミット: `79ff90f` / Vercel デプロイ: 本番反映済み
 
 ---
 
@@ -281,16 +287,198 @@ function isToday(dateStr: string): boolean {
 
 ### Phase B（ユーザー確認後）
 
-- I-06: コントラスト比修正（デザイン判断が必要）
-- C-04: ホームページ JSON-LD SSR化（リファクタ規模が大きい）
+- ✅ I-06: コントラスト比修正 → `.dark` `--muted-foreground: 218 13% 60%` を `65%` に変更（WCAG AA クリア）
+- ✅ C-04: ホームページ JSON-LD SSR化 → `page.tsx` を Server Component 化、クライアントロジックを `HomeClient.tsx` に分離済み
+
+> 完了日: 2026-05-01 / コミット: `2a6f5cc` / Vercel デプロイ: 本番反映済み
 
 ---
 
 ## 品質チェックリスト
 
-- [ ] TypeScript エラーなし (`npx tsc --noEmit`)
-- [ ] Vercel ビルド成功
-- [ ] Chrome 実機：全ページ確認
-- [ ] Google Rich Results Test で Article 構造化データ検証
-- [ ] 設定変更 → WeatherWidget 更新を実機確認
-- [ ] 新規ユーザー状態（localStorage クリア）で二重バナーなしを確認
+- [x] TypeScript エラーなし (`npx tsc --noEmit`)
+- [x] Vercel ビルド成功（1m 14s、Ready）
+- [x] Chrome 実機：全ページ確認（2026-05-01 確認済み）
+- [x] Google Rich Results Test で Article 構造化データ検証（警告ゼロ達成）
+- [x] 設定変更 → WeatherWidget 更新を実機確認（CustomEvent 動作確認済み）
+- [x] 新規ユーザー状態（localStorage クリア）で二重バナーなしを確認
+
+> **追加修正（2026-05-01）**: Article JSON-LD の `datePublished`/`dateModified` を ISO 8601 フル形式（`YYYY-MM-DDT00:00:00+09:00`）に変換。Google Rich Results Test の「日時値が無効」「タイムゾーンなし」4件の警告をゼロに。コミット: `64bc92f` / Vercel: 本番反映済み（45s ビルド）
+
+> **N-03 完了（2026-05-01）**: RecordForm.tsx の記録後 CTA を記録数に応じて動的切り替え（7件未満→ホーム優先 / 7件以上→ダッシュボード優先）。気圧急落日の nudge カードも追加。コミット: `79ff90f` / Vercel: 本番反映済み
+
+---
+
+## デッドコード整理（2026-05-01）
+
+### 背景
+
+「何度も改修してきた中で不要になったコードを全体的に整理してほしい」という依頼に対し、grep ベースでインポート参照を全走査して未使用コードを特定・削除した。
+
+---
+
+### 削除内容
+
+#### 1. `src/lib/demoData.ts` を削除（コミット: `f9c0965`）
+
+**削除理由**: ダッシュボードに記録0〜9件のとき「サンプルデータ表示中」バナーとともにデモデータを描画する機能（F003）として実装されたが、当該機能はその後の改修で削除済み。`DEMO_RECORDS` 配列・`isDemoRecord()` 関数ともに、プロジェクト全体で一切インポートされていないことを grep で確認。
+
+**削除内容**: 138行（30件の固定デモレコード配列 + `isDemoRecord()` 関数）
+
+---
+
+#### 2. `src/components/ComingSoon.tsx` を削除（コミット: `d92236a`）
+
+**削除理由**: F001（初期スケルトン実装）フェーズで作成した「準備中」表示コンポーネント。F002以降で各ページが実装されたため不要に。プロジェクト全体で一切インポートされていないことを grep で確認。
+
+**削除内容**: 49行（`ComingSoon` コンポーネント）
+
+---
+
+#### 3. `WeatherWidget.tsx` の重複関数 `getTodayJST()` を削除（コミット: `62c1cfe` → `61125b5` で修正）
+
+**削除理由**: `storage.ts` に `formatDateJst(date: Date): string` が正規実装として存在するにもかかわらず、WeatherWidget.tsx 内に同一ロジックの `getTodayJST(): string` が独立して定義されていた（DRY 違反、I-02）。`checkTonightPressureDrop` / `PressureAlertBanner` 内の4箇所の呼び出しを `formatDateJst(new Date())` に統一。
+
+**詳細は下記「ビルドエラーの記録と教訓」を参照。**
+
+---
+
+## ビルドエラーの記録と教訓（2026-05-01）
+
+### 発生経緯
+
+GitHub のウェブエディタ（CodeMirror 6）を JavaScript の `replaceAll()` で操作し、`getTodayJST()` → `formatDateJst(new Date())` を一括置換した際、**関数の呼び出し箇所だけでなく関数定義の名前部分まで置換**されてしまった。
+
+**誤った結果（コミット `62c1cfe`）**:
+```typescript
+// 意図: この関数ブロックを丸ごと削除したかった
+// 実際: 関数名だけが書き換えられ、無効な TypeScript になった
+function formatDateJst(new Date()): string {  // ← 不正な構文！
+  const d = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
+  return `${d.getFullYear()}-...`;
+}
+```
+
+**影響**: コミット `62c1cfe`・`f9c0965`・`d92236a` の計3件が連続してVercelビルドエラー（13〜15秒で即失敗）。
+
+### 原因
+
+`replaceAll('getTodayJST()', 'formatDateJst(new Date())')` は文字列の単純置換であり、コンテキスト（定義 vs 呼び出し）を区別しない。`getTodayJST(` という文字列が関数定義の `function getTodayJST(` 内にも存在するため、そちらも置換された。
+
+### 修正方法（コミット: `61125b5`）
+
+GitHub エディタの CM6 ビューに対して `view.dispatch({ changes: { from, to, insert: '' } })` で無効な関数ブロック全体（コメント行含む5行、18423〜18709文字目）を直接削除。
+
+**CM6 ビューの取得方法（GitHub エディタ専用）**:
+```javascript
+const contentEl = document.querySelector('.cm-content[contenteditable]');
+const view = contentEl?.cmTile?.view;  // cmTile.view が EditorView
+// view.dispatch({ changes: { from, to, insert: '' } }) で編集可能
+```
+
+### 教訓・次回への注意事項
+
+| 場面 | 推奨アプローチ |
+|------|--------------|
+| 関数定義の削除 | `replaceAll` は使わず、`from`/`to` 位置を直接指定して削除する |
+| 関数呼び出しの置換 | `replaceAll` で対応可（定義部と呼び出し部でパターンが異なることを事前確認） |
+| 大きなリファクタリング | コミット前にプレビューして確認するか、ローカルで `tsc --noEmit` を実行する |
+| GitHub ウェブエディタの制限 | エラー時にビルドログが iframe 内に格納されていて取得困難。Vercel デプロイ URL は `/deployments/{fullId}` 形式（短縮IDでは404） |
+
+---
+
+## 本番全ページ確認（2026-05-01 デッドコード整理後）
+
+コミット `61125b5` 反映後、Vercel デプロイ `BmJwQw9ja`（Ready / 48s）で以下を確認。
+
+| ページ | タイトル | 状態 |
+|-------|---------|------|
+| `/` | SleepForecast — 気象病・低気圧から、明日の眠りを予報する | ✅ WeatherWidget・天気データ・気圧グラフ正常 |
+| `/record` | 記録 | ✅ 今日の気象サマリー・スリープフォーム正常 |
+| `/dashboard` | 睡眠ダッシュボード | ✅ 空状態UI正常 |
+| `/settings` | 設定 | ✅ 都道府県セレクタ・データ管理正常 |
+| `/articles` | 記事一覧 | ✅ 全記事表示正常 |
+| `/articles/tsuyu-choushi-warui` | 梅雨の体調不良… | ✅ 記事本文・目次・CTA正常 |
+
+---
+
+## セキュリティ審査・対処記録（2026-05-01）
+
+4エージェント並列 + 直接ファイル検査による包括的セキュリティ審査を実施。
+
+### 審査結果一覧
+
+| 検査項目 | 結果 | リスク | 対応 |
+|---------|------|--------|------|
+| ハードコードされたシークレット（src/全体） | 発見なし | ✅ None | — |
+| NEXT_PUBLIC_ 変数の公開範囲 | 全て意図的公開（Supabase RLSで保護） | ✅ None | — |
+| XSS ベクター（innerHTML/eval等） | 使用なし | ✅ None | — |
+| dangerouslySetInnerHTML | ビルド時生成のMarkdownのみ・XSS不可 | ✅ None | — |
+| Supabase RLS | 全テーブル・全操作（SELECT/INSERT/UPDATE/DELETE）をカバー | ✅ None | — |
+| API 入力バリデーション | lat/lon 型チェック・範囲チェック（±90/±180）完備 | ✅ None | — |
+| SQL インジェクション | Supabase SDK のパラメータ化クエリで保護 | ✅ None | — |
+| セキュリティヘッダー | HSTS・CSP・X-Frame-Options等 完備 | ✅ None | — |
+| 依存ライブラリ既知脆弱性 | 発見なし | ✅ None | — |
+| public/ ディレクトリ | 機密情報なし | ✅ None | — |
+| .env.local.txt の gitignore 漏れ | Supabase キーを含むファイルが対象外だった | ⚠️ Medium | 🔧 修正済み |
+| HSTS ヘッダー欠落 | next.config.mjs に未設定 | ⚠️ Low | 🔧 修正済み |
+| エラーレスポンスへの内部情報漏洩 | /api/weather の catch で detail フィールドを返却 | ⚠️ Medium | 🔧 修正済み |
+| レートリミット未実装 | /api/weather に連続リクエスト制限なし | ⚠️ Low | 将来対応 |
+| Formspree ID 未設定 | NEXT_PUBLIC_FORMSPREE_ID 未設定でフォーム機能不全 | — | 機能バグ（要設定） |
+
+### 修正内容詳細
+
+#### ① `.env.local.txt` を `.gitignore` に追加
+
+**ファイル**: `.gitignore`  
+Supabase の URL と Anon Key を含む `.env.local.txt` が `.gitignore` の `.env*.local` パターンに一致せず、誤コミットのリスクがあった。明示的に追加して保護。
+
+```
+# local env files
+.env.local
+.env*.local
+.env.local.txt   ← 追加
+```
+
+#### ② HSTS ヘッダー（`Strict-Transport-Security`）を追加
+
+**ファイル**: `next.config.mjs`  
+Vercel は自動で HTTPS を強制するが、ブラウザ側でも HTTP→HTTPS 中間者攻撃を防ぐためヘッダーを追加。
+
+```javascript
+{
+  key: "Strict-Transport-Security",
+  value: "max-age=31536000; includeSubDomains",
+}
+```
+
+#### ③ API エラーレスポンスの内部情報漏洩を修正
+
+**ファイル**: `src/app/api/weather/route.ts`（3箇所）  
+`catch` ブロックで `detail: (err as Error).message` をクライアントへ返していた。ネットワークエラー詳細（接続先 URL 等）が外部に漏れる可能性があったため、サーバーログ（`console.error`）にのみ出力し、クライアントへは汎用メッセージのみ返すよう修正。
+
+```typescript
+// 修正前
+return Response.json({ error: "...", detail: (err as Error).message }, { status: 502 });
+
+// 修正後
+console.error("[api/weather]", err);
+return Response.json({ error: "気象データの取得に失敗しました" }, { status: 502 });
+```
+
+### Supabase セキュリティ設計メモ
+
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` は**意図的に公開するキー**であり、これが漏れてもセキュリティ上の問題はない。セキュリティは Supabase の RLS（Row Level Security）で担保されており、すべての DB 操作が `auth.uid() = user_id` でユーザー自身のデータのみにアクセスを制限している。
+
+```sql
+-- sleep_logs・user_settings 両テーブルに適用済み
+CREATE POLICY "select_own_sleep_logs" ON public.sleep_logs
+  FOR SELECT USING (auth.uid() = user_id);
+-- INSERT / UPDATE / DELETE も同様
+```
+
+### 今後の改善候補（優先度低）
+
+- **レートリミット**: `/api/weather` に IP ベースの制限追加（Upstash Redis 等）。Vercel Functions の呼び出し上限が気になってきたタイミングで対応。
+- **CSP の nonce 化**: 現在 `unsafe-inline`/`unsafe-eval` が必要（Next.js + Tailwind の制約）。Next.js 側が対応したタイミングで nonce ベースCSPへ移行を検討。
+- **Formspree 設定**: お問い合わせフォームを使いたい場合は Formspree でフォームを作成し `NEXT_PUBLIC_FORMSPREE_ID=xxxx` を `.env.local` と Vercel 環境変数の両方に設定する。

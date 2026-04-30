@@ -65,6 +65,12 @@ const withPWA = withPWAInit({
 /** セキュリティヘッダー定義 */
 const securityHeaders = [
   {
+    // HTTPS 強制（HSTS）: 1年間 HTTPS のみ許可。Vercel が HTTPS を強制するため
+    // max-age は最低 6 か月（推奨 1 年）。includeSubDomains は全サブドメインに適用。
+    key: "Strict-Transport-Security",
+    value: "max-age=31536000; includeSubDomains",
+  },
+  {
     // クリックジャッキング防止
     key: "X-Frame-Options",
     value: "DENY",

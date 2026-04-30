@@ -135,11 +135,10 @@ async function handleFullMode(lat: number, lon: number): Promise<Response> {
       } catch { /* ignore */ }
     }
   } catch (err) {
+    // 内部エラー詳細はサーバーログのみに出力し、クライアントには返さない
+    console.error("[api/weather full]", err);
     return Response.json(
-      {
-        error: "気象データの取得に失敗しました",
-        detail: (err as Error).message,
-      },
+      { error: "気象データの取得に失敗しました" },
       { status: 502 }
     );
   }
@@ -263,11 +262,10 @@ export async function GET(request: Request): Promise<Response> {
       next: { revalidate: 600 },
     });
   } catch (err) {
+    // 内部エラー詳細はサーバーログのみに出力し、クライアントには返さない
+    console.error("[api/weather]", err);
     return Response.json(
-      {
-        error: "気象データの取得に失敗しました",
-        detail: (err as Error).message,
-      },
+      { error: "気象データの取得に失敗しました" },
       { status: 502 }
     );
   }
@@ -283,11 +281,10 @@ export async function GET(request: Request): Promise<Response> {
   try {
     json = (await upstreamRes.json()) as OpenMeteoResponse;
   } catch (err) {
+    // 内部エラー詳細はサーバーログのみに出力し、クライアントには返さない
+    console.error("[api/weather] JSON parse error", err);
     return Response.json(
-      {
-        error: "Open-Meteo のレスポンスを解釈できませんでした",
-        detail: (err as Error).message,
-      },
+      { error: "Open-Meteo のレスポンスを解釈できませんでした" },
       { status: 502 }
     );
   }
