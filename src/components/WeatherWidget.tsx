@@ -15,6 +15,7 @@
  */
 
 import * as React from "react";
+import { PersonalPressureInsight } from "@/components/PersonalPressureInsight";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -1303,6 +1304,9 @@ export function WeatherWidget() {
           hourlyPressureValues={data.hourlyPressure.values}
         />
       )}
+
+      {/* ── ②.6 気圧急落パーソナルアラート（個人データ相関） ── */}
+      <PersonalPressureInsight currentDelta={data.current.pressureDeltaHpa} />
 
       <div className="mx-4 border-t border-white/5" />
 
