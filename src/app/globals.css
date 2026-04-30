@@ -58,7 +58,7 @@
     --secondary: 223 20% 20%;
     --secondary-foreground: 225 18% 91%;
     --muted: 223 20% 22%;
-    --muted-foreground: 218 13% 60%;
+    --muted-foreground: 218 13% 65%; /* #9aa0b2 — contrast ratio ≥4.5:1 on #0f1117 */
     --accent: 239 84% 67%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 72% 51%;
