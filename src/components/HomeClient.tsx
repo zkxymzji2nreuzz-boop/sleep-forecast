@@ -94,6 +94,7 @@ export function HomeClient() {
   const [email, setEmail] = useState<string>("");
   const [currentPressure, setCurrentPressure] = useState<number | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [pressureChecks, setPressureChecks] = useState<boolean[]>([false, false, false]);
 
   useEffect(() => {
     const loadPrediction = async () => {
@@ -250,33 +251,54 @@ export function HomeClient() {
             id="pressure-check-heading"
             className="mb-3 text-sm font-bold text-[#e6e8ee]"
           >
-            🌀 あなたは気圧に敏感？ — 3つのチェック
+            🌀 あなたの気圧感受度を確認しよう
           </h2>
-          <ul className="mb-4 space-y-2 text-sm text-[#a8b0c2]">
-            <li className="flex items-start gap-2">
-              <span className="mt-0.5 text-indigo-400" aria-hidden="true">✓</span>
-              雨の前日や台風が近づくと、頭痛やだるさを感じる
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="mt-0.5 text-indigo-400" aria-hidden="true">✓</span>
-              天気が悪い日は睡眠が浅くなる・寝つきが悪いと感じる
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="mt-0.5 text-indigo-400" aria-hidden="true">✓</span>
-              「天気のせいかも？」と思うことが月に2回以上ある
-            </li>
-          </ul>
-          <p className="mb-4 text-xs leading-relaxed text-[#a8b0c2]">
-            1つでも当てはまる方は、気圧変化が睡眠に影響している可能性があります。
-            毎朝15秒の記録で、あなただけのパターンを確かめましょう。
-          </p>
-          <Link
-            href="/record"
-            className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-400"
-          >
-            <Activity className="h-4 w-4" aria-hidden="true" />
-            記録して確かめる
-          </Link>
+          <fieldset className="mb-4 space-y-3 border-0 p-0">
+            <legend className="sr-only">気圧感受度チェックリスト</legend>
+            {[
+              "雨の前日や台風が近づくと、頭痛やだるさを感じる",
+              "天気が悪い日は睡眠が浅くなる・寝つきが悪いと感じる",
+              "「天気のせいかも？」と思うことが月に2回以上ある",
+            ].map((item, i) => (
+              <label
+                key={i}
+                className="flex cursor-pointer items-start gap-3 text-sm text-[#a8b0c2]"
+              >
+                <input
+                  type="checkbox"
+                  checked={pressureChecks[i]}
+                  onChange={() => {
+                    const next = [...pressureChecks];
+                    next[i] = !next[i];
+                    setPressureChecks(next);
+                  }}
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-indigo-400"
+                  aria-label={item}
+                />
+                <span>{item}</span>
+              </label>
+            ))}
+          </fieldset>
+          {pressureChecks.some(Boolean) && (
+            <p className="mb-4 rounded-xl border border-indigo-400/20 bg-indigo-500/10 px-4 py-2.5 text-xs leading-relaxed text-indigo-200">
+              当てはまる項目があります。設定で気圧感受度を入力すると、より精度の高い睡眠予測が可能になります。
+            </p>
+          )}
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/settings"
+              className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-400"
+            >
+              設定で詳しく入力する
+            </Link>
+            <Link
+              href="/record"
+              className="inline-flex items-center gap-1.5 rounded-full border border-indigo-400/40 px-5 py-2.5 text-sm font-medium text-indigo-300 transition-colors hover:border-indigo-400/70"
+            >
+              <Activity className="h-4 w-4" aria-hidden="true" />
+              まず記録を始める
+            </Link>
+          </div>
         </section>
       )}
 
