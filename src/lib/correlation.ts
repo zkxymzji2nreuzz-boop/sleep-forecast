@@ -183,6 +183,7 @@ export function calculateStats(records: SleepRecord[]): DashboardStats {
       recordCountThisMonth: 0,
       longestStreak: 0,
       worstDay: null,
+      pressureSensitivity: null,
     };
   }
 
