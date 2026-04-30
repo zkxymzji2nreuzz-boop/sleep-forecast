@@ -58,6 +58,7 @@ import { Breadcrumb } from "@/components/Breadcrumb";
 import { CorrelationChart } from "@/components/CorrelationChart";
 import { OnboardingProgress } from "@/components/OnboardingProgress";
 import { AchievementsSection } from "@/components/AchievementsSection";
+import { MonthlySummaryReport } from "@/components/MonthlySummaryReport";
 import { PredictionCard } from "@/components/PredictionCard";
 import { Button } from "@/components/ui/button";
 import {
@@ -661,8 +662,13 @@ export default function DashboardPage() {
 
       {/* ── ⑦ 下部記録促進バナーは OnboardingProgress に統合済み ── */}
 
-      {/* ── ⑧ 実績バッジ ── */}
+      {/* ── ⑧ 月次サマリーレポート ── */}
       <div className="mt-8">
+        <MonthlySummaryReport records={records} />
+      </div>
+
+      {/* ── ⑨ 実績バッジ ── */}
+      <div className="mt-6">
         <AchievementsSection records={records} />
       </div>
 
