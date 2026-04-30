@@ -10,7 +10,7 @@
  */
 
 import { useMemo, useState } from "react";
-import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Share2 } from "lucide-react";
 import type { SleepRecord } from "@/lib/types";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -158,6 +158,42 @@ function formatDate(dateStr: string): string {
   return `${parseInt(m)}/${parseInt(d)}`;
 }
 
+/** 月次サマリーの X シェアテキストを生成 */
+function buildShareText(summary: MonthlySummary): string {
+  const ym = formatYearMonth(summary.yearMonth);
+  const qualityEmoji =
+    summary.avgQuality >= 4.5 ? "😴✨" :
+    summary.avgQuality >= 3.5 ? "😊" :
+    summary.avgQuality >= 2.5 ? "😐" : "😪";
+  const lines = [
+    `【${ym} 睡眠レポート】${qualityEmoji}`,
+    `📊 記録日数: ${summary.totalRecords}日 | 平均品質: ${summary.avgQuality.toFixed(1)}/5.0`,
+  ];
+  if (summary.longestStreak >= 3) {
+    lines.push(`🔥 最長連続: ${summary.longestStreak}日`);
+  }
+  if (summary.pressureDropCount > 0) {
+    lines.push(`🌀 気圧急落日: ${summary.pressureDropCount}日`);
+  }
+  lines.push("#気象病 #低気圧 #睡眠記録");
+  lines.push("https://sleep-forecast.vercel.app");
+  return lines.join("\n");
+}
+
+async function shareMonthly(summary: MonthlySummary) {
+  const text = buildShareText(summary);
+  if (navigator.share) {
+    try {
+      await navigator.share({ text });
+      return;
+    } catch {
+      // キャンセル等 → fallback
+    }
+  }
+  const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // UI
 // ─────────────────────────────────────────────────────────────────────────────
@@ -193,7 +229,7 @@ export function MonthlySummaryReport({ records }: MonthlySummaryReportProps) {
           <CalendarDays className="h-4 w-4 text-indigo-400" aria-hidden="true" />
           <h2 className="text-sm font-bold text-[#e6e8ee]">月次サマリー</h2>
         </div>
-        {/* 月ナビ */}
+        {/* 月ナビ + シェアボタン */}
         <div className="flex items-center gap-1">
           <button
             onClick={() => setSelectedIdx((i) => Math.min(i + 1, availableMonths.length - 1))}
@@ -214,6 +250,16 @@ export function MonthlySummaryReport({ records }: MonthlySummaryReportProps) {
           >
             <ChevronRight className="h-4 w-4" />
           </button>
+          {summary.totalRecords > 0 && (
+            <button
+              onClick={() => shareMonthly(summary)}
+              className="ml-1 p-1.5 rounded-full text-[#9ba3b5] hover:text-indigo-300 hover:bg-indigo-500/10 transition-colors"
+              aria-label="X（Twitter）でシェア"
+              title="Xでシェア"
+            >
+              <Share2 className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
       </div>
 

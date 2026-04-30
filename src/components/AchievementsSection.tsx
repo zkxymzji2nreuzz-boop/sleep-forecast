@@ -12,7 +12,7 @@
  */
 
 import { useState } from "react";
-import { Trophy } from "lucide-react";
+import { Trophy, Share2 } from "lucide-react";
 import { calcBadgeStatuses, type BadgeCategory, type BadgeStatus } from "@/lib/achievements";
 import type { SleepRecord } from "@/lib/types";
 
@@ -100,6 +100,32 @@ function BadgeCard({ status }: BadgeCardProps) {
   );
 }
 
+async function shareAchievements(earnedCount: number, statuses: ReturnType<typeof calcBadgeStatuses>) {
+  const earnedBadges = statuses.filter((s) => s.earned).slice(0, 3);
+  const badgeEmojis = earnedBadges.map((s) => s.badge.emoji).join(" ");
+  const text = [
+    `SleepForecastで${earnedCount}個のバッジを獲得しました！ 🏆`,
+    badgeEmojis ? `最近の実績: ${badgeEmojis}` : "",
+    "気象と睡眠の相関を記録して、自分だけの予報を作ろう。",
+    "#気象病 #低気圧 #睡眠記録",
+    "https://sleep-forecast.vercel.app",
+  ].filter(Boolean).join("\n");
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ text });
+      return;
+    } catch {
+      // キャンセル → fallback
+    }
+  }
+  window.open(
+    `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`,
+    "_blank",
+    "noopener,noreferrer"
+  );
+}
+
 interface AchievementsSectionProps {
   records: SleepRecord[];
 }
@@ -164,11 +190,21 @@ export function AchievementsSection({ records }: AchievementsSectionProps) {
         </div>
       )}
 
-      {/* 記録ゼロ以外で達成バッジあり: 簡易サマリー */}
+      {/* 達成バッジあり: サマリー + シェアボタン */}
       {earnedCount > 0 && records.length > 0 && (
-        <p className="mt-3 text-[11px] text-[#9ba3b5] text-center leading-relaxed">
-          {earnedCount}個のバッジを獲得中。記録を続けてさらに解放しましょう！
-        </p>
+        <div className="mt-3 flex items-center justify-between">
+          <p className="text-[11px] text-[#9ba3b5] leading-relaxed">
+            {earnedCount}個のバッジを獲得中。記録を続けてさらに解放しましょう！
+          </p>
+          <button
+            onClick={() => shareAchievements(earnedCount, statuses)}
+            className="ml-2 flex-shrink-0 flex items-center gap-1 text-[11px] text-[#9ba3b5] hover:text-indigo-300 hover:bg-indigo-500/10 px-2 py-1 rounded-full transition-colors"
+            aria-label="X（Twitter）でシェア"
+          >
+            <Share2 className="h-3 w-3" />
+            <span>シェア</span>
+          </button>
+        </div>
       )}
     </div>
   );

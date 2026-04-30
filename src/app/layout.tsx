@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BottomNav } from "@/components/BottomNav";
 import { NotificationChecker } from "@/components/NotificationChecker";
+import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/react";
@@ -95,6 +96,7 @@ export default function RootLayout({
           <Footer />
         </div>
         <BottomNav />
+        <PwaInstallPrompt />
         <NotificationChecker />
         <GoogleAnalytics />
         <Toaster />
