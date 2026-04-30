@@ -10,7 +10,7 @@
  */
 
 import * as React from "react";
-import { Settings, MapPin, Trash2, Check, ChevronDown, LocateFixed, Loader2, Download } from "lucide-react";
+import { Settings, MapPin, Trash2, Check, ChevronDown, LocateFixed, Loader2, Download, Bell, BellOff, BellRing } from "lucide-react";
 import { PREFECTURES, findNearestPrefecture } from "@/lib/prefectures";
 import {
   getDefaultPrefectureCode,
@@ -18,6 +18,16 @@ import {
   clearAllRecords,
   getRecords,
 } from "@/lib/storage";
+import {
+  getNotificationEnabled,
+  getNotificationPermission,
+  getNotificationTime,
+  isNotificationSupported,
+  requestNotificationPermission,
+  setNotificationEnabled,
+  setNotificationTime,
+  showTestNotification,
+} from "@/lib/notifications";
 import type { SleepRecord } from "@/lib/types";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -170,11 +180,24 @@ export function SettingsForm() {
   const [geoDetected, setGeoDetected] = React.useState<string | null>(null);
   const [csvExported, setCsvExported] = React.useState(false);
 
+  // 通知設定
+  const [notifSupported, setNotifSupported] = React.useState(false);
+  const [notifPermission, setNotifPermission] = React.useState<string>("default");
+  const [notifEnabled, setNotifEnabled] = React.useState(false);
+  const [notifTime, setNotifTime] = React.useState("08:00");
+  const [notifTestSent, setNotifTestSent] = React.useState(false);
+  const [notifTimeSaved, setNotifTimeSaved] = React.useState(false);
+
   // マウント後に localStorage を読み込む
   React.useEffect(() => {
     const code = getDefaultPrefectureCode() ?? "13";
     setPrefCode(code);
     setRecordCount(getRecords().length);
+    // 通知設定を読み込む
+    setNotifSupported(isNotificationSupported());
+    setNotifPermission(getNotificationPermission());
+    setNotifEnabled(getNotificationEnabled());
+    setNotifTime(getNotificationTime());
     setMounted(true);
   }, []);
 
@@ -220,6 +243,36 @@ export function SettingsForm() {
       },
       { timeout: 10000, maximumAge: 300000 }
     );
+  }
+
+  // ── 通知権限リクエスト ──
+  async function handleRequestPermission() {
+    const perm = await requestNotificationPermission();
+    setNotifPermission(perm);
+    if (perm === "granted") {
+      setNotifEnabled(true);
+      setNotificationEnabled(true);
+    }
+  }
+
+  // ── 通知 ON/OFF トグル ──
+  function handleToggleNotif(enabled: boolean) {
+    setNotifEnabled(enabled);
+    setNotificationEnabled(enabled);
+  }
+
+  // ── リマインダー時刻の保存 ──
+  function handleSaveNotifTime() {
+    setNotificationTime(notifTime);
+    setNotifTimeSaved(true);
+    setTimeout(() => setNotifTimeSaved(false), 2000);
+  }
+
+  // ── テスト通知 ──
+  function handleTestNotif() {
+    showTestNotification();
+    setNotifTestSent(true);
+    setTimeout(() => setNotifTestSent(false), 3000);
   }
 
   // ── CSV エクスポート ──
@@ -392,7 +445,125 @@ export function SettingsForm() {
         </p>
       </section>
 
-      {/* ── セクション3: バージョン情報 ── */}
+      {/* ── セクション3: 通知設定 ── */}
+      {notifSupported && (
+        <section
+          aria-labelledby="settings-notif-heading"
+          className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6"
+        >
+          <h2
+            id="settings-notif-heading"
+            className="mb-4 flex items-center gap-2 border-l-[3px] border-indigo-400/70 pl-4 text-base font-bold text-[#e6e8ee] leading-snug"
+          >
+            <Bell className="h-4 w-4 text-indigo-300/70" aria-hidden="true" />
+            通知設定
+          </h2>
+          <p className="mb-4 text-sm text-[#9ba3b5]">
+            毎日の記録を忘れないよう、リマインダー通知を受け取れます。
+          </p>
+
+          {/* 権限未取得 */}
+          {notifPermission === "default" && (
+            <button
+              onClick={handleRequestPermission}
+              className="mb-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo-500/20 transition-all hover:from-indigo-400 hover:to-purple-400"
+            >
+              <Bell className="h-4 w-4" aria-hidden="true" />
+              通知を許可する
+            </button>
+          )}
+
+          {/* 権限拒否 */}
+          {notifPermission === "denied" && (
+            <div className="mb-4 rounded-xl border border-rose-400/20 bg-rose-500/[0.05] px-4 py-3">
+              <p className="flex items-center gap-1.5 text-xs font-semibold text-rose-400">
+                <BellOff className="h-3.5 w-3.5" aria-hidden="true" />
+                通知がブラウザでブロックされています
+              </p>
+              <p className="mt-1 text-xs text-[#9ba3b5]">
+                ブラウザのサイト設定から通知を許可してください。
+              </p>
+            </div>
+          )}
+
+          {/* 権限取得済み */}
+          {notifPermission === "granted" && (
+            <div className="space-y-4">
+              {/* ON/OFF トグル */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-[#e6e8ee]">リマインダー通知</p>
+                  <p className="mt-0.5 text-xs text-[#9ba3b5]">
+                    今日の記録がない場合、設定時刻にお知らせします
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={notifEnabled}
+                  onClick={() => handleToggleNotif(!notifEnabled)}
+                  className={[
+                    "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
+                    notifEnabled ? "bg-indigo-500" : "bg-white/10",
+                  ].join(" ")}
+                >
+                  <span
+                    className={[
+                      "inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform",
+                      notifEnabled ? "translate-x-6" : "translate-x-1",
+                    ].join(" ")}
+                  />
+                </button>
+              </div>
+
+              {/* 時刻ピッカー（通知ONの時のみ表示） */}
+              {notifEnabled && (
+                <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4 space-y-3">
+                  <label
+                    htmlFor="notif-time"
+                    className="block text-xs font-semibold uppercase tracking-wider text-[#9ba3b5]"
+                  >
+                    リマインダー時刻
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      id="notif-time"
+                      type="time"
+                      value={notifTime}
+                      onChange={(e) => setNotifTime(e.target.value)}
+                      className="h-10 rounded-lg border border-white/10 bg-white/[0.04] px-3 text-sm tabular-nums text-[#e6e8ee] focus:border-indigo-400/60 focus:outline-none focus:ring-1 focus:ring-indigo-400/20"
+                    />
+                    <button
+                      onClick={handleSaveNotifTime}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-indigo-400/40 px-4 py-2 text-xs font-medium text-indigo-300 transition-colors hover:border-indigo-400/70 hover:text-indigo-200"
+                    >
+                      {notifTimeSaved ? (
+                        <>
+                          <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                          保存しました
+                        </>
+                      ) : (
+                        "保存"
+                      )}
+                    </button>
+                  </div>
+
+                  {/* テスト通知 */}
+                  <button
+                    onClick={handleTestNotif}
+                    className="inline-flex items-center gap-1.5 text-xs text-[#9ba3b5] hover:text-indigo-300 transition-colors"
+                  >
+                    <BellRing className="h-3.5 w-3.5" aria-hidden="true" />
+                    {notifTestSent ? "テスト通知を送信しました" : "テスト通知を送信"}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* ── セクション4: バージョン情報 ── */}
       <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
         <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-base font-bold text-[#e6e8ee] leading-snug">
           アプリ情報
