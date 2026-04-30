@@ -414,11 +414,6 @@ function SleepScoreHero({ score100, wsiScore, hints }: { score100: number; wsiSc
 // ③.5 気圧急変アラートバナー（通知許可フロー）
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** JST で「今日の日付文字列 YYYY-MM-DD」を返す */
-function formatDateJst(new Date()): string {
-  const d = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
 
 /**
  * 今夜（18:00 JST〜翌7:00 JST）の気圧変化幅が 3hPa 以上かどうか判定する。
