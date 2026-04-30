@@ -135,12 +135,24 @@ export function RecordForm(): JSX.Element {
   const [freezeEarned, setFreezeEarned] = React.useState(false);
   /** 保存後の残りフリーズ枚数 */
   const [freezeCountAfterSave, setFreezeCountAfterSave] = React.useState(0);
+  /** 今日の気象サマリー（フォーム上部表示用） */
+  const [todayWeather, setTodayWeather] = React.useState<WeatherData | null | "loading">("loading");
 
   React.useEffect(() => {
     const today = getTodayRecord();
     setExistingRecord(today);
     setForm(buildInitialState(today));
     setAllRecords(getRecords());
+  }, []);
+
+  // 今日の気象をページ読み込み時に取得（表示専用）
+  React.useEffect(() => {
+    const code = getDefaultPrefectureCode() ?? "13";
+    const pref = getPrefectureByCode(code);
+    if (!pref) { setTodayWeather(null); return; }
+    fetchWeather(pref.latitude, pref.longitude)
+      .then((w) => setTodayWeather(w))
+      .catch(() => setTodayWeather(null));
   }, []);
 
   const metrics = React.useMemo(() => {
@@ -550,6 +562,46 @@ export function RecordForm(): JSX.Element {
           <p className="mt-1 text-xs text-[#9ba3b5]">実際はどうでしたか？↓</p>
         </div>
       )}
+
+      {/* 今日の気象サマリー */}
+      {todayWeather === "loading" ? (
+        <div className="mb-4 flex items-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.02] px-4 py-3">
+          <Loader2 className="h-3.5 w-3.5 animate-spin text-[#9ba3b5]" aria-hidden="true" />
+          <span className="text-xs text-[#9ba3b5]">気象データを取得中…</span>
+        </div>
+      ) : todayWeather ? (
+        <div className="mb-4 rounded-xl border border-white/[0.07] bg-white/[0.02] px-4 py-3">
+          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[#9ba3b5]">今日の気象</p>
+          <div className="flex flex-wrap gap-x-5 gap-y-1.5 tabular-nums text-sm">
+            <span className="flex items-baseline gap-1.5">
+              <span className="text-[10px] text-[#9ba3b5]">気圧</span>
+              <span className="text-[#e6e8ee]">{todayWeather.pressureHpa.toFixed(1)} hPa</span>
+              <span className={
+                todayWeather.pressureDeltaHpa <= -3
+                  ? "text-xs text-rose-400"
+                  : todayWeather.pressureDeltaHpa >= 3
+                  ? "text-xs text-emerald-400"
+                  : "text-xs text-[#9ba3b5]"
+              }>
+                {todayWeather.pressureDeltaHpa >= 0 ? "+" : ""}{todayWeather.pressureDeltaHpa.toFixed(1)}
+              </span>
+            </span>
+            <span className="flex items-baseline gap-1.5">
+              <span className="text-[10px] text-[#9ba3b5]">気温</span>
+              <span className="text-[#e6e8ee]">{todayWeather.temperatureC.toFixed(1)}°C</span>
+            </span>
+            <span className="flex items-baseline gap-1.5">
+              <span className="text-[10px] text-[#9ba3b5]">湿度</span>
+              <span className="text-[#e6e8ee]">{todayWeather.humidity}%</span>
+            </span>
+          </div>
+          {todayWeather.pressureDeltaHpa <= -3 && (
+            <p className="mt-2 text-[11px] leading-snug text-rose-300/80">
+              気圧が下がっています。睡眠への影響が出やすい日です。
+            </p>
+          )}
+        </div>
+      ) : null}
 
       <form onSubmit={handleSubmit} noValidate>
         <Card className="border-0 bg-transparent shadow-none">
