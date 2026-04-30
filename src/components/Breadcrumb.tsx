@@ -15,11 +15,9 @@ type Props = {
 };
 
 /**
- * パンくずリスト。
+ * パンくずリスト（Client Component）。
  * - JSON-LD BreadcrumbList を出力 (SEO)
  * - 視覚的なパンくずナビゲーションも描画 (UX)
- *
- * Server Component として使用する。
  */
 export function Breadcrumb({ items }: Props) {
   const SITE_URL =
