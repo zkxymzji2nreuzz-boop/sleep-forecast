@@ -25,6 +25,7 @@ import { PredictionCard } from "@/components/PredictionCard";
 import { ContinuousRecordBadge } from "@/components/ContinuousRecordBadge";
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { OnboardingBanner } from "@/components/OnboardingBanner";
+import { WeeklyInsightCard } from "@/components/WeeklyInsightCard";
 import { getRecords } from "@/lib/storage";
 import {
   predictTomorrow,
@@ -132,7 +133,7 @@ export function HomeClient() {
       {/* オンボーディングバナー（初回訪問・記録ゼロ時のみ表示） */}
       <OnboardingBanner />
 
-      {/* 連続記録バッジ + 予測カード */}
+      {/* 連続記録バッジ + 週次インサイト + 予測カード */}
       {!loading && (
         <>
           {badge?.level && (
@@ -140,6 +141,7 @@ export function HomeClient() {
               <ContinuousRecordBadge badge={badge} />
             </div>
           )}
+          <WeeklyInsightCard />
           {prediction && (
             <div className="mb-12">
               <PredictionCard prediction={prediction} variant="compact" />
