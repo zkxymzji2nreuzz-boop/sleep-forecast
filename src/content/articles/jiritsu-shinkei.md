@@ -6,7 +6,7 @@ publishedAt: "2026-03-25"
 updatedAt: "2026-04-29"
 category: "自律神経"
 tags: ["自律神経", "交感神経", "副交感神経", "睡眠の質"]
-relatedSlugs: ["kiatsu-nemurenaie", "tenkitsuu-taisaku", "kiatsu-zutsu"]
+relatedSlugs: ["kiatsu-jiritsu-shinkei", "kiatsu-nemurenaie", "tenkitsuu-taisaku"]
 wordCount: 2300
 ---
 
