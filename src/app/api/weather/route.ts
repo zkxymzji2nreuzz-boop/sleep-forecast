@@ -239,7 +239,7 @@ export async function GET(request: Request): Promise<Response> {
     // 明日の予報を取得 (後方互換)
     upstream.searchParams.set(
       "daily",
-      "temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,precipitation_probability,pressure_msl_min,pressure_msl_max"
+      "temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,precipitation_probability_max,pressure_msl_min,pressure_msl_max"
     );
     upstream.searchParams.set("forecast_days", "2");
     upstream.searchParams.set("timezone", "Asia/Tokyo");
