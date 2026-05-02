@@ -303,7 +303,23 @@ function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
 // ③ 今夜の睡眠スコア（改善版: バッジ主役）
 // ─────────────────────────────────────────────────────────────────────────────
 
-function SleepScoreHero({ score100, wsiScore, hints }: { score100: number; wsiScore: WSIScore; hints: string[] }) {
+interface SleepScoreHeroProps {
+  score100: number;
+  wsiScore: WSIScore;
+  hints: string[];
+  hourlyPressureTimes: string[];
+  hourlyPressureValues: number[];
+  currentPressureDelta: number;
+  humidity: number;
+  tempDelta: number;
+  apparentTempC: number | undefined;
+}
+
+function SleepScoreHero({
+  score100, wsiScore, hints,
+  hourlyPressureTimes, hourlyPressureValues,
+  currentPressureDelta, humidity, tempDelta, apparentTempC,
+}: SleepScoreHeroProps) {
   const { badge, color } = getWSIBadge(score100);
   const [expanded, setExpanded] = React.useState(false);
   const contrib = estimatePtContrib(wsiScore.pressureDelta6h, wsiScore.tempDelta, wsiScore.humidity);
@@ -314,19 +330,8 @@ function SleepScoreHero({ score100, wsiScore, hints }: { score100: number; wsiSc
 
   return (
     <div
-      role="button"
-      tabIndex={0}
-      aria-expanded={expanded}
-      aria-controls="sleep-score-detail"
-      className="rounded-2xl p-5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300"
+      className="rounded-2xl p-5"
       style={{ background: `${color}12`, border: `1px solid ${color}35` }}
-      onClick={handleToggle}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          handleToggle();
-        }
-      }}
     >
       <p className="text-xs font-semibold text-[#a8b0c2] mb-3">今夜の睡眠スコア</p>
 
@@ -348,7 +353,14 @@ function SleepScoreHero({ score100, wsiScore, hints }: { score100: number; wsiSc
       </div>
 
       {/* タップで内訳 */}
-      <p className="text-xs text-[#a8b0c2] flex items-center gap-1.5">
+      <button
+        type="button"
+        onClick={handleToggle}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleToggle(); } }}
+        aria-expanded={expanded}
+        aria-controls="sleep-score-detail"
+        className="w-full text-left text-xs text-[#a8b0c2] flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 rounded"
+      >
         {!expanded && (
           <span
             className="inline-block w-2 h-2 rounded-full flex-shrink-0"
@@ -356,7 +368,7 @@ function SleepScoreHero({ score100, wsiScore, hints }: { score100: number; wsiSc
           />
         )}
         タップで内訳を見る {expanded ? "∧" : "∨"}
-      </p>
+      </button>
 
       {/* 展開: 内訳 */}
       {expanded && (
@@ -394,16 +406,27 @@ function SleepScoreHero({ score100, wsiScore, hints }: { score100: number; wsiSc
               </p>
             </div>
           </div>
-          {/* ケアヒント（インライン - 指摘K）*/}
+          {/* ケアヒント */}
           {hints.length > 0 && (
             <div className="mt-3 pt-3 border-t border-white/10 flex gap-2 text-xs leading-relaxed text-[#b0b8cc]">
               <span className="mt-0.5 shrink-0 text-indigo-400">💡</span>
               <span>{hints[0]}</span>
             </div>
           )}
-          {/* ⑤ スコアは目安である旨を明示 */}
           <p className="mt-2 text-[9px] text-[#a8b0c2] text-right">※ スコアは目安です</p>
         </div>
+      )}
+
+      {/* ── 明日の目覚め予報（常時表示）── */}
+      {hourlyPressureValues.length > 0 && (
+        <WakeupSubSection
+          hourlyPressureTimes={hourlyPressureTimes}
+          hourlyPressureValues={hourlyPressureValues}
+          currentPressureDelta={currentPressureDelta}
+          humidity={humidity}
+          tempDelta={tempDelta}
+          apparentTempC={apparentTempC}
+        />
       )}
     </div>
   );
@@ -593,59 +616,6 @@ function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: Pres
           <button onClick={dismiss} className="rounded-full p-3 text-xs text-[#a8b0c2] hover:text-[#e6e8ee] min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="閉じる">✕</button>
         </div>
       </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// ④ カウントダウン帯（ポジティブ表現）
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface CountdownBandProps {
-  hourlyPressureTimes: string[];
-  hourlyPressureValues: number[];
-}
-
-function CountdownBand({ hourlyPressureTimes, hourlyPressureValues }: CountdownBandProps) {
-  // 現在以降の気圧データで「急落」（-3hPa/h以下）が最初に起きる時刻を探す
-  const nowMs = Date.now();
-
-  let hoursUntilDrop: number | null = null;
-  let nowIdx = 0;
-  let minDiff = Infinity;
-  for (let i = 0; i < hourlyPressureTimes.length; i++) {
-    const tMs = Date.parse(hourlyPressureTimes[i] + (hourlyPressureTimes[i].includes("+") ? "" : "+09:00"));
-    const diff = Math.abs(tMs - nowMs);
-    if (diff < minDiff) { minDiff = diff; nowIdx = i; }
-  }
-
-  for (let i = nowIdx + 1; i < hourlyPressureValues.length; i++) {
-    const delta = hourlyPressureValues[i] - hourlyPressureValues[i - 1];
-    if (delta <= -3) {
-      hoursUntilDrop = i - nowIdx;
-      break;
-    }
-  }
-
-  const isStable = hoursUntilDrop === null;
-
-  return (
-    <div
-      className="mx-5 mb-4 rounded-xl px-4 py-3"
-      style={{
-        background: isStable ? "rgba(16,185,129,0.12)" : "rgba(245,158,11,0.10)",
-        border: `1px solid ${isStable ? "rgba(16,185,129,0.30)" : "rgba(245,158,11,0.30)"}`,
-      }}
-    >
-      {isStable ? (
-        <p className="text-sm font-semibold" style={{ color: "#10b981" }}>
-          今夜は気圧安定です
-        </p>
-      ) : (
-        <p className="text-sm font-semibold" style={{ color: "#f59e0b" }}>
-          あと{hoursUntilDrop}時間は安定です &nbsp;⟶&nbsp; その後低下予測
-        </p>
-      )}
     </div>
   );
 }
@@ -891,7 +861,52 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
 // ⑥ 明日の目覚め予報カード
 // ─────────────────────────────────────────────────────────────────────────────
 
-interface WakeupForecastProps {
+function getWakeupLevel(score100: number): { name: string; color: string; level: number; advice: string } {
+  if (score100 >= 80) return { name: "ばっちり", color: "#10b981", level: 5, advice: "最高の目覚めが期待できます。朝の時間を有効活用して" };
+  if (score100 >= 65) return { name: "すっきり", color: "#4a90d9", level: 4, advice: "良いコンディションです。大事な予定も安心して入れられます" };
+  if (score100 >= 45) return { name: "まあまあ", color: "#a8b0c2", level: 3, advice: "いつも通りで大丈夫。軽いストレッチで目覚めの質をアップ" };
+  if (score100 >= 25) return { name: "ぼんやり", color: "#f59e0b", level: 2, advice: "今夜は早めに就寝を。照明を落として身体を整えましょう" };
+  return                     { name: "ぐったり", color: "#f87070", level: 1, advice: "明日は予定を最小限に。無理をしない日と決めておきましょう" };
+}
+
+/**
+ * 翌朝6〜8時の気圧データから morningDelta を計算するヘルパー
+ */
+function computeMorningDelta(
+  hourlyPressureTimes: string[],
+  hourlyPressureValues: number[],
+  currentPressureDelta: number
+): number {
+  const nowMs = Date.now();
+  const jstNow = new Date(nowMs + 9 * 3600 * 1000);
+  const tomorrow7JstMs = Date.UTC(
+    jstNow.getUTCFullYear(), jstNow.getUTCMonth(), jstNow.getUTCDate() + 1, 7, 0, 0
+  ) - 9 * 3600 * 1000;
+
+  const morningPressures: number[] = [];
+  for (let i = 0; i < hourlyPressureTimes.length; i++) {
+    const timeStr = hourlyPressureTimes[i];
+    const tMs = timeStr.includes("+") || timeStr.includes("Z")
+      ? Date.parse(timeStr)
+      : Date.parse(timeStr + "+09:00");
+    if (Math.abs(tMs - tomorrow7JstMs) <= 3600 * 1000) {
+      morningPressures.push(hourlyPressureValues[i]);
+    }
+  }
+
+  if (morningPressures.length > 0 && hourlyPressureValues.length > 0) {
+    const morningAvg = morningPressures.reduce((a, b) => a + b, 0) / morningPressures.length;
+    const currentPressure = hourlyPressureValues[0] || 1013;
+    return Math.round((morningAvg - currentPressure) * 10) / 10;
+  }
+  return currentPressureDelta;
+}
+
+/**
+ * SleepScoreHero 内に埋め込む「明日の目覚め予報」サブセクション。
+ * ドット5連インジケーター + アクションアドバイス1行を表示する。
+ */
+interface WakeupSubSectionProps {
   hourlyPressureTimes: string[];
   hourlyPressureValues: number[];
   currentPressureDelta: number;
@@ -900,70 +915,55 @@ interface WakeupForecastProps {
   apparentTempC: number | undefined;
 }
 
-function getWakeupLevel(score100: number): { name: string; color: string; level: number } {
-  if (score100 >= 80) return { name: "スッキリ",   color: "#10b981", level: 5 };
-  if (score100 >= 65) return { name: "おだやか",   color: "#4a90d9", level: 4 };
-  if (score100 >= 45) return { name: "ふつう",     color: "#8b98a5", level: 3 };
-  if (score100 >= 25) return { name: "うとうと",   color: "#f59e0b", level: 2 };
-  return                     { name: "どんより",   color: "#8b98a5", level: 1 };
-}
-
-function WakeupForecastCard({ hourlyPressureTimes, hourlyPressureValues, currentPressureDelta, humidity, tempDelta, apparentTempC }: WakeupForecastProps) {
-  // 翌朝6-8時のデータを探して気圧デルタを計算
-  const now = new Date();
-  const nowMs = now.getTime();
-  const jstNow = new Date(nowMs + 9 * 3600 * 1000);
-  const jstYear = jstNow.getUTCFullYear();
-  const jstMonth = jstNow.getUTCMonth();
-  const jstDate = jstNow.getUTCDate();
-
-  const tomorrow7JstMs = Date.UTC(jstYear, jstMonth, jstDate + 1, 7, 0, 0) - 9 * 3600 * 1000;
-
-  // 翌朝6〜8時の平均気圧を取得
-  const morningPressures: number[] = [];
-  for (let i = 0; i < hourlyPressureTimes.length; i++) {
-    const timeStr = hourlyPressureTimes[i];
-    const tMs = timeStr.includes("+") || timeStr.includes("Z")
-      ? Date.parse(timeStr)
-      : Date.parse(timeStr + "+09:00");
-    // 翌朝 6〜8時 JST (UTC では 21〜23時)
-    const diffFromMorning = tMs - tomorrow7JstMs;
-    if (Math.abs(diffFromMorning) <= 3600 * 1000) {
-      morningPressures.push(hourlyPressureValues[i]);
-    }
-  }
-
-  // 翌朝の気圧を現在気圧との差分で計算
-  let morningDelta = currentPressureDelta;
-  if (morningPressures.length > 0 && hourlyPressureValues.length > 0) {
-    const morningAvg = morningPressures.reduce((a, b) => a + b, 0) / morningPressures.length;
-    const currentPressure = hourlyPressureValues[0] || 1013;
-    morningDelta = Math.round((morningAvg - currentPressure) * 10) / 10;
-  }
-
-  // 翌朝のWSIスコアを算出
+function WakeupSubSection({
+  hourlyPressureTimes,
+  hourlyPressureValues,
+  currentPressureDelta,
+  humidity,
+  tempDelta,
+  apparentTempC,
+}: WakeupSubSectionProps) {
+  const morningDelta = computeMorningDelta(hourlyPressureTimes, hourlyPressureValues, currentPressureDelta);
   const morningScore = computeWSIScore100(morningDelta, tempDelta, humidity, apparentTempC);
-  const { name, color } = getWakeupLevel(morningScore);
+  const { name, color, level, advice } = getWakeupLevel(morningScore);
 
   return (
-    <div
-      className="rounded-2xl p-5"
-      style={{
-        background: `${color}10`,
-        border: `1px solid ${color}30`,
-      }}
-    >
-      <p className="text-xs font-semibold text-[#a8b0c2] mb-3">☀️ 明日の目覚め予報</p>
-
-      <span
-        className="text-2xl font-black"
-        style={{ color }}
-      >
-        {name}
-      </span>
-      <p className="mt-1 text-xs text-[#a8b0c2]">
-        翌朝の気圧から算出
+    <div className="mt-3 pt-3 border-t border-dashed border-white/15">
+      <p className="text-[10px] font-semibold text-[#a8b0c2] mb-2 tracking-wide uppercase">
+        ☀️ 明日の目覚め予報
       </p>
+
+      {/* ラベル + ドット5連 */}
+      <div className="flex items-center justify-between mb-1.5">
+        <span
+          className="text-base font-bold leading-none"
+          style={{ color }}
+        >
+          {name}
+        </span>
+
+        {/* ドットインジケーター */}
+        <div className="flex items-center gap-1.5" aria-label={`目覚め予報: ${name} (${level}/5)`}>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <span
+              key={i}
+              style={{
+                display: "inline-block",
+                width: 9,
+                height: 9,
+                borderRadius: "50%",
+                background: i <= level ? color : "#ffffff20",
+                outline: i === level ? `2px solid ${color}` : "none",
+                outlineOffset: 2,
+                transition: "all 0.2s",
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* アクションアドバイス */}
+      <p className="text-[11px] text-[#a8b0c2] leading-relaxed">{advice}</p>
     </div>
   );
 }
@@ -1280,18 +1280,20 @@ export function WeatherWidget() {
         </div>
       )}
 
-      {/* ── ① 今夜の睡眠スコア（最上部）── */}
+      {/* ── ① 今夜の睡眠スコア + 明日の目覚め予報（最上部）── */}
       <div className="px-5 pt-4 pb-4">
-        <SleepScoreHero score100={score100} wsiScore={wsiScore} hints={careHints} />
-      </div>
-
-      {/* ── ② カウントダウン帯 ── */}
-      {data.hourlyPressure.values.length > 1 && (
-        <CountdownBand
+        <SleepScoreHero
+          score100={score100}
+          wsiScore={wsiScore}
+          hints={careHints}
           hourlyPressureTimes={data.hourlyPressure.times}
           hourlyPressureValues={data.hourlyPressure.values}
+          currentPressureDelta={data.current.pressureDeltaHpa}
+          humidity={data.current.humidity}
+          tempDelta={tempDelta}
+          apparentTempC={apparent}
         />
-      )}
+      </div>
 
       {/* ── ②.5 気圧急変アラートバナー（通知許可フロー） ── */}
       {data.hourlyPressure.values.length > 1 && (
@@ -1341,21 +1343,7 @@ export function WeatherWidget() {
 
       <div className="mx-5 border-t border-white/5" />
 
-      {/* ── ⑥ 明日の目覚め予報カード ── */}
-      <div className="px-5 pt-5 pb-4">
-        <WakeupForecastCard
-          hourlyPressureTimes={data.hourlyPressure.times}
-          hourlyPressureValues={data.hourlyPressure.values}
-          currentPressureDelta={data.current.pressureDeltaHpa}
-          humidity={data.current.humidity}
-          tempDelta={tempDelta}
-          apparentTempC={apparent}
-        />
-      </div>
-
-      <div className="mx-5 border-t border-white/5" />
-
-      {/* ── ⑦ 睡眠×気圧 相関グラフ ── */}
+      {/* ── ⑥ 睡眠×気圧 相関グラフ ── */}
       <div className="px-5 pt-5 pb-6">
         <p className="mb-3 text-xs font-semibold text-[#a8b0c2] tracking-wide uppercase">睡眠 × 気圧 相関</p>
         <CorrelationChart />
