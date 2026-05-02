@@ -234,7 +234,6 @@ function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
   const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
   return (
     <div>
-      <p className="mb-1 text-right text-[9px] text-[#a8b0c2]">← → スクロール</p>
       <div style={{ display: "flex" }}>
         <div style={{ flexShrink: 0, width: "56px" }}>
           {WEEKLY_LABEL_ROWS.map((label) => (
@@ -682,10 +681,10 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
   const jstNowDateObj = new Date(currentJstHourStartJst);
   const jstTodayDate = jstNowDateObj.getUTCDate();
 
-  // 対象時間帯のデータを抽出（現在時刻〜+13時間、14ポイント）
+  // 対象時間帯のデータを抽出（1時間前〜+12時間、14ポイント）
   const targetPoints: { label: string; value: number; isNow: boolean; delta: number }[] = [];
 
-  for (let offset = 0; offset <= 13; offset++) {
+  for (let offset = -1; offset <= 12; offset++) {
     const targetUtcMs = currentHourStartUtc + offset * 3600 * 1000;
     const targetJstMs = targetUtcMs + 9 * 3600 * 1000;
     const targetJstDateObj = new Date(targetJstMs);
@@ -693,7 +692,7 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
     const isTomorrow = targetJstDateObj.getUTCDate() !== jstTodayDate;
 
     const label = isTomorrow ? `翌${targetJstHour}時` : `${targetJstHour}時`;
-    const isNow = offset === 0; // 最初のポイントが常に現在時刻
+    const isNow = offset === 0; // 現在時刻（offset=0）にマーカーを表示
 
     // 対応するhourlyデータを探す（±30分以内）
     let bestIdx = -1;
@@ -880,7 +879,7 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
           data={chartData}
           options={chartOptions}
           plugins={[currentBandPlugin]}
-          aria-label="今後13時間の気圧推移グラフ"
+          aria-label="1時間前から12時間後の気圧推移グラフ"
           role="img"
         />
       </div>
@@ -1327,11 +1326,11 @@ export function WeatherWidget() {
 
       <div className="mx-5 border-t border-white/5" />
 
-      {/* ── ⑤ 気圧グラフ（現在時刻〜13時間後、Chart.js） ── */}
+      {/* ── ⑤ 気圧グラフ（1時間前〜12時間後、Chart.js） ── */}
       {data.hourlyPressure.values.length > 1 && (
         <div className="px-5 pt-5 pb-4">
           <p className="mb-3 text-xs font-semibold text-[#a8b0c2] tracking-wide uppercase">
-            気圧推移（これから13時間）
+            気圧推移（1時間前〜これから12時間）
           </p>
           <NightPressureChart
             hourlyPressureTimes={data.hourlyPressure.times}
