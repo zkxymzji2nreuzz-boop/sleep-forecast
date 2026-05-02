@@ -26,15 +26,16 @@ import { ContinuousRecordBadge } from "@/components/ContinuousRecordBadge";
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { OnboardingBanner } from "@/components/OnboardingBanner";
 import { WeeklyInsightCard } from "@/components/WeeklyInsightCard";
-import { getRecords } from "@/lib/storage";
+import { WeeklyRiskForecast } from "@/components/WeeklyRiskForecast";
+import { getRecords, DEFAULT_PREFECTURE_KEY } from "@/lib/storage";
 import {
   predictTomorrow,
   calculateContinuousRecordBadge,
 } from "@/lib/prediction";
-import { fetchWeatherForecast } from "@/lib/weather";
+import { fetchWeatherForecast, fetchFullWeather } from "@/lib/weather";
 import { getPrefectureByCode } from "@/lib/prefectures";
 import { calculateStats } from "@/lib/correlation";
-import type { PredictionResult } from "@/lib/types";
+import type { PredictionResult, DailyForecast } from "@/lib/types";
 
 const FAQ_ITEMS = [
   {
@@ -95,6 +96,8 @@ export function HomeClient() {
   const [currentPressure, setCurrentPressure] = useState<number | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [pressureChecks, setPressureChecks] = useState<boolean[]>([false, false, false]);
+  /** WeeklyRiskForecast 用 7日間予報データ */
+  const [dailyForecast, setDailyForecast] = useState<DailyForecast[] | null>(null);
 
   useEffect(() => {
     const loadPrediction = async () => {
@@ -109,20 +112,37 @@ export function HomeClient() {
           setBadge(calculateContinuousRecordBadge(stats.longestStreak));
         }
 
-        // 予測を計算
-        if (records.length > 0) {
-          const lastRecord = records[0];
-          const prefecture = getPrefectureByCode(lastRecord.prefectureCode);
-          if (prefecture) {
-            const forecast = await fetchWeatherForecast(
+        // 都道府県コード: 記録 → 設定 → デフォルト (東京 "13")
+        const prefCode =
+          records.length > 0
+            ? records[0].prefectureCode
+            : (localStorage.getItem(DEFAULT_PREFECTURE_KEY) ?? "13");
+        const prefecture = getPrefectureByCode(prefCode);
+
+        if (prefecture) {
+          if (records.length > 0) {
+            // 記録ありの場合: WeeklyRiskForecast用フル予報 + 個人予測を並列取得
+            const [fullWeatherResult, forecastResult] = await Promise.allSettled([
+              fetchFullWeather(prefecture.latitude, prefecture.longitude),
+              fetchWeatherForecast(prefecture.latitude, prefecture.longitude),
+            ]);
+
+            if (fullWeatherResult.status === "fulfilled") {
+              setDailyForecast(fullWeatherResult.value.forecast);
+              setCurrentPressure(fullWeatherResult.value.current.pressureHpa);
+            }
+            if (forecastResult.status === "fulfilled") {
+              const result = predictTomorrow(records, forecastResult.value);
+              setPrediction(result);
+            }
+          } else {
+            // 記録ゼロの場合: WeeklyRiskForecast用フル予報のみ取得
+            const fullWeather = await fetchFullWeather(
               prefecture.latitude,
               prefecture.longitude
             );
-            const result = predictTomorrow(records, forecast);
-            setPrediction(result);
-            if (forecast?.pressureHpa != null) {
-              setCurrentPressure(forecast.pressureHpa);
-            }
+            setDailyForecast(fullWeather.forecast);
+            setCurrentPressure(fullWeather.current.pressureHpa);
           }
         }
       } catch (err) {
@@ -162,18 +182,107 @@ export function HomeClient() {
       {/* オンボーディングバナー（初回訪問・記録ゼロ時のみ表示） */}
       <OnboardingBanner />
 
-      {/* 連続記録バッジ + 週次インサイト + 予測カード */}
+      {/* ─── フェーズ別メインコンテンツ ────────────────────────────────────── */}
+      {/*
+       * Phase0 (0-2件): WeeklyRiskForecast がプライマリ、PredictionCard は非表示
+       * Phase1 (3-6件): WeeklyRiskForecast がプライマリ + ロック状態のPredictionCardプレビュー
+       * Phase2 (7件〜): PredictionCard がプライマリ、WeeklyRiskForecast は下部に縮小
+       */}
       {!loading && (
         <>
+          {/* 連続記録バッジ */}
           {badge?.level && (
             <div className="mb-6">
               <ContinuousRecordBadge badge={badge} />
             </div>
           )}
+
+          {/* 週次インサイトカード（記録ありの場合のみ有効） */}
           <WeeklyInsightCard />
-          {prediction && (
-            <div className="mb-12">
-              <PredictionCard prediction={prediction} variant="compact" />
+
+          {/* Phase2: PredictionCard をプライマリ表示 */}
+          {recordCount >= 7 && prediction && (
+            <div className="mb-8">
+              <PredictionCard
+                prediction={prediction}
+                variant="compact"
+                streakDays={badge?.longestStreak}
+              />
+            </div>
+          )}
+
+          {/* Phase0 / Phase1: WeeklyRiskForecast をプライマリ表示 */}
+          {recordCount < 7 && dailyForecast && (
+            <div className="mb-8">
+              <WeeklyRiskForecast
+                forecast={dailyForecast}
+                recordCount={recordCount}
+                variant="full"
+              />
+            </div>
+          )}
+
+          {/* Phase1 (3-6件): ロック状態のPredictionCardプレビュー */}
+          {recordCount >= 3 && recordCount < 7 && (
+            <div className="mb-8 rounded-xl border border-indigo-400/15 bg-indigo-500/[0.04] p-5">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-[#e6e8ee]">
+                    明日の眠気レベル
+                  </p>
+                  <p className="mt-0.5 text-xs text-[#a8b0c2]">
+                    あと{7 - recordCount}日の記録で、あなた専用の予測が始まります
+                  </p>
+                </div>
+                {/* プログレスリング */}
+                <div className="shrink-0">
+                  <svg
+                    width="52"
+                    height="52"
+                    viewBox="0 0 52 52"
+                    aria-label={`${recordCount}/7日記録済み`}
+                  >
+                    <circle
+                      cx="26"
+                      cy="26"
+                      r="21"
+                      fill="none"
+                      stroke="rgba(255,255,255,0.08)"
+                      strokeWidth="3.5"
+                    />
+                    <circle
+                      cx="26"
+                      cy="26"
+                      r="21"
+                      fill="none"
+                      stroke="#818cf8"
+                      strokeWidth="3.5"
+                      strokeDasharray={`${(recordCount / 7) * 131.9} 131.9`}
+                      strokeLinecap="round"
+                      transform="rotate(-90 26 26)"
+                    />
+                    <text
+                      x="26"
+                      y="23"
+                      textAnchor="middle"
+                      fill="#a5b4fc"
+                      fontSize="10"
+                      fontWeight="500"
+                    >
+                      {recordCount}/7
+                    </text>
+                    <text
+                      x="26"
+                      y="34"
+                      textAnchor="middle"
+                      fill="#a8b0c2"
+                      fontSize="8"
+                    >
+                      日記録
+                    </text>
+                  </svg>
+                </div>
+              </div>
             </div>
           )}
         </>
@@ -308,6 +417,17 @@ export function HomeClient() {
       {/* 気象・睡眠ウィジェット: 今夜の睡眠予報 + 気圧グラフ + 5日間予報 */}
       <div className="mb-12">
         <WeatherWidget />
+
+        {/* Phase2 (記録7件〜): WeeklyRiskForecast を compact で補足表示 */}
+        {!loading && recordCount >= 7 && dailyForecast && (
+          <div className="mt-4">
+            <WeeklyRiskForecast
+              forecast={dailyForecast}
+              recordCount={recordCount}
+              variant="compact"
+            />
+          </div>
+        )}
 
         {/* iOSアプリ通知登録フォーム */}
         <div className="mt-8 rounded-2xl border border-white/10 bg-[#1a1f2e] p-5">

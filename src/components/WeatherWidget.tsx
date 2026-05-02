@@ -414,18 +414,12 @@ function SleepScoreHero({ score100, wsiScore, hints }: { score100: number; wsiSc
 // ③.5 気圧急変アラートバナー（通知許可フロー）
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** JST で「今日の日付文字列 YYYY-MM-DD」を返す */
-function getTodayJST(): string {
-  const d = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
 /**
  * 今夜（18:00 JST〜翌7:00 JST）の気圧変化幅が 3hPa 以上かどうか判定する。
  * hourlyPressureTimes は ISO 8601（+09:00 付き推奨）を想定。
  */
 function checkTonightPressureDrop(times: string[], pressures: number[]): boolean {
-  const todayStr = getTodayJST();
+  const todayStr = formatDateJst(new Date());
   const todayBase = new Date(`${todayStr}T00:00:00+09:00`);
   const tomorrowBase = new Date(todayBase.getTime() + 24 * 60 * 60 * 1000);
   const tomorrowStr = `${tomorrowBase.getFullYear()}-${String(tomorrowBase.getMonth() + 1).padStart(2, "0")}-${String(tomorrowBase.getDate()).padStart(2, "0")}`;
@@ -468,7 +462,7 @@ function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: Pres
     if (typeof window === "undefined") return;
     if (!("Notification" in window)) return; // iOS Safari 等は非対応
 
-    const today = getTodayJST();
+    const today = formatDateJst(new Date());
     const hasDrop = checkTonightPressureDrop(hourlyPressureTimes, hourlyPressureValues);
     const alreadyNotifiedToday = localStorage.getItem(ALERT_STORAGE_KEY) === today;
     const perm = Notification.permission;
@@ -513,14 +507,14 @@ function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: Pres
         body: "気圧急変の夜です。眠れなかったら明朝記録してみてください",
         icon: "/icon-192.png",
       });
-      localStorage.setItem(ALERT_STORAGE_KEY, getTodayJST());
+      localStorage.setItem(ALERT_STORAGE_KEY, formatDateJst(new Date()));
     }
     // 拒否されても mode を "none" にして閉じる（拒否フォールバックは急変時のみ）
     setMode("none");
   };
 
   const dismiss = () => {
-    if (mode === "drop") localStorage.setItem(ALERT_STORAGE_KEY, getTodayJST());
+    if (mode === "drop") localStorage.setItem(ALERT_STORAGE_KEY, formatDateJst(new Date()));
     if (mode === "optin") localStorage.setItem(OPTIN_ASKED_KEY, "true");
     setMode("none");
   };
@@ -1364,6 +1358,22 @@ export function WeatherWidget() {
       <div className="px-5 pt-5 pb-6">
         <p className="mb-3 text-xs font-semibold text-[#a8b0c2] tracking-wide uppercase">睡眠 × 気圧 相関</p>
         <CorrelationChart />
+      </div>
+
+      {/* ── 帰属クレジット (Open-Meteo CC BY 4.0 ライセンス義務) ── */}
+      <div className="border-t border-white/5 px-5 py-3">
+        <p className="text-[9px] text-[#a8b0c2]/40">
+          Weather data provided by{" "}
+          <a
+            href="https://open-meteo.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-2 hover:text-[#a8b0c2]/70 transition-colors"
+          >
+            Open-Meteo.com
+          </a>{" "}
+          (CC BY 4.0)
+        </p>
       </div>
     </section>
   );
