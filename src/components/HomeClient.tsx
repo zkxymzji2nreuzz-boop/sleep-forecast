@@ -182,6 +182,70 @@ export function HomeClient() {
       {/* オンボーディングバナー（初回訪問・記録ゼロ時のみ表示） */}
       <OnboardingBanner />
 
+      {/* ─── ヒーローセクション（Phase0/1: 7日未満のユーザー向け） ─────────── */}
+      {/*
+       * Phase0/1 のみ表示。継続ユーザー（Phase2: 7件以上）はデータファースト
+       * で毎日使うため非表示。新規・初期ユーザーにアプリの価値を最初に伝える。
+       */}
+      {isLoaded && recordCount < 7 && (
+        <section className="mb-12 text-center sm:mb-16">
+          <h1 className="mb-4 text-3xl font-bold leading-tight tracking-tight text-[#e6e8ee] sm:text-4xl md:text-5xl">
+            気象病・低気圧から<br />明日の眠りを予報する
+          </h1>
+          <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed text-[#a8b0c2] sm:text-base">
+            気圧・気温・月齢からあなたの睡眠を読み解く
+          </p>
+          <>
+            {recordCount === 0 && (
+              <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3">
+                <Button asChild size="lg" className="h-12 w-full text-base">
+                  <Link href="/record">
+                    <Activity className="mr-1" aria-hidden="true" />
+                    今日を記録する
+                  </Link>
+                </Button>
+              </div>
+            )}
+            {recordCount >= 1 && recordCount <= 4 && (
+              <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
+                <Button asChild size="lg" className="h-12 text-base">
+                  <Link href="/record">
+                    <Activity className="mr-1" aria-hidden="true" />
+                    今日を記録する
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="h-9 border-indigo-400/40 text-sm text-[#e6e8ee] hover:bg-indigo-500/10 hover:text-[#e6e8ee]"
+                >
+                  <Link href="/dashboard">ダッシュボードを見る</Link>
+                </Button>
+              </div>
+            )}
+            {recordCount >= 5 && recordCount < 7 && (
+              <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
+                <Button asChild size="lg" className="h-12 text-base">
+                  <Link href="/dashboard">
+                    <Activity className="mr-1" aria-hidden="true" />
+                    ダッシュボードで分析する
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="h-9 border-indigo-400/40 text-sm text-[#e6e8ee] hover:bg-indigo-500/10 hover:text-[#e6e8ee]"
+                >
+                  <Link href="/record">今日を記録する</Link>
+                </Button>
+              </div>
+            )}
+          </>
+        </section>
+      )}
+
       {/* ─── フェーズ別メインコンテンツ ────────────────────────────────────── */}
       {/*
        * Phase0 (0-2件): WeeklyRiskForecast がプライマリ、PredictionCard は非表示
@@ -287,68 +351,6 @@ export function HomeClient() {
           )}
         </>
       )}
-
-      <section className="mb-12 text-center sm:mb-16">
-        <p className="mb-3 text-xs uppercase tracking-widest text-indigo-400">
-          SleepForecast
-        </p>
-        <h1 className="mb-4 text-3xl font-bold leading-tight tracking-tight text-[#e6e8ee] sm:text-4xl md:text-5xl">
-          気象病・低気圧から、明日の眠りを予報する
-        </h1>
-        <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed text-[#a8b0c2] sm:text-base">
-          気圧・気温・月齢からあなたの睡眠を読み解く
-        </p>
-        {isLoaded && (
-          <>
-            {recordCount === 0 && (
-              <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3">
-                <Button asChild size="lg" className="h-12 w-full text-base">
-                  <Link href="/record">
-                    <Activity className="mr-1" aria-hidden="true" />
-                    今日を記録する
-                  </Link>
-                </Button>
-              </div>
-            )}
-            {recordCount >= 1 && recordCount <= 4 && (
-              <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
-                <Button asChild size="lg" className="h-12 text-base">
-                  <Link href="/record">
-                    <Activity className="mr-1" aria-hidden="true" />
-                    今日を記録する
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className="h-9 border-indigo-400/40 text-sm text-[#e6e8ee] hover:bg-indigo-500/10 hover:text-[#e6e8ee]"
-                >
-                  <Link href="/dashboard">ダッシュボードを見る</Link>
-                </Button>
-              </div>
-            )}
-            {recordCount >= 5 && (
-              <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
-                <Button asChild size="lg" className="h-12 text-base">
-                  <Link href="/dashboard">
-                    <Activity className="mr-1" aria-hidden="true" />
-                    ダッシュボードで分析する
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className="h-9 border-indigo-400/40 text-sm text-[#e6e8ee] hover:bg-indigo-500/10 hover:text-[#e6e8ee]"
-                >
-                  <Link href="/record">今日を記録する</Link>
-                </Button>
-              </div>
-            )}
-          </>
-        )}
-      </section>
 
       {/* 気圧感受度チェックカード（記録ゼロの新規ユーザー向け） */}
       {isLoaded && recordCount === 0 && (
