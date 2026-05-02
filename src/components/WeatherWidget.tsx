@@ -15,6 +15,7 @@
  */
 
 import * as React from "react";
+import { Moon, Sunrise, Sun, Sparkles, type LucideIcon } from "lucide-react";
 import { PersonalPressureInsight } from "@/components/PersonalPressureInsight";
 import {
   Chart as ChartJS,
@@ -861,12 +862,21 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
 // ⑥ 明日の目覚め予報カード
 // ─────────────────────────────────────────────────────────────────────────────
 
-function getWakeupLevel(score100: number): { name: string; color: string; level: number; advice: string } {
-  if (score100 >= 80) return { name: "ばっちり", color: "#10b981", level: 5, advice: "最高の目覚めが期待できます。朝の時間を有効活用して" };
-  if (score100 >= 65) return { name: "すっきり", color: "#4a90d9", level: 4, advice: "良いコンディションです。大事な予定も安心して入れられます" };
-  if (score100 >= 45) return { name: "まあまあ", color: "#a8b0c2", level: 3, advice: "いつも通りで大丈夫。軽いストレッチで目覚めの質をアップ" };
-  if (score100 >= 25) return { name: "ぼんやり", color: "#f59e0b", level: 2, advice: "今夜は早めに就寝を。照明を落として身体を整えましょう" };
-  return                     { name: "ぐったり", color: "#f87070", level: 1, advice: "明日は予定を最小限に。無理をしない日と決めておきましょう" };
+// 天体ナラティブ スケール（Lv1→Lv5: 夜→夜明け→日中→輝き）
+const WAKEUP_SCALE: { level: number; Icon: LucideIcon; color: string }[] = [
+  { level: 1, Icon: Moon,     color: "#f87070" },
+  { level: 2, Icon: Moon,     color: "#f59e0b" },
+  { level: 3, Icon: Sunrise,  color: "#a8b0c2" },
+  { level: 4, Icon: Sun,      color: "#4a90d9" },
+  { level: 5, Icon: Sparkles, color: "#10b981" },
+];
+
+function getWakeupLevel(score100: number): { name: string; color: string; level: number; advice: string; Icon: LucideIcon } {
+  if (score100 >= 80) return { name: "ばっちり", color: "#10b981", level: 5, Icon: Sparkles, advice: "最高の目覚めが期待できます。朝の時間を有効活用して" };
+  if (score100 >= 65) return { name: "すっきり", color: "#4a90d9", level: 4, Icon: Sun,      advice: "良いコンディションです。大事な予定も安心して入れられます" };
+  if (score100 >= 45) return { name: "まあまあ", color: "#a8b0c2", level: 3, Icon: Sunrise,  advice: "いつも通りで大丈夫。軽いストレッチで目覚めの質をアップ" };
+  if (score100 >= 25) return { name: "ぼんやり", color: "#f59e0b", level: 2, Icon: Moon,     advice: "今夜は早めに就寝を。照明を落として身体を整えましょう" };
+  return                     { name: "ぐったり", color: "#f87070", level: 1, Icon: Moon,     advice: "明日は予定を最小限に。無理をしない日と決めておきましょう" };
 }
 
 /**
@@ -925,7 +935,7 @@ function WakeupSubSection({
 }: WakeupSubSectionProps) {
   const morningDelta = computeMorningDelta(hourlyPressureTimes, hourlyPressureValues, currentPressureDelta);
   const morningScore = computeWSIScore100(morningDelta, tempDelta, humidity, apparentTempC);
-  const { name, color, level, advice } = getWakeupLevel(morningScore);
+  const { name, color, level, advice, Icon } = getWakeupLevel(morningScore);
 
   return (
     <div className="mt-3 pt-3 border-t border-dashed border-white/15">
@@ -933,32 +943,43 @@ function WakeupSubSection({
         ☀️ 明日の目覚め予報
       </p>
 
-      {/* ラベル + ドット5連 */}
+      {/* 大アイコン + ラベル（左） ／ 5段階天体スケール（右） */}
       <div className="flex items-center justify-between mb-1.5">
-        <span
-          className="text-base font-bold leading-none"
-          style={{ color }}
-        >
-          {name}
-        </span>
+        <div className="flex items-center gap-2.5">
+          <Icon
+            size={26}
+            color={color}
+            strokeWidth={level === 5 ? 2.2 : 1.8}
+          />
+          <span className="text-base font-bold leading-none" style={{ color }}>
+            {name}
+          </span>
+        </div>
 
-        {/* ドットインジケーター */}
+        {/* 天体ナラティブ インジケーター */}
         <div className="flex items-center gap-1.5" aria-label={`目覚め予報: ${name} (${level}/5)`}>
-          {[1, 2, 3, 4, 5].map((i) => (
-            <span
-              key={i}
-              style={{
-                display: "inline-block",
-                width: 9,
-                height: 9,
-                borderRadius: "50%",
-                background: i <= level ? color : "#ffffff20",
-                outline: i === level ? `2px solid ${color}` : "none",
-                outlineOffset: 2,
-                transition: "all 0.2s",
-              }}
-            />
-          ))}
+          {WAKEUP_SCALE.map((lv) => {
+            const isActive = lv.level === level;
+            return (
+              <span
+                key={lv.level}
+                style={{
+                  display: "flex",
+                  opacity: isActive ? 1 : 0.18,
+                  outline: isActive ? `2px solid ${lv.color}` : "none",
+                  outlineOffset: 2,
+                  borderRadius: "50%",
+                  transition: "opacity 0.2s",
+                }}
+              >
+                <lv.Icon
+                  size={isActive ? 18 : 13}
+                  color={lv.color}
+                  strokeWidth={1.7}
+                />
+              </span>
+            );
+          })}
         </div>
       </div>
 
