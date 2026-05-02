@@ -414,6 +414,8 @@ function SleepScoreHero({ score100, wsiScore, hints }: { score100: number; wsiSc
 // ③.5 気圧急変アラートバナー（通知許可フロー）
 // ─────────────────────────────────────────────────────────────────────────────
 
+
+
 /**
  * 今夜（18:00 JST〜翌7:00 JST）の気圧変化幅が 3hPa 以上かどうか判定する。
  * hourlyPressureTimes は ISO 8601（+09:00 付き推奨）を想定。
