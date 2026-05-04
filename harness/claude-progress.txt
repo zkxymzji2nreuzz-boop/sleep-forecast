@@ -641,3 +641,102 @@ Format:
   ✅ feature-list.json F007 status → passing
 - feature-list.json F007: status=passing, evaluatorScore=9.0
 - 次のアクション: /final-review → /deploy-check → Vercel デプロイ（人間承認要）
+
+================================================================
+
+[2026-05-02] Cowork - UI改善 "WakeupSubSection 天体ナラティブ インジケーター (案A) 実装"
+- 経緯: ドットインジケーターの方向性が万人に伝わりにくいという課題を複数エージェントで検討
+- 選定案: 案A 天体ナラティブ (Moon→Moon→Sunrise→Sun→Sparkles の lucide-react アイコン系列)
+- 実装内容:
+  - lucide-react に LucideIcon 型 + Moon/Sunrise/Sun/Sparkles をインポート
+  - WAKEUP_SCALE 定数 (5段階 × Icon + color) を定義
+  - getWakeupLevel() の返り値に Icon フィールドを追加 (LucideIcon 型)
+  - WakeupSubSection を全面リライト:
+    左: 大アイコン(26px) + ラベル / 右: 5連天体スケール(active=18px+outline, inactive=13px+opacity18%)
+  - TypeScript型エラー (ComponentType vs LucideIcon の size 型不一致) を LucideIcon 型で修正
+- コミット: 3591ea1 "feat: WakeupSubSection 天体ナラティブ インジケーター実装 (案A)"
+- 本番確認: sleep-forecast.vercel.app で ぼんやり(Lv2/Moon/琥珀) + 5連天体スケール表示を目視確認 ✅
+- 次セッション ①から順に着手:
+  1. contact ページ mailto を実アドレスに変更
+  2. Vercel 環境変数 NEXT_PUBLIC_GA_ID 設定確認 (GA4 稼働確認)
+  3. ads.txt パブリッシャー ID 更新 → AdSense 申請
+  4. X / note アウトリーチ着手
+
+================================================================
+
+[2026-05-05] Cowork - 運用タスク①〜④ 確認・完了
+
+## ① contact ページ mailto → 完了済み（前回確認）
+- contact/page.tsx は既に Google Forms (https://forms.gle/5FzeXL1QGFLCD9jZ8) を使用中
+- example.com の mailto は存在しない。タスク完了済み ✅
+
+## ② NEXT_PUBLIC_GA_ID 設定 → GA4 稼働確認 ✅
+- Vercel 環境変数 NEXT_PUBLIC_GA_ID=G-4VP91XW5GZ を前セッションで設定・デプロイ済み
+- 本日デプロイ状態確認: Ready / Latest / Current (Deployment ID: J54dVPEzMNqeU3evPSEwEWZksGHm)
+- 本番サイト JS コンソール確認:
+  - cookieConsent: "accepted" ✅
+  - gtagDefined: true ✅
+  - gaScriptPresent: true ✅
+  - dataLayerLength: 5 ✅ (イベント送信確認)
+- GA4 (G-4VP91XW5GZ) 本番稼働を確認。タスク完了 ✅
+
+## ③ ads.txt パブリッシャー ID 確認 ✅
+- public/ads.txt の内容: google.com, pub-3630118749428580, DIRECT, f08c47fec0942fa0
+- AdSense ダッシュボード (pub-3630118749428580) にログインし、ID が実 ID であることを確認 ✅
+- ads.txt の技術的設定は完了済み
+- AdSense 審査状況: 「ポリシー違反 - 有用性の低いコンテンツ」でブロック中
+  → サイト所有権確認は済み (✅)
+  → トラフィック積み上げ後に「審査をリクエスト」ボタンで再申請が必要
+  → 「問題を修正しました」チェックボックス + 「審査をリクエスト」は人間が手動で実施
+- 技術タスクは完了。AdSense 本承認は運用フェーズ（トラフィック獲得後） ✅
+
+## ④ X / note アウトリーチ
+- 日次作業として継続中。本日分は作業済み ✅
+- X: フォロワー数増加中（種まき期継続）
+- note: フォロワー 11人 / フォロー 43人（順調な滑り出し）
+
+## 次セッションへの申し送り
+- AdSense 再審査申請: DAU 50〜100 程度になったタイミングで「審査をリクエスト」を実施（人間操作）
+- X/note アウトリーチ: 引き続き日次で継続
+- 次の開発候補: note 記事の定期投稿（週1本推奨）/ iOSアプリ開発着手
+
+================================================================
+
+[2026-05-05] Generator - W-1 ダッシュボード バンドルサイズ削減 (next/dynamic)
+
+## 対応内容
+- final-review-report.md の W-1 "ダッシュボード First Load JS 223KB" 対応
+- 方針: Chart.js / react-chartjs-2 の全インポートを next/dynamic で遅延ロードに分割
+
+## 変更ファイル
+- **新規作成**: src/components/DashboardChartsSection.tsx
+  - chart.js / react-chartjs-2 の全インポートをこちらに移動
+  - ChartJS.register() + defaults 設定
+  - 折れ線グラフ・散布図・棒グラフ(タブ) の JSX を全て含む
+  - ChartCard / LockedChart ヘルパーコンポーネントも内包
+  - Props: { records: SleepRecord[] }
+
+- **変更**: src/app/dashboard/page.tsx
+  - chart.js / react-chartjs-2 の import を全て削除
+  - Tabs / CorrelationChart の import を削除（DashboardChartsSection 内に移動）
+  - Lock アイコン import を削除（同上）
+  - ChartCard / LockedChart コンポーネント定義を削除
+  - チャート useMemo フック (lineData / pressureBarData 等) を削除
+  - `next/dynamic` で DashboardChartsSection を遅延ロード (ssr: false)
+  - ローディング中はパルスアニメーションのスケルトン (3枚) を表示
+
+## 期待効果
+- /dashboard の First Load JS: 223KB → 推定 ~80-100KB 程度に削減
+  (chart.js ~180KB gzip前 が別チャンクに分離)
+- チャート部分は client-side のみ、SSR 対象外のため hydration 問題なし
+- 初回表示: スケルトン → チャート読み込み完了で差し替え
+
+## 注意事項
+- bash sandbox の UNC パスエラーで npm run build / tsc --noEmit を実行できず
+- TypeScript の型チェックは目視で確認済み（型エラーは検出されていない）
+- Vercel デプロイ後のビルドログで /dashboard のサイズを確認すること
+
+## 次セッションへの申し送り
+- `git commit -m "perf: extract Chart.js to DashboardChartsSection with next/dynamic (W-1)"` を実施
+- Vercel デプロイ後にビルドログ /dashboard のサイズを確認（目標: ~100KB以下）
+- W-2 コントラスト比: TestFlight/iOS フェーズ完了後に対応（保留）
