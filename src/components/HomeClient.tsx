@@ -6,20 +6,17 @@
  * page.tsx を Server Component 化するため、clientロジック
  * （useState / useEffect / localStorage）をここに分離。
  * JSON-LD は Server Component 側の page.tsx で SSR する。
+ *
+ * ─ Phase 設計 ─────────────────────────────────────────────
+ * P0 (0件)  : Hero(CTA1つ) → WeeklyRiskForecast(full) → AdBanner → WeatherWidget → 3ステップ → FAQ
+ * P1 (1-6件): Hero(CTA2つ) → WeeklyRiskForecast(full) → AdBanner → WeatherWidget → FAQ
+ * P2 (7件+) : WeeklyInsightCard → PredictionCard → AdBanner → WeatherWidget(+compact forecast) → FAQ
  */
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Activity, ChevronDown, Moon, Smartphone, Timer, Watch } from "lucide-react";
+import { Activity, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { AdBanner } from "@/components/AdBanner";
 import { PredictionCard } from "@/components/PredictionCard";
 import { ContinuousRecordBadge } from "@/components/ContinuousRecordBadge";
@@ -51,10 +48,6 @@ const FAQ_ITEMS = [
     a: "完全無料・登録不要でご利用いただけます。記録データはお使いのブラウザの端末内にのみ保存され、外部サーバーへの送信は行いません。",
   },
   {
-    q: "データはどこに保存されますか？",
-    a: "すべての記録データはブラウザのlocalStorageに保存されます。外部サーバーや第三者への送信は行わないため、プライバシーが守られます。",
-  },
-  {
     q: "何日記録すると予測の精度が上がりますか？",
     a: "7日間以上の記録で相関分析が開始され、予測の信頼度が「中」になります。15日以上で「高」となり、気象パターンとあなたの睡眠との個人的な相関が分かるようになります。",
   },
@@ -64,40 +57,14 @@ const FAQ_ITEMS = [
   },
 ] as const;
 
-const FEATURES = [
-  {
-    icon: Watch,
-    title: "ウェアラブル不要",
-    description:
-      "高価なデバイスは要りません。ブラウザ 1 つであなたの睡眠を記録・予測します。",
-  },
-  {
-    icon: Timer,
-    title: "毎朝15秒で入力",
-    description:
-      "昨晩の眠りを 3 択でタップするだけ。気象データは自動で取得します。",
-  },
-  {
-    icon: Moon,
-    title: "明日の眠気を予報",
-    description:
-      "気圧・気温・月齢とあなたの過去データから、明日の睡眠品質を予測します。",
-  },
-] as const;
-
 export function HomeClient() {
   const [prediction, setPrediction] = useState<PredictionResult | null>(null);
   const [badge, setBadge] = useState<ReturnType<typeof calculateContinuousRecordBadge> | null>(null);
   const [loading, setLoading] = useState(true);
   const [recordCount, setRecordCount] = useState<number>(0);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
-  const [submitted, setSubmitted] = useState<boolean>(false);
-  const [email, setEmail] = useState<string>("");
-  const [currentPressure, setCurrentPressure] = useState<number | null>(null);
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [pressureChecks, setPressureChecks] = useState<boolean[]>([false, false, false]);
-  /** WeeklyRiskForecast 用 7日間予報データ */
   const [dailyForecast, setDailyForecast] = useState<DailyForecast[] | null>(null);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   useEffect(() => {
     const loadPrediction = async () => {
@@ -129,7 +96,6 @@ export function HomeClient() {
 
             if (fullWeatherResult.status === "fulfilled") {
               setDailyForecast(fullWeatherResult.value.forecast);
-              setCurrentPressure(fullWeatherResult.value.current.pressureHpa);
             }
             if (forecastResult.status === "fulfilled") {
               const result = predictTomorrow(records, forecastResult.value);
@@ -142,7 +108,6 @@ export function HomeClient() {
               prefecture.longitude
             );
             setDailyForecast(fullWeather.forecast);
-            setCurrentPressure(fullWeather.current.pressureHpa);
           }
         }
       } catch (err) {
@@ -155,38 +120,12 @@ export function HomeClient() {
     loadPrediction();
   }, []);
 
-  const handleEmailSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    try {
-      const formspreeId = process.env.NEXT_PUBLIC_FORMSPREE_ID || "YOUR_FORM_ID";
-      const response = await fetch(`https://formspree.io/f/${formspreeId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-      if (response.ok) {
-        setSubmitted(true);
-      } else {
-        console.error("通知登録エラー: HTTP", response.status);
-      }
-    } catch (err) {
-      console.error("通知登録エラー:", err);
-    }
-  };
-
   return (
     <div className="container mx-auto max-w-screen-md px-4 py-10 sm:py-14">
       {/* オンボーディングバナー（初回訪問・記録ゼロ時のみ表示） */}
       <OnboardingBanner />
 
-      {/* ─── ヒーローセクション（Phase0/1: 7日未満のユーザー向け） ─────────── */}
-      {/*
-       * Phase0/1 のみ表示。継続ユーザー（Phase2: 7件以上）はデータファースト
-       * で毎日使うため非表示。新規・初期ユーザーにアプリの価値を最初に伝える。
-       */}
+      {/* ─── ヒーローセクション（P0 / P1: 記録7件未満） ─────────────────────── */}
       {isLoaded && recordCount < 7 && (
         <section className="mb-12 text-center sm:mb-16">
           <h1 className="mb-4 text-3xl font-bold leading-tight tracking-tight text-[#e6e8ee] sm:text-4xl md:text-5xl">
@@ -195,63 +134,62 @@ export function HomeClient() {
           <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed text-[#a8b0c2] sm:text-base">
             気圧・気温・月齢からあなたの睡眠を読み解く
           </p>
-          <>
-            {recordCount === 0 && (
-              <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3">
-                <Button asChild size="lg" className="h-12 w-full text-base">
-                  <Link href="/record">
-                    <Activity className="mr-1" aria-hidden="true" />
-                    今日を記録する
-                  </Link>
-                </Button>
-              </div>
-            )}
-            {recordCount >= 1 && recordCount <= 4 && (
-              <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
-                <Button asChild size="lg" className="h-12 text-base">
-                  <Link href="/record">
-                    <Activity className="mr-1" aria-hidden="true" />
-                    今日を記録する
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className="h-9 border-indigo-400/40 text-sm text-[#e6e8ee] hover:bg-indigo-500/10 hover:text-[#e6e8ee]"
-                >
-                  <Link href="/dashboard">ダッシュボードを見る</Link>
-                </Button>
-              </div>
-            )}
-            {recordCount >= 5 && recordCount < 7 && (
-              <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
-                <Button asChild size="lg" className="h-12 text-base">
-                  <Link href="/dashboard">
-                    <Activity className="mr-1" aria-hidden="true" />
-                    ダッシュボードで分析する
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className="h-9 border-indigo-400/40 text-sm text-[#e6e8ee] hover:bg-indigo-500/10 hover:text-[#e6e8ee]"
-                >
-                  <Link href="/record">今日を記録する</Link>
-                </Button>
-              </div>
-            )}
-          </>
+
+          {/* P0: 記録ゼロ → シンプルに1つのCTA */}
+          {recordCount === 0 && (
+            <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3">
+              <Button asChild size="lg" className="h-12 w-full text-base">
+                <Link href="/record">
+                  <Activity className="mr-1" aria-hidden="true" />
+                  今日を記録する
+                </Link>
+              </Button>
+            </div>
+          )}
+
+          {/* P1: 1〜4件 → 記録 primary / ダッシュボード secondary */}
+          {recordCount >= 1 && recordCount <= 4 && (
+            <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
+              <Button asChild size="lg" className="h-12 text-base">
+                <Link href="/record">
+                  <Activity className="mr-1" aria-hidden="true" />
+                  今日を記録する
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="h-9 border-indigo-400/40 text-sm text-[#e6e8ee] hover:bg-indigo-500/10 hover:text-[#e6e8ee]"
+              >
+                <Link href="/dashboard">ダッシュボードを見る</Link>
+              </Button>
+            </div>
+          )}
+
+          {/* P1: 5〜6件 → ダッシュボード primary / 記録 secondary */}
+          {recordCount >= 5 && recordCount < 7 && (
+            <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center">
+              <Button asChild size="lg" className="h-12 text-base">
+                <Link href="/dashboard">
+                  <Activity className="mr-1" aria-hidden="true" />
+                  ダッシュボードで分析する
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="h-9 border-indigo-400/40 text-sm text-[#e6e8ee] hover:bg-indigo-500/10 hover:text-[#e6e8ee]"
+              >
+                <Link href="/record">今日を記録する</Link>
+              </Button>
+            </div>
+          )}
         </section>
       )}
 
-      {/* ─── フェーズ別メインコンテンツ ────────────────────────────────────── */}
-      {/*
-       * Phase0 (0-2件): WeeklyRiskForecast がプライマリ、PredictionCard は非表示
-       * Phase1 (3-6件): WeeklyRiskForecast がプライマリ + ロック状態のPredictionCardプレビュー
-       * Phase2 (7件〜): PredictionCard がプライマリ、WeeklyRiskForecast は下部に縮小
-       */}
+      {/* ─── フェーズ別メインカード ───────────────────────────────────────────── */}
       {!loading && (
         <>
           {/* 連続記録バッジ */}
@@ -261,10 +199,10 @@ export function HomeClient() {
             </div>
           )}
 
-          {/* 週次インサイトカード（記録ありの場合のみ有効） */}
+          {/* P2: 週次インサイトカード（7件〜のみ） */}
           <WeeklyInsightCard />
 
-          {/* Phase2: PredictionCard をプライマリ表示 */}
+          {/* P2: PredictionCard をプライマリ表示 */}
           {recordCount >= 7 && prediction && (
             <div className="mb-8">
               <PredictionCard
@@ -275,7 +213,7 @@ export function HomeClient() {
             </div>
           )}
 
-          {/* Phase0 / Phase1: WeeklyRiskForecast をプライマリ表示 */}
+          {/* P0 / P1: WeeklyRiskForecast をプライマリ表示 */}
           {recordCount < 7 && dailyForecast && (
             <div className="mb-8">
               <WeeklyRiskForecast
@@ -285,142 +223,17 @@ export function HomeClient() {
               />
             </div>
           )}
-
-          {/* Phase1 (3-6件): ロック状態のPredictionCardプレビュー */}
-          {recordCount >= 3 && recordCount < 7 && (
-            <div className="mb-8 rounded-xl border border-indigo-400/15 bg-indigo-500/[0.04] p-5">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm font-semibold text-[#e6e8ee]">
-                    明日の眠気レベル
-                  </p>
-                  <p className="mt-0.5 text-xs text-[#a8b0c2]">
-                    あと{7 - recordCount}日の記録で、あなた専用の予測が始まります
-                  </p>
-                </div>
-                {/* プログレスリング */}
-                <div className="shrink-0">
-                  <svg
-                    width="52"
-                    height="52"
-                    viewBox="0 0 52 52"
-                    aria-label={`${recordCount}/7日記録済み`}
-                  >
-                    <circle
-                      cx="26"
-                      cy="26"
-                      r="21"
-                      fill="none"
-                      stroke="rgba(255,255,255,0.08)"
-                      strokeWidth="3.5"
-                    />
-                    <circle
-                      cx="26"
-                      cy="26"
-                      r="21"
-                      fill="none"
-                      stroke="#818cf8"
-                      strokeWidth="3.5"
-                      strokeDasharray={`${(recordCount / 7) * 131.9} 131.9`}
-                      strokeLinecap="round"
-                      transform="rotate(-90 26 26)"
-                    />
-                    <text
-                      x="26"
-                      y="23"
-                      textAnchor="middle"
-                      fill="#a5b4fc"
-                      fontSize="10"
-                      fontWeight="500"
-                    >
-                      {recordCount}/7
-                    </text>
-                    <text
-                      x="26"
-                      y="34"
-                      textAnchor="middle"
-                      fill="#a8b0c2"
-                      fontSize="8"
-                    >
-                      日記録
-                    </text>
-                  </svg>
-                </div>
-              </div>
-            </div>
-          )}
         </>
       )}
 
-      {/* 気圧感受度チェックカード（記録ゼロの新規ユーザー向け） */}
-      {isLoaded && recordCount === 0 && (
-        <section
-          aria-labelledby="pressure-check-heading"
-          className="mb-10 rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-5 sm:p-6"
-        >
-          <h2
-            id="pressure-check-heading"
-            className="mb-3 text-sm font-bold text-[#e6e8ee]"
-          >
-            🌀 あなたの気圧感受度を確認しよう
-          </h2>
-          <fieldset className="mb-4 space-y-3 border-0 p-0">
-            <legend className="sr-only">気圧感受度チェックリスト</legend>
-            {[
-              "雨の前日や台風が近づくと、頭痛やだるさを感じる",
-              "天気が悪い日は睡眠が浅くなる・寝つきが悪いと感じる",
-              "「天気のせいかも？」と思うことが月に2回以上ある",
-            ].map((item, i) => (
-              <label
-                key={i}
-                className="flex cursor-pointer items-start gap-3 text-sm text-[#a8b0c2]"
-              >
-                <input
-                  type="checkbox"
-                  checked={pressureChecks[i]}
-                  onChange={() => {
-                    const next = [...pressureChecks];
-                    next[i] = !next[i];
-                    setPressureChecks(next);
-                  }}
-                  className="mt-0.5 h-4 w-4 shrink-0 accent-indigo-400"
-                  aria-label={item}
-                />
-                <span>{item}</span>
-              </label>
-            ))}
-          </fieldset>
-          {pressureChecks.some(Boolean) && (
-            <p className="mb-4 rounded-xl border border-indigo-400/20 bg-indigo-500/10 px-4 py-2.5 text-xs leading-relaxed text-indigo-200">
-              当てはまる項目があります。設定で気圧感受度を入力すると、より精度の高い睡眠予測が可能になります。
-            </p>
-          )}
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/settings"
-              className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-indigo-400"
-            >
-              設定で詳しく入力する
-            </Link>
-            <Link
-              href="/record"
-              className="inline-flex items-center gap-1.5 rounded-full border border-indigo-400/40 px-5 py-2.5 text-sm font-medium text-indigo-300 transition-colors hover:border-indigo-400/70"
-            >
-              <Activity className="h-4 w-4" aria-hidden="true" />
-              まず記録を始める
-            </Link>
-          </div>
-        </section>
-      )}
-
-      {/* 広告スロット: ヒーロー下 */}
+      {/* 広告スロット */}
       <AdBanner slot="hero-bottom" format="horizontal" className="mb-8" />
 
-      {/* 気象・睡眠ウィジェット: 今夜の睡眠予報 + 気圧グラフ + 5日間予報 */}
+      {/* 気象ウィジェット */}
       <div className="mb-12">
         <WeatherWidget />
 
-        {/* Phase2 (記録7件〜): WeeklyRiskForecast を compact で補足表示 */}
+        {/* P2: WeeklyRiskForecast を compact で補足表示 */}
         {!loading && recordCount >= 7 && dailyForecast && (
           <div className="mt-4">
             <WeeklyRiskForecast
@@ -430,147 +243,62 @@ export function HomeClient() {
             />
           </div>
         )}
-
-        {/* iOSアプリ通知登録フォーム */}
-        <div className="mt-8 rounded-2xl border border-white/10 bg-[#1a1f2e] p-5">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="flex items-center gap-2 text-base font-semibold text-[#e6e8ee]">
-                <Smartphone className="h-4 w-4 text-indigo-400" aria-hidden="true" />
-                iOSアプリ開発中
-              </p>
-              <p className="mt-1 text-xs text-[#a8b0c2]">
-                気圧急落アラートなど、通知機能を準備中です
-              </p>
-            </div>
-          </div>
-
-          {/* 今日の気象コンディション（prediction があれば表示） */}
-          {prediction && currentPressure != null && (
-            <p className="mt-3 text-xs text-[#a8b0c2]">
-              今日の気圧: {Math.round(currentPressure)}hPaです
-            </p>
-          )}
-
-          {/* 通知登録フォーム */}
-          <div className="mt-4 border-t border-white/10 pt-4">
-            {submitted ? (
-              <p className="text-sm text-indigo-400">登録ありがとうございます！</p>
-            ) : (
-              <>
-                <p className="mb-2 text-xs text-[#a8b0c2]">リリース時に通知を受け取る</p>
-                <form
-                  action={`https://formspree.io/f/${process.env.NEXT_PUBLIC_FORMSPREE_ID || "YOUR_FORM_ID"}`}
-                  method="POST"
-                  onSubmit={handleEmailSubmit}
-                  className="flex flex-col gap-2 sm:flex-row"
-                >
-                  <Input
-                    type="email"
-                    name="email"
-                    required
-                    placeholder="メールアドレス"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="border-white/10 bg-[#0f1117] text-[#e6e8ee] placeholder:text-[#a8b0c2]"
-                  />
-                  <Button type="submit" className="h-10 whitespace-nowrap">
-                    通知を受け取る
-                  </Button>
-                </form>
-              </>
-            )}
-          </div>
-        </div>
       </div>
 
-      {/* 3ステップで始める */}
-      <section
-        aria-labelledby="howto-heading"
-        className="mb-12 sm:mb-16"
-      >
-        <h2
-          id="howto-heading"
-          className="mb-6 text-center text-xl font-semibold text-[#e6e8ee] sm:text-2xl"
-        >
-          3 ステップで始める
-        </h2>
-        <ol className="space-y-4">
-          {[
-            {
-              step: "01",
-              title: "今日の眠りを記録する",
-              desc: "「よく眠れた」「なんとか眠れた」「眠れなかった」の 3 択でタップ。15 秒で完了します。",
-              href: "/record",
-            },
-            {
-              step: "02",
-              title: "7 日間続けてみる",
-              desc: "気象データは自動取得。記録を重ねるほど、あなただけのパターンが見えてきます。",
-              href: null,
-            },
-            {
-              step: "03",
-              title: "ダッシュボードで傾向を把握",
-              desc: "気圧・気温・月齢との相関グラフで、眠れない夜の原因が分かります。",
-              href: "/dashboard",
-            },
-          ].map(({ step, title, desc, href }) => (
-            <li key={step} className="flex gap-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-              <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-indigo-500/15 text-xs font-bold text-indigo-300">
-                {step}
-              </span>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-[#e6e8ee]">
-                  {href ? (
-                    <a href={href} className="hover:underline decoration-indigo-400/50">
-                      {title}
-                    </a>
-                  ) : title}
-                </p>
-                <p className="mt-0.5 text-xs leading-relaxed text-[#a8b0c2]">{desc}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section
-        aria-labelledby="features-heading"
-        className="mb-12 sm:mb-16"
-      >
-        <h2
-          id="features-heading"
-          className="mb-6 text-center text-xl font-semibold text-[#e6e8ee] sm:text-2xl"
-        >
-          SleepForecast の特徴
-        </h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {FEATURES.map((feature) => {
-            const Icon = feature.icon;
-            return (
-              <Card
-                key={feature.title}
-                className="border-white/5 bg-[#1a1f2e]"
+      {/* 3ステップで始める（P0 / P1 のみ表示） */}
+      {isLoaded && recordCount < 7 && (
+        <section aria-labelledby="howto-heading" className="mb-12 sm:mb-16">
+          <h2
+            id="howto-heading"
+            className="mb-6 text-center text-xl font-semibold text-[#e6e8ee] sm:text-2xl"
+          >
+            3 ステップで始める
+          </h2>
+          <ol className="space-y-4">
+            {[
+              {
+                step: "01",
+                title: "今日の眠りを記録する",
+                desc: "「よく眠れた」「なんとか眠れた」「眠れなかった」の 3 択でタップ。15 秒で完了します。",
+                href: "/record",
+              },
+              {
+                step: "02",
+                title: "7 日間続けてみる",
+                desc: "気象データは自動取得。記録を重ねるほど、あなただけのパターンが見えてきます。",
+                href: null,
+              },
+              {
+                step: "03",
+                title: "ダッシュボードで傾向を把握",
+                desc: "気圧・気温・月齢との相関グラフで、眠れない夜の原因が分かります。",
+                href: "/dashboard",
+              },
+            ].map(({ step, title, desc, href }) => (
+              <li
+                key={step}
+                className="flex gap-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4"
               >
-                <CardHeader className="space-y-2 pb-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-indigo-500/15 text-indigo-400">
-                    <Icon className="h-5 w-5" aria-hidden="true" />
-                  </div>
-                  <CardTitle className="text-base text-[#e6e8ee]">
-                    {feature.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-sm leading-relaxed text-[#a8b0c2]">
-                    {feature.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      </section>
+                <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-indigo-500/15 text-xs font-bold text-indigo-300">
+                  {step}
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-[#e6e8ee]">
+                    {href ? (
+                      <a href={href} className="hover:underline decoration-indigo-400/50">
+                        {title}
+                      </a>
+                    ) : (
+                      title
+                    )}
+                  </p>
+                  <p className="mt-0.5 text-xs leading-relaxed text-[#a8b0c2]">{desc}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
 
       {/* よくある質問 */}
       <section aria-labelledby="faq-heading" className="mb-12 sm:mb-16">

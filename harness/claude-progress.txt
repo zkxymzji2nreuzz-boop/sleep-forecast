@@ -819,6 +819,44 @@ Opus モデルを使った4エージェント並列レビューを実施。
 
 ================================================================
 
+[2026-05-07] Generator - T-01 ホームページ情報密度削減（ハイブリッドB-lean）
+
+## 変更ファイル
+- **変更**: src/components/HomeClient.tsx（624行 → 283行、約55%削減）
+
+## 削除したセクション
+1. **iOSアプリ通知登録フォーム** — 未リリース機能、空約束をユーザーに見せない
+2. **SleepForecastの特徴カード×3** — ウェアラブル不要/15秒/予報。FAQ/3ステップで代替済み
+3. **ロック済みPredictionCard（P1用）** — WeeklyRiskForecastで代替、二重表示を排除
+4. **気圧感受度チェックカード** — /record 画面への移動を推奨（今回はホームから削除のみ）
+
+## 修正した動作
+- **3ステップ説明**: P0/P1（recordCount < 7）のみ表示。継続ユーザーには不要
+- **FAQアイテム**: 6件 → 5件（「データはどこに保存されますか？」を削除、「登録や料金は？」と内容重複）
+
+## 削除した state / import
+- state: `email`, `submitted`, `currentPressure`, `pressureChecks`
+- handler: `handleEmailSubmit`
+- constant: `FEATURES`
+- imports: `Smartphone`, `Input`, `Watch`, `Timer`, `Moon`, `Card`, `CardContent`, `CardDescription`, `CardHeader`, `CardTitle`
+
+## Phase設計（コメント明記）
+- P0 (0件)  : Hero(CTA×1) → WeeklyRiskForecast(full) → AdBanner → WeatherWidget → 3ステップ → FAQ
+- P1 (1-6件): Hero(CTA×2) → WeeklyRiskForecast(full) → AdBanner → WeatherWidget → FAQ
+- P2 (7件+) : WeeklyInsightCard → PredictionCard → AdBanner → WeatherWidget(+compact forecast) → FAQ
+
+## 注意事項
+- bash sandbox の UNC パスエラーで tsc --noEmit を実行できず
+- TypeScript 型安全は目視確認済み（削除したプロパティは全て対応）
+- Vercel デプロイでビルドエラーが出ないことを確認すること
+
+## 次セッションへの申し送り
+- T-02: CSP unsafe-inline排除 + /api/weather IPレート制限
+- T-03: アプリ内集計データをピラー記事に注入
+- T-04: 動的OGP画像（@vercel/og）+ Xシェアボタン強化
+
+================================================================
+
 [2026-05-07] Cowork - BUG-FIX データ永続化（IndexedDB二重バックアップ + Supabaseセッション復元）
 
 ## 問題
