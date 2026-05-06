@@ -43,6 +43,7 @@ import {
   getRecords,
   formatDateJst,
 } from "@/lib/storage";
+import { getDemoCount, generateDemoRecords } from "@/lib/demo";
 import { getPrefectureByCode } from "@/lib/prefectures";
 import type {
   FullWeatherData,
@@ -1006,7 +1007,9 @@ function CorrelationChart() {
   const [points, setPoints] = React.useState<{ pressure: number; quality: number }[]>([]);
 
   React.useEffect(() => {
-    const records = getRecords();
+    // デモモード時はデモデータを使う
+    const demoCnt = getDemoCount();
+    const records = demoCnt !== null ? generateDemoRecords(demoCnt) : getRecords();
     const validPoints = records
       .filter((r) => r.weather?.pressureHpa != null && r.quality != null)
       .map((r) => ({ pressure: r.weather.pressureHpa, quality: r.quality as number }));

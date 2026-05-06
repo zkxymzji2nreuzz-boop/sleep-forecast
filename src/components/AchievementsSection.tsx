@@ -100,7 +100,7 @@ function BadgeCard({ status }: BadgeCardProps) {
   );
 }
 
-async function shareAchievements(earnedCount: number, statuses: ReturnType<typeof calcBadgeStatuses>) {
+function shareAchievements(earnedCount: number, statuses: ReturnType<typeof calcBadgeStatuses>) {
   const earnedBadges = statuses.filter((s) => s.earned).slice(0, 3);
   const badgeEmojis = earnedBadges.map((s) => s.badge.emoji).join(" ");
   const text = [
@@ -111,14 +111,6 @@ async function shareAchievements(earnedCount: number, statuses: ReturnType<typeo
     "https://sleep-forecast.vercel.app",
   ].filter(Boolean).join("\n");
 
-  if (navigator.share) {
-    try {
-      await navigator.share({ text });
-      return;
-    } catch {
-      // キャンセル → fallback
-    }
-  }
   window.open(
     `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`,
     "_blank",

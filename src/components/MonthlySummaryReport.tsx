@@ -180,16 +180,8 @@ function buildShareText(summary: MonthlySummary): string {
   return lines.join("\n");
 }
 
-async function shareMonthly(summary: MonthlySummary) {
+function shareMonthly(summary: MonthlySummary) {
   const text = buildShareText(summary);
-  if (navigator.share) {
-    try {
-      await navigator.share({ text });
-      return;
-    } catch {
-      // キャンセル等 → fallback
-    }
-  }
   const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
   window.open(url, "_blank", "noopener,noreferrer");
 }
