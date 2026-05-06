@@ -3,14 +3,23 @@
  *
  * URL パラメータ `?demo=N` を検出し、N 日分のサンプル睡眠記録を生成する。
  * 本番データ（localStorage / Supabase）には一切書き込まない。
- * HomeClient / DashboardPage が `getRecords()` の代わりにこのデータを使う。
+ * HomeClient / DashboardPage / RecordForm が `getRecords()` の代わりにこのデータを使う。
+ *
+ * セッション持続:
+ *   ?demo=N を一度検出すると sessionStorage に保存し、ページ遷移後も維持される。
+ *   DemoModeBanner の × ボタンで clearDemoMode() を呼ぶとセッションが終了する。
+ *   タブを閉じると sessionStorage は自動消去される。
  *
  * 使用例:
- *   /                → 通常モード
- *   /?demo=4         → 4 日分（P1 状態のプレビュー）
- *   /?demo=7         → 7 日分（予測解放直後のプレビュー）
- *   /?demo=30        → 30 日分（フル機能のプレビュー）
+ *   /?demo=4            → 4 日分（P1 状態のプレビュー）
+ *   /?demo=7            → 7 日分（予測解放直後のプレビュー）
+ *   /?demo=30           → 30 日分（フル機能のプレビュー）
+ *   /dashboard?demo=30  → ダッシュボードから直接デモ開始
+ *   /record?demo=30     → 記録ページから直接デモ開始
  */
+
+/** sessionStorage キー */
+const DEMO_SESSION_KEY = "sf_demo_count";
 
 import type { SleepRecord, SleepQuality, WeatherData } from "./types";
 
@@ -20,22 +29,57 @@ import type { SleepRecord, SleepQuality, WeatherData } from "./types";
 
 /**
  * `?demo=N` パラメータを読み取る。
+ * 優先順位:
+ *   1. URL パラメータ `?demo=N` → 有効なら sessionStorage に保存して返す
+ *   2. sessionStorage に保存済みの値 → 返す（ページ遷移後も維持）
+ *   3. どちらもなければ null
  * - N が 1〜365 の整数でなければ null を返す。
  * - SSR（window なし）でも安全に動作する。
  */
 export function getDemoCount(): number | null {
   if (typeof window === "undefined") return null;
+
+  // 1. URL パラメータを確認
   const params = new URLSearchParams(window.location.search);
   const val = params.get("demo");
-  if (!val) return null;
-  const n = parseInt(val, 10);
-  if (!Number.isFinite(n) || n < 1 || n > 365) return null;
-  return n;
+  if (val) {
+    const n = parseInt(val, 10);
+    if (Number.isFinite(n) && n >= 1 && n <= 365) {
+      // sessionStorage に保存してページ遷移後も維持
+      try { sessionStorage.setItem(DEMO_SESSION_KEY, String(n)); } catch { /* ignore */ }
+      return n;
+    }
+  }
+
+  // 2. sessionStorage にキャッシュがあれば返す
+  try {
+    const cached = sessionStorage.getItem(DEMO_SESSION_KEY);
+    if (cached) {
+      const n = parseInt(cached, 10);
+      if (Number.isFinite(n) && n >= 1 && n <= 365) return n;
+    }
+  } catch { /* ignore */ }
+
+  return null;
 }
 
 /** デモモードが有効かどうかを返す */
 export function isDemoMode(): boolean {
   return getDemoCount() !== null;
+}
+
+/**
+ * デモモードを終了する。
+ * sessionStorage のキャッシュを消去し、ページをリロードする。
+ * DemoModeBanner の × ボタンから呼び出す。
+ */
+export function clearDemoMode(): void {
+  if (typeof window === "undefined") return;
+  try { sessionStorage.removeItem(DEMO_SESSION_KEY); } catch { /* ignore */ }
+  // URL から ?demo パラメータを除去してリロード
+  const url = new URL(window.location.href);
+  url.searchParams.delete("demo");
+  window.location.replace(url.toString());
 }
 
 // ---------------------------------------------------------------------------

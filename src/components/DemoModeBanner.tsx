@@ -3,20 +3,18 @@
 /**
  * DemoModeBanner — デモモード中にページ上部に表示するバナー。
  * ?demo=N を検出した場合にのみレンダリングされる。
- * ×ボタンで非表示にできる（セッション内のみ、localStorage への保存なし）。
+ * ×ボタンで clearDemoMode() を呼び、sessionStorage を消去してリロードする。
+ * これによりダッシュボード・記録など全ページでデモが終了する。
  */
 
-import { useState } from "react";
 import { FlaskConical, X } from "lucide-react";
+import { clearDemoMode } from "@/lib/demo";
 
 type Props = {
   recordCount: number;
 };
 
 export function DemoModeBanner({ recordCount }: Props) {
-  const [dismissed, setDismissed] = useState(false);
-  if (dismissed) return null;
-
   return (
     <div
       role="status"
@@ -33,14 +31,14 @@ export function DemoModeBanner({ recordCount }: Props) {
           {recordCount} 日分のサンプルデータで表示中。本番データには影響しません。
         </span>
         <span className="ml-2 text-amber-400/60 text-xs">
-          /?demo=7 や /?demo=30 でも試せます
+          ナビゲーションしてもデモは継続します
         </span>
       </p>
       <button
         type="button"
-        onClick={() => setDismissed(true)}
+        onClick={() => clearDemoMode()}
         className="ml-2 shrink-0 rounded text-amber-400/60 transition-colors hover:text-amber-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400"
-        aria-label="デモモードバナーを閉じる"
+        aria-label="デモモードを終了する"
       >
         <X className="h-4 w-4" />
       </button>

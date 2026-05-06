@@ -50,6 +50,8 @@ import {
 import type { SleepQuality, SleepRecord, WeatherData } from "@/lib/types";
 import { fetchWeather, getMoonData } from "@/lib/weather";
 import { computeWSIScore100 } from "@/lib/wsi";
+import { getDemoCount, generateDemoRecords } from "@/lib/demo";
+import { DemoModeBanner } from "@/components/DemoModeBanner";
 
 /** 3 択評価マスタ */
 const QUALITY_OPTIONS: Array<{
@@ -115,6 +117,9 @@ function buildInitialState(existing: SleepRecord | null): FormState {
 export function RecordForm(): JSX.Element {
   const { toast } = useToast();
 
+  /** デモモード: null = 通常, number = デモ件数 */
+  const [demoCount, setDemoCount] = React.useState<number | null>(null);
+
   const [existingRecord, setExistingRecord] = React.useState<SleepRecord | null>(
     null
   );
@@ -139,14 +144,30 @@ export function RecordForm(): JSX.Element {
   const [todayWeather, setTodayWeather] = React.useState<WeatherData | null | "loading">("loading");
 
   React.useEffect(() => {
-    const today = getTodayRecord();
-    setExistingRecord(today);
-    setForm(buildInitialState(today));
-    setAllRecords(getRecords());
+    // デモモード判定（URL パラメータ or sessionStorage）
+    const demoCnt = getDemoCount();
+    setDemoCount(demoCnt);
+
+    if (demoCnt !== null) {
+      // デモ: 今日分のレコードをデモデータから取得してフォームに反映
+      const demoRecords = generateDemoRecords(demoCnt);
+      setAllRecords(demoRecords);
+      const todayDemo = demoRecords[0] ?? null; // [0] = 今日
+      setExistingRecord(todayDemo);
+      setForm(buildInitialState(todayDemo));
+      // デモ時は今日の気象を即座にセット
+      if (todayDemo) setTodayWeather(todayDemo.weather);
+    } else {
+      const today = getTodayRecord();
+      setExistingRecord(today);
+      setForm(buildInitialState(today));
+      setAllRecords(getRecords());
+    }
   }, []);
 
-  // 今日の気象をページ読み込み時に取得（表示専用）
+  // 今日の気象をページ読み込み時に取得（表示専用）— デモ時はスキップ
   React.useEffect(() => {
+    if (getDemoCount() !== null) return; // デモ時は useEffect[1] でセット済み
     const code = getDefaultPrefectureCode() ?? "13";
     const pref = getPrefectureByCode(code);
     if (!pref) { setTodayWeather(null); return; }
@@ -249,6 +270,19 @@ export function RecordForm(): JSX.Element {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     if (!validate() || form.quality === null) return;
+
+    // デモモード: 実際の保存はせず、デモデータの今日分を savedView として表示する
+    if (demoCount !== null) {
+      const demoRecords = generateDemoRecords(demoCount);
+      const todayDemo = demoRecords[0];
+      if (todayDemo) setSavedView({ ...todayDemo, quality: form.quality as SleepQuality });
+      toast({
+        title: "デモモード: 保存はスキップされました",
+        description: "本番データには影響しません。",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const pref = getPrefectureByCode(form.prefectureCode);
@@ -568,6 +602,7 @@ export function RecordForm(): JSX.Element {
 
   return (
     <div className="container mx-auto max-w-screen-md px-4 py-8 pb-24 sm:py-12 sm:pb-0">
+      {demoCount !== null && <DemoModeBanner recordCount={demoCount} />}
       <div className="mb-6 text-center">
         <div className="mb-4 flex items-center justify-center gap-4 text-xs tabular-nums text-[#a8b0c2]">
           <span className="inline-flex items-center gap-1.5">
