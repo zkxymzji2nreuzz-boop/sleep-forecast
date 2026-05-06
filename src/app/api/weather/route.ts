@@ -38,8 +38,9 @@ function checkRateLimit(ip: string): boolean {
   const now = Date.now();
 
   // Map が膨らみすぎたら古いエントリを掃除する
+  // Array.from() を使うことで TypeScript の downlevelIteration 設定に依存しない
   if (rateLimitMap.size > MAX_MAP_SIZE) {
-    for (const [key, entry] of rateLimitMap) {
+    for (const [key, entry] of Array.from(rateLimitMap.entries())) {
       if (now - entry.windowStart > WINDOW_MS) rateLimitMap.delete(key);
       if (rateLimitMap.size <= MAX_MAP_SIZE / 2) break;
     }
