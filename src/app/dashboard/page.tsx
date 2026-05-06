@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { AdBanner } from "@/components/AdBanner";
 import { Breadcrumb } from "@/components/Breadcrumb";
+import { DemoModeBanner } from "@/components/DemoModeBanner";
 import { OnboardingProgress } from "@/components/OnboardingProgress";
 import { AchievementsSection } from "@/components/AchievementsSection";
 import { MonthlySummaryReport } from "@/components/MonthlySummaryReport";
@@ -53,6 +54,7 @@ import {
 import { fetchWeatherForecast } from "@/lib/weather";
 import { getPrefectureByCode } from "@/lib/prefectures";
 import { getRecords, getStreakDays } from "@/lib/storage";
+import { getDemoCount, generateDemoRecords } from "@/lib/demo";
 import type { SleepRecord, PredictionResult, WeatherData } from "@/lib/types";
 
 /** Chart.js を含むセクションを動的インポートで分割（First Load JS 削減） */
@@ -122,12 +124,16 @@ export default function DashboardPage() {
   const [prediction, setPrediction] = React.useState<PredictionResult | null>(null);
   const [streakDays, setStreakDays] = React.useState<number>(0);
   const [todayWeather, setTodayWeather] = React.useState<WeatherData | null>(null);
+  const [demoCount, setDemoCount] = React.useState<number | null>(null);
 
   React.useEffect(() => {
-    const real = getRecords();
+    // デモモード判定（URL パラメータ ?demo=N）
+    const demoCnt = getDemoCount();
+    setDemoCount(demoCnt);
+    const real = demoCnt !== null ? generateDemoRecords(demoCnt) : getRecords();
     setRecords(real);
     setIsLoaded(true);
-    setStreakDays(getStreakDays());
+    setStreakDays(demoCnt !== null ? real.length : getStreakDays());
 
     // 予測を計算
     if (real.length > 0) {
@@ -195,6 +201,9 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto max-w-screen-md px-4 py-8 pb-16 sm:py-12">
       <Breadcrumb items={[{ name: "ホーム", href: "/" }, { name: "ダッシュボード" }]} />
+
+      {/* デモモードバナー */}
+      {demoCount !== null && <DemoModeBanner recordCount={demoCount} />}
 
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-[#e6e8ee]">睡眠ダッシュボード</h1>

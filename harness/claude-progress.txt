@@ -857,6 +857,32 @@ Opus モデルを使った4エージェント並列レビューを実施。
 
 ================================================================
 
+[2026-05-07] Generator - デモモード実装（?demo=N URL パラメータ）
+
+## 新規ファイル
+- **src/lib/demo.ts**: getDemoCount() / isDemoMode() / generateDemoRecords(n)
+  - seededRand() による決定論的乱数（同じ N なら毎回同じ結果）
+  - 気圧急落と睡眠品質低下の相関を内包（ダッシュボードの相関グラフで視覚確認可能）
+  - 満月・高湿度でも品質が若干低下する設計
+- **src/components/DemoModeBanner.tsx**: 琥珀色バナー + × 閉じボタン
+
+## 変更ファイル
+- **src/components/HomeClient.tsx**: demoCount state追加、getDemoCount/generateDemoRecords呼び出し、DemoModeBanner表示
+- **src/app/dashboard/page.tsx**: 同上 + streakDays をデモ時は records.length で代替
+
+## 使い方
+- /?demo=4    → 4日分（P1ステートをプレビュー）
+- /?demo=7    → 7日分（予測カード解放直後）
+- /?demo=30   → 30日分（フル相関グラフ解放）
+- /dashboard?demo=30 → ダッシュボードのフル機能確認
+
+## 安全性
+- 本番 localStorage / Supabase には一切書き込まない（インメモリのみ）
+- OnboardingBanner はデモ時に非表示（意図的）
+
+
+================================================================
+
 [2026-05-07] Cowork - BUG-FIX データ永続化（IndexedDB二重バックアップ + Supabaseセッション復元）
 
 ## 問題

@@ -25,6 +25,8 @@ import { OnboardingBanner } from "@/components/OnboardingBanner";
 import { WeeklyInsightCard } from "@/components/WeeklyInsightCard";
 import { WeeklyRiskForecast } from "@/components/WeeklyRiskForecast";
 import { getRecords, DEFAULT_PREFECTURE_KEY } from "@/lib/storage";
+import { isDemoMode, getDemoCount, generateDemoRecords } from "@/lib/demo";
+import { DemoModeBanner } from "@/components/DemoModeBanner";
 import {
   predictTomorrow,
   calculateContinuousRecordBadge,
@@ -65,11 +67,17 @@ export function HomeClient() {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [dailyForecast, setDailyForecast] = useState<DailyForecast[] | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [demoCount, setDemoCount] = useState<number | null>(null);
 
   useEffect(() => {
     const loadPrediction = async () => {
       try {
-        const records = getRecords();
+        // デモモード判定（URL パラメータ ?demo=N）
+        const demoCnt = getDemoCount();
+        setDemoCount(demoCnt);
+        const records = demoCnt !== null
+          ? generateDemoRecords(demoCnt)
+          : getRecords();
         setRecordCount(records.length);
         setIsLoaded(true);
 
@@ -122,8 +130,11 @@ export function HomeClient() {
 
   return (
     <div className="container mx-auto max-w-screen-md px-4 py-10 sm:py-14">
-      {/* オンボーディングバナー（初回訪問・記録ゼロ時のみ表示） */}
-      <OnboardingBanner />
+      {/* デモモードバナー */}
+      {demoCount !== null && <DemoModeBanner recordCount={demoCount} />}
+
+      {/* オンボーディングバナー（初回訪問・記録ゼロ時のみ / デモ時は非表示） */}
+      {demoCount === null && <OnboardingBanner />}
 
       {/* ─── ヒーローセクション（P0 / P1: 記録7件未満） ─────────────────────── */}
       {isLoaded && recordCount < 7 && (
