@@ -8,10 +8,14 @@ import {
   Info,
   BarChart2,
   PenLine,
+  Twitter,
 } from "lucide-react";
 import type { ArticleFull, ArticleMeta } from "@/lib/types";
 import { AdBanner } from "@/components/AdBanner";
 import { Button } from "@/components/ui/button";
+
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://sleep-forecast.vercel.app";
 
 // ---------------------------------------------------------------------------
 // Inline CTA helpers (REQ-P2-03)
@@ -309,6 +313,31 @@ export function ArticleLayout({ article, related, dataBadge }: Props) {
           </Button>
         </div>
       </aside>
+
+      {/* X (Twitter) シェアボタン */}
+      {(() => {
+        const articleUrl = `${SITE_URL}/articles/${article.slug}`;
+        const tweetText = `${article.title} | SleepForecast`;
+        const hashtags = ["気象病", "睡眠", "SleepForecast"].join(",");
+        const tweetUrl =
+          `https://twitter.com/intent/tweet` +
+          `?text=${encodeURIComponent(tweetText)}` +
+          `&url=${encodeURIComponent(articleUrl)}` +
+          `&hashtags=${encodeURIComponent(hashtags)}`;
+        return (
+          <div className="mt-8 flex justify-center">
+            <a
+              href={tweetUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-5 py-2.5 text-sm font-medium text-[#e6e8ee] transition-all hover:border-[#1d9bf0]/40 hover:bg-[#1d9bf0]/10 hover:text-[#1d9bf0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300"
+            >
+              <Twitter className="h-4 w-4" aria-hidden="true" />
+              この記事を X でシェアする
+            </a>
+          </div>
+        );
+      })()}
 
       {/* 関連記事 */}
       {related.length > 0 && (

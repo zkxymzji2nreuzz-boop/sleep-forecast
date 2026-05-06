@@ -18,8 +18,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest): NextResponse {
-  // API ルート: CSP nonce 不要（JSON レスポンスには CSP が意味を持たない）
-  if (request.nextUrl.pathname.startsWith("/api/")) {
+  // API ルート・OGP 画像ルート: CSP nonce 不要
+  if (
+    request.nextUrl.pathname.startsWith("/api/") ||
+    request.nextUrl.pathname.startsWith("/og")
+  ) {
     return NextResponse.next();
   }
 
