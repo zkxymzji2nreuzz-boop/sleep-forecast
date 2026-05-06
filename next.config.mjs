@@ -95,31 +95,8 @@ const securityHeaders = [
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=(self), payment=()",
   },
-  {
-    /**
-     * Content Security Policy
-     * - script-src: Next.js hydration に 'unsafe-inline'/'unsafe-eval' が必要
-     * - style-src: Tailwind CSS の動的スタイルに 'unsafe-inline' が必要
-     * - connect-src: GA4・Vercel Analytics のみ許可（天気APIはサーバーサイド経由）
-     * - frame-ancestors: 埋め込みを完全禁止
-     */
-    key: "Content-Security-Policy",
-    value: [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://va.vercel-scripts.com",
-      "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: https:",
-      "font-src 'self'",
-      // Supabase: *.supabase.co (Auth API + DB API)
-      "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.supabase.co wss://*.supabase.co",
-      "frame-src 'none'",
-      "frame-ancestors 'none'",
-      "base-uri 'self'",
-      "form-action 'self' https://formspree.io",
-      "worker-src 'self' blob:",
-      "manifest-src 'self'",
-    ].join("; "),
-  },
+  // Content-Security-Policy は src/middleware.ts で動的に付与（nonce ベース）
+  // unsafe-inline / unsafe-eval を排除するため静的ヘッダーから移行済み
 ];
 
 /** @type {import('next').NextConfig} */

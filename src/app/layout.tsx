@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import "./globals.css";
 
 import { Header } from "@/components/Header";
@@ -83,6 +84,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // middleware.ts が x-nonce ヘッダーに nonce を設定する
+  // layout.tsx (Server Component) で読み取り、<Script> コンポーネントに渡す
+  const nonce = headers().get("x-nonce") ?? "";
+
   return (
     <html lang="ja" className="dark">
       <body className="bg-[#0f1117] text-[#e6e8ee] antialiased">
@@ -102,7 +107,7 @@ export default function RootLayout({
           <PwaInstallPrompt />
           <NotificationChecker />
           <CookieConsent />
-          <GoogleAnalytics />
+          <GoogleAnalytics nonce={nonce} />
           <Toaster />
           <Analytics />
         </AuthProvider>

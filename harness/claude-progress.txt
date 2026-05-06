@@ -926,3 +926,51 @@ localStorage空 + IDB無 + セッション無効 → 新規匿名（回復不可
 - src/lib/storage.ts (+27行)
 - src/lib/auth.ts (+15行)
 - src/components/AuthProvider.tsx (+8行)
+
+================================================================
+
+[2026-05-07] Generator - T-02 CSP nonce実装 + /api/weather レート制限
+
+## 変更ファイル（5件）
+
+### src/middleware.ts（新規）
+- リクエストごとに btoa(crypto.randomUUID()) で nonce を生成（Edge Runtime 互換）
+- Content-Security-Policy レスポンスヘッダーに 'nonce-{nonce}' + 'strict-dynamic' を設定
+  - script-src: 'unsafe-inline' と 'unsafe-eval' を完全排除
+  - style-src: Tailwind/shadcn の動的スタイルのため 'unsafe-inline' は維持
+- x-nonce リクエストヘッダーで layout.tsx に nonce を伝達
+- matcher で _next/static / sw.js / workbox-*.js / 画像拡張子を除外
+- API ルート（/api/）は CSP 不要なためスキップ
+
+### next.config.mjs（変更）
+- CSP エントリを securityHeaders から削除（middleware.ts に移管）
+- HSTS / X-Frame-Options / X-Content-Type-Options 等は引き続き静的ヘッダーで付与
+
+### src/app/layout.tsx（変更）
+- `import { headers } from "next/headers"` を追加
+- RootLayout 内で `headers().get("x-nonce") ?? ""` で nonce を取得
+- `<GoogleAnalytics nonce={nonce} />` に渡す
+
+### src/components/GoogleAnalytics.tsx（変更）
+- Props 型に `nonce?: string` を追加
+- gtag/js ロード Script と ga-init インライン Script に nonce 属性を付与
+
+### src/app/api/weather/route.ts（変更）
+- モジュールレベル rateLimitMap: Map<string, {count, windowStart}> を定義
+  - 60 req/min / IP のスライディングウィンドウ（Edge best-effort）
+  - MAX_MAP_SIZE=2000 でメモリ肥大防止（古いエントリを掃除）
+- GET ハンドラ先頭で IP 抽出（x-forwarded-for → x-real-ip → "unknown"）
+- 上限超過時: 429 + Retry-After: 60
+- ALLOWED_ORIGINS Set で Origin ヘッダーチェック
+  - Origin が設定されていて自ドメイン以外 → 403 Forbidden
+  - Origin なし（サーバー間通信）はそのまま通過
+
+## 制限事項
+- Vercel Edge は複数 V8 isolate を起動するため rate limit はインスタンス単位
+  完全なレート制限が必要な場合は Vercel KV + @upstash/ratelimit を導入すること
+- style-src の 'unsafe-inline' は維持（Tailwind JIT との互換性のため）
+
+## 次セッションへの申し送り
+- T-02 のビルド確認は Vercel デプロイログで行うこと（bash sandbox UNC パスエラーのため）
+- デプロイ後: Chrome DevTools の Network タブで CSP ヘッダーに nonce が付いているか確認
+- T-03: アプリ内集計データをピラー記事（kishoubyou-kanzen-guide）に注入

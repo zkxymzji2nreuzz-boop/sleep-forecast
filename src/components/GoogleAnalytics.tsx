@@ -12,7 +12,12 @@ import { COOKIE_CONSENT_KEY, type CookieConsentValue } from "@/components/Cookie
  * - Cookie 同意（sf_cookie_consent = "accepted"）がない場合はスクリプトを読み込まない
  * - 同意状態が変わると sf_cookie_consent_change イベントで再評価する
  */
-export function GoogleAnalytics() {
+type Props = {
+  /** middleware.ts が生成した CSP nonce。Script タグに付与して unsafe-inline を回避する */
+  nonce?: string;
+};
+
+export function GoogleAnalytics({ nonce }: Props) {
   const gaId = process.env.NEXT_PUBLIC_GA_ID;
   const pathname = usePathname();
   const [consented, setConsented] = useState(false);
@@ -44,8 +49,9 @@ export function GoogleAnalytics() {
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
         strategy="afterInteractive"
+        nonce={nonce}
       />
-      <Script id="ga-init" strategy="afterInteractive">
+      <Script id="ga-init" strategy="afterInteractive" nonce={nonce}>
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}

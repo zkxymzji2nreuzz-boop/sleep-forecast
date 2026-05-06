@@ -21,6 +21,52 @@ import type { AQIData } from "@/lib/types";
 
 export const runtime = "edge";
 
+// ─────────────────────────────────────────────────────────────────────────────
+// IP レート制限（インスタンス内メモリ / Edge 環境では best-effort）
+// Vercel Edge は複数 V8 isolate を起動するため、全体の上限は保証されないが
+// 単一 isolate 内での乱用を抑止できる。
+// 本格的なレート制限が必要になったら Vercel KV + @upstash/ratelimit を導入すること。
+// ─────────────────────────────────────────────────────────────────────────────
+const RATE_LIMIT = 60;    // リクエスト数上限 / ウィンドウ
+const WINDOW_MS = 60_000; // ウィンドウサイズ: 60 秒
+const MAX_MAP_SIZE = 2000; // メモリ肥大防止: エントリ上限
+
+const rateLimitMap = new Map<string, { count: number; windowStart: number }>();
+
+/** IP ごとのリクエスト数を確認。上限を超えたら false を返す */
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+
+  // Map が膨らみすぎたら古いエントリを掃除する
+  if (rateLimitMap.size > MAX_MAP_SIZE) {
+    for (const [key, entry] of rateLimitMap) {
+      if (now - entry.windowStart > WINDOW_MS) rateLimitMap.delete(key);
+      if (rateLimitMap.size <= MAX_MAP_SIZE / 2) break;
+    }
+  }
+
+  const entry = rateLimitMap.get(ip);
+
+  // 新規 or ウィンドウ期限切れ → カウンタをリセット
+  if (!entry || now - entry.windowStart > WINDOW_MS) {
+    rateLimitMap.set(ip, { count: 1, windowStart: now });
+    return true;
+  }
+
+  if (entry.count >= RATE_LIMIT) return false;
+
+  entry.count++;
+  return true;
+}
+
+// 許可する Origin（自ドメインのみ）
+const ALLOWED_ORIGINS = new Set([
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://sleep-forecast.vercel.app",
+  "https://sleep-forecast.vercel.app",
+  "http://localhost:3000",
+  "http://localhost:3001",
+]);
+
 /** 入力値バリデーション: 数値範囲外は 400 */
 function parseLatLon(searchParams: URLSearchParams):
   | { ok: true; lat: number; lon: number }
@@ -217,6 +263,27 @@ async function handleFullMode(lat: number, lon: number): Promise<Response> {
 }
 
 export async function GET(request: Request): Promise<Response> {
+  // ── IP レート制限チェック ──
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    request.headers.get("x-real-ip") ??
+    "unknown";
+
+  if (!checkRateLimit(ip)) {
+    return Response.json(
+      { error: "リクエスト数が上限に達しました。しばらく経ってからお試しください。" },
+      { status: 429, headers: { "Retry-After": "60" } }
+    );
+  }
+
+  // ── Origin チェック: 自ドメイン以外からの直接呼び出しを拒否 ──
+  // ブラウザからのリクエストは必ず Origin ヘッダーを持つ。
+  // サーバー間通信（origin なし）はそのまま通過させる。
+  const origin = request.headers.get("origin");
+  if (origin !== null && !ALLOWED_ORIGINS.has(origin)) {
+    return Response.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const { searchParams } = new URL(request.url);
   const parsed = parseLatLon(searchParams);
   if (!parsed.ok) {
