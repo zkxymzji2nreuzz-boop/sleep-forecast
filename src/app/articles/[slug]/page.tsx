@@ -7,6 +7,7 @@ import {
 } from "@/lib/articles";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { ArticleLayout } from "@/components/ArticleLayout";
+import { ArticleDataBadge } from "@/components/ArticleDataBadge";
 
 type Params = {
   params: { slug: string };
@@ -187,7 +188,15 @@ export default async function ArticlePage({ params }: Params) {
           ]}
         />
       </div>
-      <ArticleLayout article={article} related={related} />
+      <ArticleLayout
+        article={article}
+        related={related}
+        dataBadge={
+          article.slug === "kishoubyou-kanzen-guide"
+            ? <ArticleDataBadge />
+            : undefined
+        }
+      />
     </>
   );
 }

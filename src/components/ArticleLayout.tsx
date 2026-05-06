@@ -69,6 +69,8 @@ function ArticleInlineCta() {
 type Props = {
   article: ArticleFull;
   related: ArticleMeta[];
+  /** 記事本文中（インライン CTA の直後）に挿入するオプションのデータバッジ */
+  dataBadge?: React.ReactNode;
 };
 
 /**
@@ -166,7 +168,7 @@ function RelatedActions({ article }: { article: ArticleFull }) {
   );
 }
 
-export function ArticleLayout({ article, related }: Props) {
+export function ArticleLayout({ article, related, dataBadge }: Props) {
   return (
     <article className="container mx-auto max-w-[680px] px-5 pb-20 pt-10 sm:pt-14">
       {/* 戻るリンク (柔らかいトーンの「ほかの読みものを見る」) */}
@@ -262,6 +264,7 @@ export function ArticleLayout({ article, related }: Props) {
               dangerouslySetInnerHTML={{ __html: part1 }}
             />
             {part2 && <ArticleInlineCta />}
+            {part2 && dataBadge}
             {part2 && (
               <div
                 className={proseClass}
