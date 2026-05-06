@@ -25,7 +25,7 @@ import { OnboardingBanner } from "@/components/OnboardingBanner";
 import { WeeklyInsightCard } from "@/components/WeeklyInsightCard";
 import { WeeklyRiskForecast } from "@/components/WeeklyRiskForecast";
 import { getRecords, DEFAULT_PREFECTURE_KEY } from "@/lib/storage";
-import { isDemoMode, getDemoCount, generateDemoRecords } from "@/lib/demo";
+import { getDemoCount, generateDemoRecords } from "@/lib/demo";
 import { DemoModeBanner } from "@/components/DemoModeBanner";
 import {
   predictTomorrow,
