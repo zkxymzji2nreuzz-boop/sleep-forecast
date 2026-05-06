@@ -7,7 +7,8 @@
  */
 
 import { supabase } from "./supabase";
-import { migrateLocalStorageToSupabase } from "./db";
+import { migrateLocalStorageToSupabase, syncFromSupabase } from "./db";
+import { idbSaveSession, idbGetSession } from "./idb";
 
 /** localStorage キー: マイグレーション完了フラグ */
 const MIGRATION_DONE_KEY = "sf_supabase_migrated_v1";
@@ -37,24 +38,43 @@ export async function ensureAnonymousSession(): Promise<{
   if (!supabase) return { userId: null, isNewSession: false };
 
   try {
-    // 既存セッション確認
+    // ── Step 1: localStorage のセッション確認 ─────────────────────────────
     const { data: sessionData } = await supabase.auth.getSession();
 
     if (sessionData.session?.user) {
       const userId = sessionData.session.user.id;
+      // IDB にセッションをバックアップ（refresh_token が消えても復元できるように）
+      void idbSaveSession(userId, sessionData.session.refresh_token);
       if (!isMigrationDone()) {
         void migrateLocalStorageToSupabase().then(markMigrationDone);
       }
       return { userId, isNewSession: false };
     }
 
-    // セッションなし → 匿名ログイン
+    // ── Step 2: localStorage セッションなし → IDB から refresh_token で復元試行 ──
+    const idbSession = await idbGetSession();
+    if (idbSession?.refreshToken) {
+      const { data: refreshData } = await supabase.auth.refreshSession({
+        refresh_token: idbSession.refreshToken,
+      });
+      if (refreshData.session?.user) {
+        const userId = refreshData.session.user.id;
+        // 復元成功 → IDB バックアップ更新 + Supabase からデータ同期
+        void idbSaveSession(userId, refreshData.session.refresh_token);
+        void syncFromSupabase().then(() => markMigrationDone());
+        return { userId, isNewSession: false };
+      }
+      // refresh_token が無効（期限切れ等）→ Step 3 へフォールスルー
+    }
+
+    // ── Step 3: セッション復元不可 → 新規匿名ログイン ─────────────────────
     const { data, error } = await supabase.auth.signInAnonymously();
     if (error || !data.user) {
       return { userId: null, isNewSession: false };
     }
 
     const userId = data.user.id;
+    void idbSaveSession(userId, data.session?.refresh_token ?? "");
     if (!isMigrationDone()) {
       void migrateLocalStorageToSupabase().then(markMigrationDone);
     }

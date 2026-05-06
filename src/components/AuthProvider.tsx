@@ -14,6 +14,7 @@
 import * as React from "react";
 import { ensureAnonymousSession } from "@/lib/auth";
 import { isSupabaseAvailable } from "@/lib/supabase";
+import { recoverFromIDB } from "@/lib/storage";
 
 type AuthContextValue = {
   /** 認証済みユーザーID（匿名含む）。Supabase 未設定時は null。 */
@@ -40,12 +41,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     if (!isSupabaseAvailable()) {
       // Supabase 未設定: localStorage のみモードで即時 ready
-      setState({ userId: null, isReady: true });
+      // IDB から記録を復元してから ready にする
+      recoverFromIDB()
+        .catch(() => {/* 非致命的 */})
+        .finally(() => setState({ userId: null, isReady: true }));
       return;
     }
 
-    // 非同期で匿名セッション確立（UI をブロックしない）
-    ensureAnonymousSession()
+    // 1. IDB から記録を復元（localStorage が空の場合のみ実行）
+    // 2. Supabase セッション確立（IDB の refresh_token で既存セッション復元も試みる）
+    recoverFromIDB()
+      .catch(() => {/* 非致命的 */})
+      .then(() => ensureAnonymousSession())
       .then(({ userId }) => setState({ userId, isReady: true }))
       .catch(() => setState({ userId: null, isReady: true }));
   }, []);

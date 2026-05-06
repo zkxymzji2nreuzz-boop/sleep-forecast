@@ -740,3 +740,125 @@ Format:
 - `git commit -m "perf: extract Chart.js to DashboardChartsSection with next/dynamic (W-1)"` を実施
 - Vercel デプロイ後にビルドログ /dashboard のサイズを確認（目標: ~100KB以下）
 - W-2 コントラスト比: TestFlight/iOS フェーズ完了後に対応（保留）
+
+================================================================
+
+[2026-05-05] Cowork - W-1 バンドルサイズ削減 検証・完了確認
+
+## Vercel デプロイ確認
+- commit: 0722461 "perf: extract Chart.js to DashboardChartsSection with next/dynamic (W-1)"
+- Vercel ビルドログにて /dashboard の First Load JS を確認:
+  - **変更前**: 223 kB
+  - **変更後**: 147 kB（-76 kB、-34% 削減）✅
+- 目標（~100KB以下）には届かなかったが、大幅削減を達成。Chart.js は別チャンクに分離済み。
+
+## 本番サイト動作確認 (sleep-forecast.vercel.app/dashboard)
+- KPI カード × 4: 表示OK（4.0良い / 2日 / 2日 / 05/03）✅
+- 予測カード: 表示OK（2.5 やや眠い / 気圧が5.6hPa低下する予想）✅
+- LockedChart オーバーレイ: 表示OK（「あと1件で解放」）✅
+- 気圧と睡眠品質の関係セクション: 表示OK ✅
+- ローディングスケルトン（animate-pulse）: 正常動作確認 ✅
+
+## W-1 最終ステータス: 完了 ✅
+
+## 保留タスク（今後）
+- W-2（コントラスト比 muted色 #8b92a5）: iOS/TestFlight フェーズ完了後に再着手
+- AdSense 再審査: 月間PV 1,000〜3,000 到達時（目安 2026年7〜8月）にユーザーが手動申請
+- X/note アウトリーチ: 日次継続（ユーザー主体）
+- iOS アプリ開発: Webアプリ完成度向上後に着手
+- note 記事定期投稿: 週1本推奨（ユーザー主体）
+
+================================================================
+
+[2026-05-05] Cowork - Opus 4エージェント並列レビュー + ロードマップ策定
+
+## レビュー概要
+Opus モデルを使った4エージェント並列レビューを実施。
+生成ファイル: harness/roadmap-2026-05.html（チェックボックス付きHTML）
+
+## エージェント別スコア（各5軸 /10）
+| エージェント | 平均スコア | 最強軸 | 最弱軸 |
+|---|---|---|---|
+| ① UX / UI | 7.0 | モバイルUX 8.0 | 感情設計 6.0 |
+| ② 技術・セキュリティ | 7.7 | パフォーマンス 8.5 | スケーラビリティ 7.0 |
+| ③ SEO / マネタイズ | 6.9 | SEO技術 8.5 | マネタイズ準備 5.5 |
+| ④ プロダクト戦略 | 6.4 | PMF 7.5 | 収益モデル 5.5 |
+| **総合（20軸平均）** | **7.0** | | |
+
+## GO/NO-GO 判定
+- SNSアウトリーチ専念: **条件付き GO**（4エージェント全員推奨）
+- iOS開発 本格着手: **発火条件待ち**（WAU200 / Day30継続率15% / iOS要望10件）
+
+## 今後のタスク一覧（T-01〜T-11）
+
+### 今すぐ（〜2週間）— GO前提条件
+- T-01: ホームページ情報密度50%削減（8カード→「今日の眠気予報」1枚主役化）工数2〜4h
+- T-02: CSP unsafe-inline排除 + /api/weather IPレート制限追加 工数3〜5h
+- T-03: アプリ内集計データをピラー記事に注入（kishoubyou-kanzen-guide）工数2h
+- T-04: 動的OGP画像（@vercel/og）+ Xシェアボタン実装 工数2〜3h
+
+### 1〜2ヶ月（SNS並行）
+- T-05: 専門家監修1名獲得（睡眠専門医 or 薬剤師）予算〜3万円
+- T-06: 既存ユーザー10名インタビュー（Xフォロワー経由）
+- T-07: アフィリエイトリンク設置（楽天/もしも / 枕・アロマ・漢方）工数2h
+- T-08: note 定期投稿（週1本）継続
+- T-09: AdSense 再審査申請（PV1,000到達後 / 人間手動操作）
+
+### 継続（常時）
+- T-10: X アウトリーチ（日次）— x-sleep-forecast-outreach スキル活用
+- T-11: note アウトリーチ（日次）— note-sleep-forecast-outreach スキル活用
+
+## iOS発火条件（3つすべて揃ったら着手）
+1. WAU（週間アクティブユーザー）200名以上
+2. Day30 継続率 15% 以上（GA4 or Supabase で計測）
+3. 「iOSアプリがほしい」要望 10件以上（DM / フォームで収集）
+→ 要件定義v4.0は温存。推定タイミング: 2026年Q3〜Q4。
+
+## 生成ファイル
+- harness/roadmap-2026-05.html: チェックボックス付きHTMLロードマップ（ブラウザで開いて確認可）
+
+================================================================
+
+[2026-05-07] Cowork - BUG-FIX データ永続化（IndexedDB二重バックアップ + Supabaseセッション復元）
+
+## 問題
+本番URLで数日記録した後、push→デプロイすると毎回データがリセットされる問題。
+Windows Chrome でも発生していた。
+
+## 根本原因
+PWA skipWaiting + clientsClaim のデプロイサイクルで localStorage が予期せずクリアされるケースがある。
+その際 Supabase の匿名セッション refresh_token も消えるため、次回起動時に新しい匿名ユーザーIDで
+signInAnonymously() され、旧ユーザーの Supabase データへアクセスできなくなる。
+
+## 実装内容
+### 新規ファイル: src/lib/idb.ts
+- IndexedDB "sleep-forecast-v1" を作成（records / session 2ストア）
+- idbPutRecords() / idbGetRecords() — 記録の二重バックアップ
+- idbSaveSession() / idbGetSession() — refresh_token のバックアップ
+- idbClearSession() — サインアウト時用
+
+### 変更: src/lib/storage.ts
+- writeAll() 内で void idbPutRecords() を呼ぶ（全記録変更時に自動バックアップ）
+- recoverFromIDB() エクスポート追加（localStorage空 + IDB有 → 自動復元）
+
+### 変更: src/lib/auth.ts
+- ensureAnonymousSession() にステップ追加:
+  Step1: localStorage セッション確認（既存）→ IDB にバックアップ保存
+  Step2: セッションなし → IDB の refresh_token で supabase.auth.refreshSession() 試行
+         成功時: syncFromSupabase() でクラウドからデータ取り戻す
+  Step3: 復元不可 → 新規匿名ログイン（既存フォールバック）
+
+### 変更: src/components/AuthProvider.tsx
+- useEffect で ensureAnonymousSession() の前に recoverFromIDB() を実行
+- IDB記録復元 → セッション復元 → データ同期 の順序を保証
+
+## 起動時の回復フロー
+localStorage空 + IDB有 → recoverFromIDB() で即時復元
+localStorage空 + IDB無 + IDBセッションあり → refreshSession → syncFromSupabase() で復元
+localStorage空 + IDB無 + セッション無効 → 新規匿名（回復不可・従来と同じ）
+
+## 変更ファイル
+- src/lib/idb.ts (新規 176行)
+- src/lib/storage.ts (+27行)
+- src/lib/auth.ts (+15行)
+- src/components/AuthProvider.tsx (+8行)

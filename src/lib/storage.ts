@@ -10,6 +10,7 @@
  */
 
 import type { SleepRecord, StoredRecords } from "./types";
+import { idbPutRecords, idbGetRecords } from "./idb";
 
 export const STORAGE_KEY = "sleep_records_v1";
 /** 設定画面・記録画面で共有する「デフォルト都道府県コード」キー */
@@ -52,10 +53,12 @@ function readAll(): StoredRecords {
   }
 }
 
-/** 内部: ストレージへ書き込み */
+/** 内部: ストレージへ書き込み（localStorage 即時 + IndexedDB 非同期バックアップ） */
 function writeAll(next: StoredRecords): void {
   if (!hasStorage()) return;
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  // IndexedDB へ非同期バックアップ（失敗しても localStorage は影響なし）
+  void idbPutRecords(next.records);
 }
 
 /** date 文字列の大小比較で新しい順にソートする */
@@ -158,6 +161,30 @@ export function clearAll(): void {
  */
 export function clearAllRecords(): void {
   clearAll();
+}
+
+/**
+ * IndexedDB から記録を復元する。
+ *
+ * localStorage が空（0件）かつ IndexedDB にデータがある場合のみ復元する。
+ * アプリ起動時に AuthProvider から呼ぶことで、localStorage が予期せず
+ * クリアされた際にデータを自動回復できる。
+ *
+ * @returns 復元した場合 true、不要だった場合 false
+ */
+export async function recoverFromIDB(): Promise<boolean> {
+  const existing = readAll();
+  if (existing.records.length > 0) return false; // localStorage にデータあり → 不要
+
+  const idbRecords = await idbGetRecords();
+  if (idbRecords.length === 0) return false; // IDB も空 → 何もできない
+
+  // localStorage へ復元（void idbPutRecords は再呼出しになるが無害）
+  window.localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({ version: 1, records: idbRecords })
+  );
+  return true;
 }
 
 /**
