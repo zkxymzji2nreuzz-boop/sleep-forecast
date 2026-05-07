@@ -51,14 +51,14 @@ export default function ArticlesIndexPage() {
             気象病・低気圧と睡眠の関係
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-            気圧、気温、月のリズム。眠りの奥にある自然の声に、そっと耳を澄ませる読みものを集めました。
+            気圧、気温、月のリズム。眠りの奥にある自然の声に、そっと耳を澄ませる読みものを集めました
           </p>
         </header>
       </div>
 
       {articles.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          今夜はまだ、新しい読みものは届いていません。
+          今夜はまだ、新しい読みものは届いていません
         </p>
       ) : (
         <ul className="grid gap-5">

@@ -29,7 +29,7 @@ export function DemoModeBanner({ recordCount }: Props) {
         <p className="leading-snug text-amber-800 dark:text-amber-200">
           <span className="font-semibold">デモモード</span>
           <span className="ml-2 text-amber-700/80 dark:text-amber-300/80">
-            {recordCount} 日分のサンプルデータで表示中。本番データには影響しません。
+            {recordCount} 日分のサンプルデータで表示中　本番データには影響しません
           </span>
         </p>
         <p className="text-xs text-amber-600/70 dark:text-amber-400/60 hidden sm:block">

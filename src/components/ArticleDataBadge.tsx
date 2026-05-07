@@ -83,7 +83,7 @@ export function ArticleDataBadge() {
             <span className="mx-1 text-[1.6rem] font-bold tabular-nums leading-none text-primary/70">
               {stats.pct}%
             </span>
-            の確率で睡眠スコアが低下しています。
+            の確率で睡眠スコアが低下しています
           </p>
 
           {/* 補足テキスト */}

@@ -19,7 +19,7 @@ export default function NotFound() {
           ページが見つかりません
         </h1>
         <p className="text-sm text-muted-foreground">
-          お探しのページは存在しないか、移動した可能性があります。
+          お探しのページは存在しないか、移動した可能性があります
         </p>
       </div>
       <div className="flex flex-col gap-3 sm:flex-row">

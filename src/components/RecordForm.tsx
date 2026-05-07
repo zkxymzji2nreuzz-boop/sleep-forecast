@@ -454,7 +454,7 @@ export function RecordForm(): JSX.Element {
                   最初の一歩、おめでとうございます！
                 </p>
                 <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-                  あと6日続けると気象との相関分析がスタートします。<br />
+                  あと6日続けると気象との相関分析がスタートします<br />
                   毎朝15秒でOK　気圧が変わった日ほど記録の価値があります
                 </p>
               </div>
@@ -572,7 +572,7 @@ export function RecordForm(): JSX.Element {
               <div className="flex items-start gap-2.5 rounded-xl border border-primary/25 bg-primary/[0.07] px-4 py-3">
                 <BarChart3 className="mt-0.5 h-4 w-4 shrink-0 text-primary/80" aria-hidden="true" />
                 <p className="text-xs leading-relaxed text-muted-foreground">
-                  気圧が下がった日のパターンをダッシュボードで確認してみましょう。あなたの傾向が見えてきます。
+                  気圧が下がった日のパターンをダッシュボードで確認してみましょう　あなたの傾向が見えてきます
                 </p>
               </div>
             )}

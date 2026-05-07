@@ -44,7 +44,7 @@ export function OnboardingBanner() {
             はじめましょう
           </p>
           <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
-            まずは今日の眠りを記録してみましょう。15秒で完了します。
+            まずは今日の眠りを記録してみましょう　15秒で完了します
           </p>
           <Link
             href="/record"
