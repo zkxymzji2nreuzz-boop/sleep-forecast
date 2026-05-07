@@ -47,8 +47,8 @@ export default function PrivacyPage() {
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="bg-card/60">
-                  <th className="border-b border-white/[0.06] px-4 py-3 text-left text-foreground font-semibold">情報の種類</th>
-                  <th className="border-b border-white/[0.06] px-4 py-3 text-left text-foreground font-semibold">目的・取り扱い</th>
+                  <th className="border-b border-border/30 px-4 py-3 text-left text-foreground font-semibold">情報の種類</th>
+                  <th className="border-b border-border/30 px-4 py-3 text-left text-foreground font-semibold">目的・取り扱い</th>
                 </tr>
               </thead>
               <tbody>

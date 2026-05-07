@@ -798,10 +798,10 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
             return `${val.toFixed(1)} hPa (${delta >= 0 ? "+" : ""}${delta.toFixed(1)} hPa/h)`;
           },
         },
-        backgroundColor: "hsl(252 28% 14%)",
-        titleColor: "rgba(241, 245, 249, 0.95)",
-        bodyColor: "rgba(203, 213, 225, 0.85)",
-        borderColor: "rgba(255,255,255,0.1)",
+        backgroundColor: isDark ? "hsl(252 28% 14%)" : "hsl(0 0% 100%)",
+        titleColor: isDark ? "rgba(241, 245, 249, 0.95)" : "hsl(253 31% 20%)",
+        bodyColor: isDark ? "rgba(203, 213, 225, 0.85)" : "rgba(30, 41, 59, 0.85)",
+        borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(107,91,168,0.3)",
         borderWidth: 1,
       },
     },
@@ -1005,7 +1005,7 @@ function WakeupSubSection({
 // 記録フォームは 1・3・5 の3択のみ
 const QUALITY_COLORS: Record<number, string> = {
   5: "#4ade80",
-  3: "#facc15",
+  3: "#d97706",
   1: "#f87171",
 };
 

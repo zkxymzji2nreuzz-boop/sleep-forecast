@@ -168,7 +168,7 @@ export function PredictionCard({
 
       {/* アドバイス (full バージョン) */}
       {variant === "full" && prediction.advice.length > 0 && (
-        <div className="mt-4 border-t border-white/20 pt-4">
+        <div className="mt-4 border-t border-border/40 pt-4">
           <h3 className="text-white text-sm font-semibold mb-3">
             💡 おすすめのアクション
           </h3>
@@ -198,7 +198,7 @@ export function PredictionCard({
 
       {/* スコア内訳 アコーディオン */}
       {prediction.breakdown && prediction.breakdown.items.length > 0 && (
-        <div className="mt-4 border-t border-white/20 pt-3">
+        <div className="mt-4 border-t border-border/40 pt-3">
           <button
             onClick={() => setBreakdownOpen((prev) => !prev)}
             className="flex items-center gap-1 text-xs text-white/60 hover:text-white/90 transition-colors w-full text-left"

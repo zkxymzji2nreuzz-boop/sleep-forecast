@@ -49,7 +49,7 @@ ChartJS.register(
 /** quality 1/3/5 の色マッピング（記録フォームは3択のみ） */
 const QUALITY_COLORS: Record<number, string> = {
   1: "#f87171",
-  3: "#facc15",
+  3: "#d97706",
   5: "#4ade80",
 };
 
@@ -139,11 +139,11 @@ export function CorrelationChart({
         display: false,
       },
       tooltip: {
-        backgroundColor: "hsl(252 28% 14%)",
+        backgroundColor: isDark ? "hsl(252 28% 14%)" : "hsl(0 0% 100%)",
         borderColor: "#6366f1",
         borderWidth: 1,
-        titleColor: "hsl(256 43% 93%)",
-        bodyColor: "rgba(203, 213, 225, 0.85)",
+        titleColor: isDark ? "hsl(256 43% 93%)" : "hsl(253 31% 20%)",
+        bodyColor: isDark ? "rgba(203, 213, 225, 0.85)" : "rgba(30, 41, 59, 0.85)",
         padding: 10,
         callbacks: {
           title: (items: TooltipItem<"scatter">[]) => {

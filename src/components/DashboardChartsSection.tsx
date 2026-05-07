@@ -102,16 +102,18 @@ const MOON_BUCKETS = [
   "満月期 (0.45〜0.55)",
   "下弦期 (0.55〜0.9)",
 ] as const;
-const MOON_BUCKET_COLORS = ["#7c4dff", "#6366f1", "#facc15", "#4ade80"];
+const MOON_BUCKET_COLORS = ["#7c4dff", "#6366f1", "#d97706", "#4ade80"];
 
-const TOOLTIP_BASE = {
-  backgroundColor: "hsl(252 28% 14%)",
-  borderColor: "#6366f1",
-  borderWidth: 1,
-  titleColor: "hsl(256 43% 93%)",
-  bodyColor: "hsl(252 23% 65%)",
-  padding: 10,
-} as const;
+function getTooltipBase(isDark: boolean) {
+  return {
+    backgroundColor: isDark ? "hsl(252 28% 14%)" : "hsl(0 0% 100%)",
+    borderColor: "#6366f1",
+    borderWidth: 1,
+    titleColor: isDark ? "hsl(256 43% 93%)" : "hsl(253 31% 20%)",
+    bodyColor: isDark ? "hsl(252 23% 65%)" : "rgba(30, 41, 59, 0.85)",
+    padding: 10,
+  } as const;
+}
 
 // ---------------------------------------------------------------------------
 // ヘルパ関数
@@ -215,7 +217,7 @@ function buildLineOptions(isDark: boolean): ChartOptions<"line"> {
         },
       },
       tooltip: {
-        ...TOOLTIP_BASE,
+        ...getTooltipBase(isDark),
         callbacks: {
           title: (items: TooltipItem<"line">[]) => {
             const item = items[0];
@@ -268,7 +270,7 @@ function buildBarOptions(isDark: boolean): ChartOptions<"bar"> {
     plugins: {
       legend: { display: false },
       tooltip: {
-        ...TOOLTIP_BASE,
+        ...getTooltipBase(isDark),
         callbacks: {
           label: (ctx: TooltipItem<"bar">) => {
             const counts = (ctx.dataset as { _counts?: number[] })._counts ?? [];
@@ -375,7 +377,7 @@ export function DashboardChartsSection({ records }: Props) {
           backgroundColor: "rgba(99, 102, 241, 0.10)",
           borderWidth: 2,
           pointBackgroundColor: "#6366f1",
-          pointBorderColor: "hsl(252 28% 14%)",
+          pointBorderColor: isDark ? "hsl(252 28% 14%)" : "hsl(0 0% 100%)",
           pointBorderWidth: 2,
           pointRadius: 3,
           pointHoverRadius: 5,
@@ -400,7 +402,7 @@ export function DashboardChartsSection({ records }: Props) {
         } as ChartData<"line">["datasets"][number],
       ],
     };
-  }, [records]);
+  }, [records, isDark]);
 
   // --- 棒グラフ (気圧別) ---
   const pressureBarData = React.useMemo<ChartData<"bar">>(() => {

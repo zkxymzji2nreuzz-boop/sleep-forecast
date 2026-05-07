@@ -169,13 +169,20 @@ export async function fetchWeather(
   const url = `/api/weather?lat=${encodeURIComponent(
     latitude
   )}&lon=${encodeURIComponent(longitude)}`;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10_000);
   let res: Response;
   try {
-    res = await fetch(url, { method: "GET", cache: "no-store" });
+    res = await fetch(url, { method: "GET", cache: "no-store", signal: controller.signal });
   } catch (err) {
+    if ((err as Error).name === "AbortError") {
+      throw new WeatherFetchError("気象データの取得がタイムアウトしました（10秒）");
+    }
     throw new WeatherFetchError(
       `ネットワークエラー: ${(err as Error).message}`
     );
+  } finally {
+    clearTimeout(timeoutId);
   }
   if (!res.ok) {
     throw new WeatherFetchError(
@@ -207,13 +214,20 @@ export async function fetchWeatherForecast(
   const url = `/api/weather?lat=${encodeURIComponent(
     latitude
   )}&lon=${encodeURIComponent(longitude)}&forecast=true`;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10_000);
   let res: Response;
   try {
-    res = await fetch(url, { method: "GET", cache: "no-store" });
+    res = await fetch(url, { method: "GET", cache: "no-store", signal: controller.signal });
   } catch (err) {
+    if ((err as Error).name === "AbortError") {
+      throw new WeatherFetchError("明日の予報取得がタイムアウトしました（10秒）");
+    }
     throw new WeatherFetchError(
       `ネットワークエラー (明日の予報): ${(err as Error).message}`
     );
+  } finally {
+    clearTimeout(timeoutId);
   }
   if (!res.ok) {
     throw new WeatherFetchError(
@@ -425,13 +439,20 @@ export async function fetchFullWeather(
   const url = `/api/weather?lat=${encodeURIComponent(
     latitude
   )}&lon=${encodeURIComponent(longitude)}&type=full`;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10_000);
   let res: Response;
   try {
-    res = await fetch(url, { method: "GET", cache: "no-store" });
+    res = await fetch(url, { method: "GET", cache: "no-store", signal: controller.signal });
   } catch (err) {
+    if ((err as Error).name === "AbortError") {
+      throw new WeatherFetchError("完全気象データの取得がタイムアウトしました（10秒）");
+    }
     throw new WeatherFetchError(
       `ネットワークエラー (full): ${(err as Error).message}`
     );
+  } finally {
+    clearTimeout(timeoutId);
   }
   if (!res.ok) {
     throw new WeatherFetchError(
@@ -456,7 +477,7 @@ export function mapAQIResponse(data: { current?: { us_aqi?: number; pm2_5?: numb
   let category: string;
   let color: string;
   if (usAqi <= 50) { category = "良好"; color = "#4ade80"; }
-  else if (usAqi <= 100) { category = "普通"; color = "#facc15"; }
+  else if (usAqi <= 100) { category = "普通"; color = "#d97706"; }
   else if (usAqi <= 150) { category = "敏感な人に注意"; color = "#fb923c"; }
   else if (usAqi <= 200) { category = "悪い"; color = "#f87171"; }
   else { category = "とても悪い"; color = "#c084fc"; }
