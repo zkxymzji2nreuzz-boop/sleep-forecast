@@ -345,12 +345,9 @@ function SleepScoreHero({
         >
           {badge}
         </span>
-        <span
-          className="text-sm font-semibold tabular-nums"
-          style={{ color: `${color}cc` }}
-        >
+        <span className="text-sm font-semibold tabular-nums text-muted-foreground">
           {score100}
-          <span className="text-xs font-normal text-muted-foreground"> / 100</span>
+          <span className="text-xs font-normal"> / 100</span>
         </span>
       </div>
 
@@ -876,12 +873,12 @@ const WAKEUP_SCALE: { level: number; Icon: LucideIcon; color: string }[] = [
   { level: 5, Icon: Sparkles, color: "#10b981" },
 ];
 
-function getWakeupLevel(score100: number): { name: string; color: string; level: number; advice: string; Icon: LucideIcon } {
-  if (score100 >= 80) return { name: "ばっちり", color: "#10b981", level: 5, Icon: Sparkles, advice: "最高の目覚めが期待できます。朝の時間を有効活用して" };
-  if (score100 >= 65) return { name: "すっきり", color: "#4a90d9", level: 4, Icon: Sun,      advice: "良いコンディションです。大事な予定も安心して入れられます" };
-  if (score100 >= 45) return { name: "まあまあ", color: "#a8b0c2", level: 3, Icon: Sunrise,  advice: "いつも通りで大丈夫。軽いストレッチで目覚めの質をアップ" };
-  if (score100 >= 25) return { name: "ぼんやり", color: "#f59e0b", level: 2, Icon: Moon,     advice: "今夜は早めに就寝を。照明を落として身体を整えましょう" };
-  return                     { name: "ぐったり", color: "#f87070", level: 1, Icon: Moon,     advice: "明日は予定を最小限に。無理をしない日と決めておきましょう" };
+function getWakeupLevel(score100: number): { name: string; color: string; textClass: string; level: number; advice: string; Icon: LucideIcon } {
+  if (score100 >= 80) return { name: "ばっちり", color: "#10b981", textClass: "text-emerald-700 dark:text-emerald-400", level: 5, Icon: Sparkles, advice: "最高の目覚めが期待できます。朝の時間を有効活用して" };
+  if (score100 >= 65) return { name: "すっきり", color: "#4a90d9", textClass: "text-sky-700 dark:text-sky-400",      level: 4, Icon: Sun,      advice: "良いコンディションです。大事な予定も安心して入れられます" };
+  if (score100 >= 45) return { name: "まあまあ", color: "#a8b0c2", textClass: "text-slate-600 dark:text-slate-400",  level: 3, Icon: Sunrise,  advice: "いつも通りで大丈夫。軽いストレッチで目覚めの質をアップ" };
+  if (score100 >= 25) return { name: "ぼんやり", color: "#f59e0b", textClass: "text-amber-700 dark:text-amber-400",  level: 2, Icon: Moon,     advice: "今夜は早めに就寝を。照明を落として身体を整えましょう" };
+  return                     { name: "ぐったり", color: "#f87070", textClass: "text-rose-700 dark:text-rose-400",    level: 1, Icon: Moon,     advice: "明日は予定を最小限に。無理をしない日と決めておきましょう" };
 }
 
 /**
@@ -940,7 +937,7 @@ function WakeupSubSection({
 }: WakeupSubSectionProps) {
   const morningDelta = computeMorningDelta(hourlyPressureTimes, hourlyPressureValues, currentPressureDelta);
   const morningScore = computeWSIScore100(morningDelta, tempDelta, humidity, apparentTempC);
-  const { name, color, level, advice, Icon } = getWakeupLevel(morningScore);
+  const { name, color, textClass, level, advice, Icon } = getWakeupLevel(morningScore);
 
   return (
     <div className="mt-3 pt-3 border-t border-dashed border-border/60">
@@ -956,7 +953,7 @@ function WakeupSubSection({
             color={color}
             strokeWidth={level === 5 ? 2.2 : 1.8}
           />
-          <span className="text-base font-bold leading-none" style={{ color }}>
+          <span className={`text-base font-bold leading-none ${textClass}`}>
             {name}
           </span>
         </div>
