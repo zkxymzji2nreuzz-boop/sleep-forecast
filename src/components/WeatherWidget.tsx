@@ -282,7 +282,7 @@ function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", color: "hsl(var(--primary))" }}>{Math.round(day.tempMin)}°</div>
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", color: precipColor(day.precipProbability) }}>{day.precipProbability}%</div>
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: "9px", fontWeight: 700, padding: "2px 5px", borderRadius: "9999px", background: zoneConfig.bg, color: zoneConfig.textColor, whiteSpace: "nowrap" }}>{zoneConfig.label}</span>
+                  <span style={{ fontSize: "9px", fontWeight: 700, padding: "2px 5px", borderRadius: "9999px", background: zoneConfig.bg, color: (zone === "warning" || zone === "danger") ? "hsl(var(--destructive))" : zone === "caution" ? "hsl(var(--muted-foreground))" : "hsl(var(--primary))", whiteSpace: "nowrap" }}>{zoneConfig.label}</span>
                 </div>
                 {/* 気圧注意バッジ行 */}
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center" }}>
