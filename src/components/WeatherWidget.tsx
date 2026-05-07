@@ -820,8 +820,8 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
       },
       y: {
         position: "right" as const,
-        min: Math.floor(minVal - Math.max(spread * 0.25, 2)),
-        max: Math.ceil(maxVal + Math.max(spread * 0.25, 2)),
+        min: Math.floor((minVal - Math.max(spread * 0.25, 2)) / 4) * 4,
+        max: Math.ceil((maxVal + Math.max(spread * 0.25, 2)) / 4) * 4,
         ticks: {
           color: tickColor,
           font: { size: 11 },
