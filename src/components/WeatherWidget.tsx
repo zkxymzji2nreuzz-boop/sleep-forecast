@@ -825,6 +825,7 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
         ticks: {
           color: tickColor,
           font: { size: 11 },
+          stepSize: 4,
           callback: (val: number | string) => `${val}`,
         },
         grid: { color: gridColor },
