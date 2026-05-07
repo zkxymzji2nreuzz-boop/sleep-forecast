@@ -13,6 +13,7 @@
 
 import * as React from "react";
 import { Bar, Line } from "react-chartjs-2";
+import { useDarkMode } from "@/lib/useDarkMode";
 import {
   Chart as ChartJS,
   BarController,
@@ -56,6 +57,7 @@ ChartJS.register(
   Legend,
   Filler
 );
+// グローバルデフォルトはダークモード基準で初期化（実行時に useDarkMode で上書き）
 ChartJS.defaults.color = "rgba(203, 213, 225, 0.85)";
 ChartJS.defaults.borderColor = "rgba(255, 255, 255, 0.08)";
 ChartJS.defaults.font.family = "'Inter', sans-serif";
@@ -190,7 +192,9 @@ function groupByMoonPhase(records: SleepRecord[]) {
 // グラフ options ビルダ
 // ---------------------------------------------------------------------------
 
-function buildLineOptions(): ChartOptions<"line"> {
+function buildLineOptions(isDark: boolean): ChartOptions<"line"> {
+  const tickColor = isDark ? "rgba(203, 213, 225, 0.85)" : "rgba(30, 41, 59, 0.85)";
+  const gridColor = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.08)";
   return {
     responsive: true,
     maintainAspectRatio: false,
@@ -203,7 +207,7 @@ function buildLineOptions(): ChartOptions<"line"> {
         position: "top" as const,
         align: "end" as const,
         labels: {
-          color: "rgba(203, 213, 225, 0.85)",
+          color: tickColor,
           font: { size: 11 },
           boxWidth: 16,
           boxHeight: 2,
@@ -233,28 +237,30 @@ function buildLineOptions(): ChartOptions<"line"> {
     },
     scales: {
       x: {
-        grid: { color: "rgba(255, 255, 255, 0.08)" },
-        ticks: { color: "rgba(203, 213, 225, 0.85)", maxRotation: 0, autoSkipPadding: 16 },
+        grid: { color: gridColor },
+        ticks: { color: tickColor, maxRotation: 0, autoSkipPadding: 16 },
       },
       y: {
         min: 1,
         max: 5,
         ticks: {
           stepSize: 1,
-          color: "rgba(203, 213, 225, 0.85)",
+          color: tickColor,
           callback: (value) => {
             const v = Number(value);
             if (!Number.isInteger(v) || v < 1 || v > 5) return "";
             return QUALITY_LABEL_MAP[v as 1 | 2 | 3 | 4 | 5];
           },
         },
-        grid: { color: "rgba(255, 255, 255, 0.08)" },
+        grid: { color: gridColor },
       },
     },
   };
 }
 
-function buildBarOptions(): ChartOptions<"bar"> {
+function buildBarOptions(isDark: boolean): ChartOptions<"bar"> {
+  const tickColor = isDark ? "rgba(203, 213, 225, 0.85)" : "rgba(30, 41, 59, 0.85)";
+  const gridColor = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.08)";
   return {
     responsive: true,
     maintainAspectRatio: false,
@@ -276,14 +282,14 @@ function buildBarOptions(): ChartOptions<"bar"> {
     },
     scales: {
       x: {
-        grid: { color: "rgba(255, 255, 255, 0.08)" },
-        ticks: { color: "rgba(203, 213, 225, 0.85)", font: { size: 10 } },
+        grid: { color: gridColor },
+        ticks: { color: tickColor, font: { size: 10 } },
       },
       y: {
         min: 0,
         max: 5,
-        ticks: { stepSize: 1, color: "rgba(203, 213, 225, 0.85)" },
-        grid: { color: "rgba(255, 255, 255, 0.08)" },
+        ticks: { stepSize: 1, color: tickColor },
+        grid: { color: gridColor },
       },
     },
   };
@@ -345,6 +351,14 @@ type Props = {
 };
 
 export function DashboardChartsSection({ records }: Props) {
+  const isDark = useDarkMode();
+
+  // ChartJS グローバルデフォルトをテーマに合わせてリアルタイム更新
+  React.useEffect(() => {
+    ChartJS.defaults.color = isDark ? "rgba(203, 213, 225, 0.85)" : "rgba(30, 41, 59, 0.85)";
+    ChartJS.defaults.borderColor = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.08)";
+  }, [isDark]);
+
   // --- 折れ線グラフ dataset ---
   const lineData = React.useMemo<ChartData<"line">>(() => {
     const asc = ascByDate(records).slice(-30);
@@ -451,8 +465,8 @@ export function DashboardChartsSection({ records }: Props) {
     };
   }, [records]);
 
-  const lineOptions = React.useMemo(() => buildLineOptions(), []);
-  const barOptions = React.useMemo(() => buildBarOptions(), []);
+  const lineOptions = React.useMemo(() => buildLineOptions(isDark), [isDark]);
+  const barOptions = React.useMemo(() => buildBarOptions(isDark), [isDark]);
 
   return (
     <>

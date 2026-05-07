@@ -44,6 +44,7 @@ import {
   formatDateJst,
 } from "@/lib/storage";
 import { getDemoCount, generateDemoRecords } from "@/lib/demo";
+import { useDarkMode } from "@/lib/useDarkMode";
 import { getPrefectureByCode } from "@/lib/prefectures";
 import type {
   FullWeatherData,
@@ -641,6 +642,9 @@ function getSegmentColor(delta: number): { color: string; width: number } {
 
 function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: NightPressureChartProps) {
   const chartRef = React.useRef<ChartJS<"line"> | null>(null);
+  const isDark = useDarkMode();
+  const tickColor = isDark ? "rgba(203, 213, 225, 0.85)" : "rgba(30, 41, 59, 0.85)";
+  const gridColor = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.08)";
 
   // 現在時刻から13時間後まで（ローリングウィンドウ）を抽出
   const nowMs = Date.now();
@@ -804,7 +808,7 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
     scales: {
       x: {
         ticks: {
-          color: "rgba(203, 213, 225, 0.85)",
+          color: tickColor,
           font: { size: 10 },
           maxRotation: 0,
           autoSkip: false,
@@ -812,18 +816,18 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
             return targetPoints[index]?.label ?? "";
           },
         },
-        grid: { color: "rgba(255, 255, 255, 0.08)" },
+        grid: { color: gridColor },
       },
       y: {
         position: "right" as const,
         min: Math.floor(minVal - Math.max(spread * 0.25, 2)),
         max: Math.ceil(maxVal + Math.max(spread * 0.25, 2)),
         ticks: {
-          color: "rgba(203, 213, 225, 0.85)",
+          color: tickColor,
           font: { size: 11 },
           callback: (val: number | string) => `${val}`,
         },
-        grid: { color: "rgba(255, 255, 255, 0.08)" },
+        grid: { color: gridColor },
       },
     },
   };

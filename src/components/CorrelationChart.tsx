@@ -16,6 +16,7 @@
  */
 
 import * as React from "react";
+import { useDarkMode } from "@/lib/useDarkMode";
 import {
   Chart as ChartJS,
   LinearScale,
@@ -68,6 +69,10 @@ export function CorrelationChart({
   records,
   height = 240,
 }: CorrelationChartProps) {
+  const isDark = useDarkMode();
+  const tickColor = isDark ? "rgba(203, 213, 225, 0.85)" : "rgba(30, 41, 59, 0.85)";
+  const gridColor = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.08)";
+
   // --- 散布点の準備 ---
   const scatterPoints = records.map((r) => ({
     x: r.weather.pressureDeltaHpa,
@@ -109,8 +114,8 @@ export function CorrelationChart({
         { x: minX, y: regression.slope * minX + regression.intercept },
         { x: maxX, y: regression.slope * maxX + regression.intercept },
       ],
-      borderColor: "rgba(255, 255, 255, 0.3)",
-      backgroundColor: "rgba(255, 255, 255, 0)",
+      borderColor: isDark ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.25)",
+      backgroundColor: "rgba(0, 0, 0, 0)",
       borderDash: [4, 4],
       borderWidth: 1.5,
       pointRadius: 0,
@@ -167,11 +172,11 @@ export function CorrelationChart({
         title: {
           display: true,
           text: "前日比気圧 (hPa)",
-          color: "rgba(203, 213, 225, 0.85)",
+          color: tickColor,
           font: { size: 11 },
         },
-        grid: { color: "rgba(255, 255, 255, 0.08)" },
-        ticks: { color: "rgba(203, 213, 225, 0.85)" },
+        grid: { color: gridColor },
+        ticks: { color: tickColor },
       },
       y: {
         type: "linear",
@@ -179,14 +184,14 @@ export function CorrelationChart({
         max: 5,
         ticks: {
           stepSize: 1,
-          color: "rgba(203, 213, 225, 0.85)",
+          color: tickColor,
           callback: (value) => {
             const v = Number(value);
             if (!Number.isInteger(v)) return "";
             return QUALITY_LABELS[v] ?? "";
           },
         },
-        grid: { color: "rgba(139, 146, 165, 0.10)" },
+        grid: { color: isDark ? "rgba(139, 146, 165, 0.10)" : "rgba(0, 0, 0, 0.06)" },
       },
     },
   };
