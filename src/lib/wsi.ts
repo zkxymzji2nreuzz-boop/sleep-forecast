@@ -139,12 +139,15 @@ export function getPressureZone(hPa: number): PressureZone {
   return "danger";
 }
 
-/** 気圧ゾーンのラベル・色マップ */
-export const PRESSURE_ZONE_CONFIG: Record<PressureZone, { label: string; color: string; bg: string }> = {
-  safe:    { label: "安定",   color: "#4ade80", bg: "rgba(74,222,128,0.06)" },
-  caution: { label: "やや低", color: "#facc15", bg: "rgba(250,204,21,0.06)" },
-  warning: { label: "低気圧", color: "#fb923c", bg: "rgba(251,146,60,0.08)" },
-  danger:  { label: "警戒",   color: "#f87171", bg: "rgba(248,113,113,0.10)" },
+/** 気圧ゾーンのラベル・色マップ
+ * color: グラフ描画用の原色（非テキスト用）
+ * textColor: WCAG AA 準拠のテキスト用 CSS 変数色
+ */
+export const PRESSURE_ZONE_CONFIG: Record<PressureZone, { label: string; color: string; textColor: string; bg: string }> = {
+  safe:    { label: "安定",   color: "#4ade80", textColor: "hsl(var(--primary))",          bg: "rgba(74,222,128,0.06)" },
+  caution: { label: "やや低", color: "#facc15", textColor: "hsl(var(--muted-foreground))", bg: "rgba(250,204,21,0.06)" },
+  warning: { label: "低気圧", color: "#fb923c", textColor: "hsl(var(--destructive))",      bg: "rgba(251,146,60,0.08)" },
+  danger:  { label: "警戒",   color: "#f87171", textColor: "hsl(var(--destructive))",      bg: "rgba(248,113,113,0.10)" },
 };
 
 /** ペナルティ合計を 0-100 スコアに変換 */
@@ -191,7 +194,7 @@ export function getCareHints(score: WSIScore): string[] {
   const hints: string[] = [];
 
   if (Math.abs(score.pressureDelta6h) >= 3) {
-    hints.push("気圧変化が大きい日は、入浴を就寝2時間前に済ませると体が整いやすくなります");
+    hints.push("気圧変化が大きい日は　入浴を就寝2時間前に済ませると体が整いやすくなります");
   }
   if (score.tempDelta >= 8) {
     hints.push("寒暖差が大きいので、就寝時の室温を一定に保つと自律神経が落ち着きます");

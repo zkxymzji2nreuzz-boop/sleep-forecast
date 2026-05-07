@@ -240,9 +240,9 @@ function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
   return (
     <div>
       <div style={{ display: "flex" }}>
-        <div style={{ flexShrink: 0, width: "68px" }}>
+        <div style={{ flexShrink: 0, width: "72px" }}>
           {WEEKLY_LABEL_ROWS.map((label) => (
-            <div key={label} style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", fontSize: "10px", color: "hsl(var(--muted-foreground))", fontWeight: label === "日付" ? 600 : 400, whiteSpace: "nowrap" }}>
+            <div key={label} style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", fontSize: "11px", color: "hsl(var(--muted-foreground))", fontWeight: label === "日付" ? 600 : 400, whiteSpace: "nowrap" }}>
               {label}
             </div>
           ))}
@@ -804,7 +804,7 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
       x: {
         ticks: {
           color: "hsl(var(--muted-foreground))",
-          font: { size: 9 },
+          font: { size: 10 },
           maxRotation: 0,
           autoSkip: false,
           callback: (_: unknown, index: number) => {
@@ -819,7 +819,7 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
         max: Math.ceil(maxVal + spread * 0.2),
         ticks: {
           color: "hsl(var(--muted-foreground))",
-          font: { size: 10 },
+          font: { size: 11 },
           callback: (val: number | string) => `${val}`,
         },
         grid: { color: "hsl(var(--border))" },

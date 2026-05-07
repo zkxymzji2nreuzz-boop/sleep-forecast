@@ -506,7 +506,7 @@ export function SettingsForm() {
         </div>
 
         <p className="mt-3 text-xs text-muted-foreground">
-          ※ データはブラウザの localStorage に保存されています。削除すると元に戻せません。
+          ※ データはブラウザの localStorage に保存されています　削除すると元に戻せません
         </p>
       </section>
 
@@ -524,7 +524,7 @@ export function SettingsForm() {
             通知設定
           </h2>
           <p className="mb-4 text-sm text-muted-foreground">
-            毎日の記録を忘れないよう、リマインダー通知を受け取れます。
+            毎日の記録を忘れないように、リマインダー通知を受け取れます。
           </p>
 
           {/* 権限未取得 */}
@@ -704,7 +704,7 @@ function CookieSettingsSection() {
         Cookie 設定
       </h2>
       <p className="mb-4 text-sm text-muted-foreground">
-        Google Analytics（アクセス解析）の Cookie 使用に関する同意設定を変更できます。
+        Google Analytics（アクセス解析）の Cookie 使用に関する同意設定を変更できます
         拒否しても、すべての機能は通常どおりご利用いただけます。
       </p>
 

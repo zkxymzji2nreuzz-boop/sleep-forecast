@@ -455,7 +455,7 @@ export function RecordForm(): JSX.Element {
                 </p>
                 <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
                   あと6日続けると気象との相関分析がスタートします。<br />
-                  毎朝15秒でOK。気圧が変わった日ほど記録の価値があります。
+                  毎朝15秒でOK　気圧が変わった日ほど記録の価値があります
                 </p>
               </div>
             )}
@@ -616,7 +616,7 @@ export function RecordForm(): JSX.Element {
               </Button>
             </div>
             <p className="pt-1 text-center text-xs text-muted-foreground/70">
-              本サービスは医療行為・診断を目的としたものではありません。
+              本サービスは医療行為・診断を目的としたものではありません
             </p>
           </CardContent>
         </Card>
@@ -637,7 +637,7 @@ export function RecordForm(): JSX.Element {
           <span>連続 {metrics.streak} 日</span>
         </div>
         <h1 className="text-2xl font-bold text-foreground sm:text-3xl">今日の睡眠を記録する</h1>
-        <p className="mt-2 text-sm text-muted-foreground">毎朝15秒でOK。気象データは自動で取得します。</p>
+        <p className="mt-2 text-sm text-muted-foreground">毎朝15秒でOK　気象データは自動で取得します</p>
       </div>
 
       {/* ⑥ 昨夜の予報との照合 */}
@@ -686,7 +686,7 @@ export function RecordForm(): JSX.Element {
           </div>
           {todayWeather.pressureDeltaHpa <= -3 && (
             <p className="mt-2 text-[11px] leading-snug text-rose-600/80 dark:text-rose-300/80">
-              気圧が下がっています。睡眠への影響が出やすい日です。
+              気圧が下がっています　睡眠への影響が出やすい日です
             </p>
           )}
         </div>
@@ -840,7 +840,7 @@ export function RecordForm(): JSX.Element {
             </div>
 
             <p className="text-center text-xs text-muted-foreground">
-              本サービスは医療行為・診断を目的としたものではありません。記録は健康管理の参考としてご利用ください。
+              本サービスは医療行為・診断を目的としたものではありません　記録は健康管理の参考としてご利用ください
             </p>
           </CardContent>
         </Card>

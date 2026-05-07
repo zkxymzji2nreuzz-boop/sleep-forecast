@@ -1,5 +1,80 @@
 ================================================================
 
+[2026-05-07] Cowork - WCAG AA コントラスト全修正 + Vercel ビルドエラー修正 (commits 417c6e5〜2d6567b)
+
+## 作業概要
+全ページスクリーンショット + JS 監査によるインラインスタイルの
+ハードコード hex 色（テキスト）を WCAG AA 準拠の CSS 変数/Tailwind クラスに置換。
+途中で TypeScript ビルドエラーが発生し合わせて修正。
+
+## 実施内容
+
+### WCAG AA 対応修正（4ファイル・5コミット）
+
+#### src/lib/wsi.ts
+- PRESSURE_ZONE_CONFIG に `textColor` フィールドを追加
+  - safe → "hsl(var(--primary))"
+  - caution → "hsl(var(--muted-foreground))"
+  - warning/danger → "hsl(var(--destructive))"
+
+#### src/components/WeatherWidget.tsx (commit 417c6e5, 5f5ac6e, 4734160, 2d6567b)
+- WakeupForecastCard: `wakeup.color`（ハードコード hex）→ `wakeup.textClass`（Tailwind）
+  ```tsx
+  const WAKEUP_CONFIG = { ... textClass: "text-amber-700 dark:text-amber-400" ... }
+  ```
+- 睡眠スコア表示: `style={{ color: "#..." }}` → `hsl(var(--muted-foreground))`
+- 週間予報 気圧ゾーンバッジ: `zoneConfig.color`（装飾色）→
+  最終的に `zoneConfig.textColor`→ zone ベースインライン式に変更（TSビルドエラー回避）
+- PressureAlertBanner: 2箇所 `color: "hsl(var(--destructive))"` に統一
+- WeatherZone バッジ: `zoneConfig.color` → `zoneConfig.textColor`
+
+#### src/components/RecordForm.tsx (commit 4734160)
+- `yesterdayBadge.color`（ハードコード hex）→ `yesterdayBadge.textClass`（Tailwind）
+  ```tsx
+  { textClass: "text-emerald-700 dark:text-emerald-400" }
+  ```
+
+#### src/components/PersonalPressureInsight.tsx (commit d3773e8)
+- line 110: `style={{ color: "..." }}` → `className="text-amber-700 dark:text-amber-400"`
+- line 123: スコア数値 → `className="text-amber-700 dark:text-amber-400 | text-violet-700 dark:text-violet-400"`
+- line 141: 差分スコア → `text-rose-700 dark:text-rose-400 | text-emerald-700 dark:text-emerald-400`
+
+#### src/components/AchievementsSection.tsx (commits 4734160, d3773e8)
+- 「達成！」バッジ: `color: badge.color` → `"hsl(var(--primary))"`
+- アクティブタブ: inline style → CSS 変数
+
+### TypeScript ビルドエラー修正 (commit 2d6567b)
+- エラー内容: `WeatherWidget.tsx:285` で `zoneConfig.textColor` が
+  `{ label: string; color: string; bg: string; }` 型に存在しないと判定
+- 原因: wsi.ts の textColor 追加がコミットされていなかった
+- 修正: `zoneConfig.textColor` を zone 変数からの直接条件式に変更
+  ```tsx
+  color: (zone === "warning" || zone === "danger")
+    ? "hsl(var(--destructive))"
+    : zone === "caution"
+    ? "hsl(var(--muted-foreground))"
+    : "hsl(var(--primary))"
+  ```
+
+## 検証
+- JS 監査（全ページ）: ハードコード hex テキスト色 **0件** ✅
+- Vercel デプロイ: commit 2d6567b → Ready ✅
+- 対象ページ全確認: ホーム・ダッシュボード・記録画面 ✅
+
+## コミット一覧
+- `5f5ac6e` fix: remove unused QUALITY_COLOR variable in RecordForm
+- `417c6e5` fix: WCAG AA contrast — wakeup label textClass + score muted-foreground
+- `4734160` fix: WCAG AA contrast — zoneConfig.textColor, RecordForm yesterdayBadge
+- `d3773e8` fix: WCAG AA contrast — PersonalPressureInsight + AchievementsSection active tab
+- `2d6567b` fix: WeatherWidget zoneConfig.textColor → zone-based inline color (TS build fix)
+
+## 次セッションへの申し送り
+- 全テキスト色のハードコード hex は完全除去済み
+- 残存する hex 色はグラフ描画用（fill/stroke）・背景/ボーダー用のみ（WCAG 対象外）
+- WCAG AA 対応は完了。次は機能開発またはコンテンツ強化を進める
+
+================================================================
+
 [2026-05-07] Cowork - 全ページOpusレビュー + P0〜P1修正バッチ
 
 ## 作業概要

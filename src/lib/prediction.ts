@@ -353,7 +353,7 @@ function generateAdvice(
   if (predictedQuality <= 2.0) {
     advice.push({
       severity: "warning",
-      text: "眠りが浅くなると予想されます。寝る 1 時間前からスマホを避けてください。",
+      text: "眠りが浅くなると予想されます　寝る 1 時間前からスマホを避けてください",
     });
   } else if (predictedQuality >= 4.5) {
     advice.push({
@@ -369,7 +369,7 @@ function generateAdvice(
   ) {
     advice.push({
       severity: "warning",
-      text: "気圧低下に備え、就寝 2 時間前から軽めのストレッチや散歩がおすすめです。",
+      text: "気圧低下に備え　就寝 2 時間前から軽めのストレッチや散歩がおすすめです",
     });
   }
 
@@ -393,7 +393,7 @@ function generateAdvice(
   if (factors.includes("high_humidity") && forecast.humidity >= 70) {
     advice.push({
       severity: "info",
-      text: "湿度が高いため、除湿機や窓の空気循環で環境を整えてください。",
+      text: "湿度が高いため　除湿機や窓の空気循環で環境を整えてください",
     });
   }
 

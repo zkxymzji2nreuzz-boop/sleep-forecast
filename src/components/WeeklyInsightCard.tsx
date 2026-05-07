@@ -83,7 +83,7 @@ function buildInsight(stats: WeeklyStats): string {
   }
   if (stats.avg >= 4.0) return "今週は良質な眠りが続いています。すばらしいです！";
   if (stats.avg <= 2.5) return "今週は睡眠の質が低めです。早めの就寝や環境整備を試してみてください。";
-  return "今週の睡眠は安定していました。記録を続けてパターンを把握しましょう。";
+  return "今週の睡眠は安定していました　記録を続けてパターンを把握しましょう";
 }
 
 function formatMD(dateStr: string): string {

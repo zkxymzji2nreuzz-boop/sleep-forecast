@@ -194,7 +194,7 @@ export function AchievementsSection({ records }: AchievementsSectionProps) {
       {earnedCount > 0 && records.length > 0 && (
         <div className="mt-3 flex items-center justify-between">
           <p className="text-[11px] text-muted-foreground leading-relaxed">
-            {earnedCount}個のバッジを獲得中。記録を続けてさらに解放しましょう！
+            {earnedCount}個のバッジを獲得中　記録を続けてさらに解放しましょう！
           </p>
           <button
             onClick={() => shareAchievements(earnedCount, statuses)}

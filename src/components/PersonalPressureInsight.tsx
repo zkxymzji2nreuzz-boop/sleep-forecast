@@ -168,7 +168,7 @@ export function PersonalPressureInsight({ currentDelta }: PersonalPressureInsigh
           </p>
           <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
             {totalRecords < MIN_TOTAL_RECORDS
-              ? `記録を続けると、あなた個人の気圧感度が分かります（あと${MIN_TOTAL_RECORDS - totalRecords}件で分析開始）`
+              ? `記録を続けるとあなた個人の気圧感度が分かります（あと${MIN_TOTAL_RECORDS - totalRecords}件で分析開始）`
               : "気圧急落日のデータが蓄積されると、あなた個人の傾向を分析できます"}
           </p>
         </div>

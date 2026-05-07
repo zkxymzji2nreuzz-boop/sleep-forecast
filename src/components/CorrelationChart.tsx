@@ -127,6 +127,8 @@ export function CorrelationChart({
     responsive: true,
     maintainAspectRatio: false,
     animation: { duration: 400 },
+    clip: false,
+    layout: { padding: { top: 8, bottom: 8, left: 4, right: 4 } },
     plugins: {
       legend: {
         display: false,

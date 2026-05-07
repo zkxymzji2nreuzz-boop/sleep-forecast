@@ -136,7 +136,7 @@ function generateInsight(summary: MonthlySummary): string {
   } else if (summary.avgQuality >= 3.0) {
     parts.push("まずまずの眠りが続いた月でした。");
   } else {
-    parts.push("睡眠の質が低めの月でした。原因を振り返ってみましょう。");
+    parts.push("睡眠の質が低めの月でした　原因を振り返ってみましょう");
   }
 
   if (summary.pressureDropCount > 0 && summary.pressureDropAvg !== null) {

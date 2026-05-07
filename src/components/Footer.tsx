@@ -32,8 +32,8 @@ export function Footer() {
         </nav>
 
         <p className="mb-3 text-xs leading-relaxed">
-          本サービスは医療行為・診断を目的としたものではありません。
-          体調に不安がある場合は医療機関にご相談ください。
+          本サービスは医療行為・診断を目的としたものではありません
+          体調に不安がある場合は医療機関にご相談ください
         </p>
 
         <p className="text-xs text-muted-foreground/70">

@@ -176,7 +176,7 @@ export default function DashboardPage() {
         <header className="mb-6">
           <h1 className="text-2xl font-bold text-foreground">睡眠ダッシュボード</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            過去 30 日の記録から、気象と睡眠品質の関係を分析します。
+            過去 30 日の記録から　気象と睡眠品質の関係を分析します
           </p>
         </header>
         <div className="flex flex-col items-center justify-center gap-6 rounded-xl border border-border bg-card px-6 py-16 text-center">
@@ -209,12 +209,12 @@ export default function DashboardPage() {
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-foreground">睡眠ダッシュボード</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          過去 30 日の記録から、気象と睡眠品質の関係を分析します。
+          過去 30 日の記録から　気象と睡眠品質の関係を分析します
         </p>
         {/* データ保存場所の注記 */}
         <p className="mt-2 text-xs text-muted-foreground/70">
           <Info className="mb-0.5 mr-1 inline-block h-3 w-3" aria-hidden />
-          記録はこのブラウザの端末内に保存されています。他の端末・ブラウザとは同期されません。
+          記録はこのブラウザの端末内に保存されています　他の端末・ブラウザとは同期されません
         </p>
       </header>
 
@@ -370,8 +370,8 @@ export default function DashboardPage() {
           />
           <p className="leading-relaxed">
             本ダッシュボードの分析・インサイトは統計的な傾向の参考情報であり、
-            医療行為・診断を目的としたものではありません。
-            体調に不安がある場合は医療機関にご相談ください。
+            医療行為・診断を目的としたものではありません
+            体調に不安がある場合は医療機関にご相談ください
           </p>
         </div>
       </div>
