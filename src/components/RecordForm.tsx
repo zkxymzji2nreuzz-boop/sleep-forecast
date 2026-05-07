@@ -242,10 +242,22 @@ export function RecordForm(): JSX.Element {
   const validate = (): boolean => {
     const next: FormErrors = {};
     if (form.quality === null) next.quality = "睡眠の状態を選択してください";
-    if (form.bedtime && !TIME_RE.test(form.bedtime)) next.bedtime = "HH:mm 形式で入力してください";
-    if (form.wakeTime && !TIME_RE.test(form.wakeTime)) next.wakeTime = "HH:mm 形式で入力してください";
+    if (form.bedtime && !TIME_RE.test(form.bedtime)) next.bedtime = "例: 23:30 のように入力してください";
+    if (form.wakeTime && !TIME_RE.test(form.wakeTime)) next.wakeTime = "例: 07:00 のように入力してください";
     if (form.note.length > 280) next.note = "メモは 280 字以内で入力してください";
     setErrors(next);
+    // 最初のエラー要素にスクロール + フォーカス
+    if (Object.keys(next).length > 0) {
+      const firstKey = Object.keys(next)[0];
+      const el =
+        document.getElementById(firstKey) ??
+        document.querySelector(`[aria-invalid="true"]`) ??
+        document.querySelector(`[role="radiogroup"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        (el as HTMLElement).focus?.();
+      }
+    }
     return Object.keys(next).length === 0;
   };
 
@@ -674,7 +686,7 @@ export function RecordForm(): JSX.Element {
             {/* 1) 3 択評価 */}
             <fieldset>
               <legend className="mb-3 block text-sm font-medium text-foreground">
-                昨晩の睡眠はいかがでしたか？<span className="text-[#f87171]" aria-hidden="true"> *</span>
+                昨晩の睡眠はいかがでしたか？<span className="text-rose-600 dark:text-rose-400" aria-hidden="true"> *</span>
               </legend>
               <div role="radiogroup" aria-label="睡眠の状態 3 択" className="grid grid-cols-3 gap-3">
                 {QUALITY_OPTIONS.map((opt) => {
@@ -699,7 +711,7 @@ export function RecordForm(): JSX.Element {
                   );
                 })}
               </div>
-              {errors.quality ? <p className="mt-2 text-xs text-[#f87171]" role="alert">{errors.quality}</p> : null}
+              {errors.quality ? <p className="mt-2 text-xs text-rose-600 dark:text-rose-400" role="alert">{errors.quality}</p> : null}
             </fieldset>
 
             {/* 2) 就寝/起床時刻 */}
@@ -711,9 +723,11 @@ export function RecordForm(): JSX.Element {
                 </Label>
                 <Input id="bedtime" type="time" inputMode="numeric" autoComplete="off" value={form.bedtime}
                   onChange={(e) => setForm((prev) => ({ ...prev, bedtime: e.target.value }))}
+                  aria-invalid={!!errors.bedtime}
+                  aria-describedby={errors.bedtime ? "bedtime-error" : undefined}
                   className="h-11 rounded-none border-0 border-b border-border bg-transparent px-0 text-foreground tabular-nums focus-visible:border-primary focus-visible:ring-0"
                 />
-                {errors.bedtime ? <p className="text-xs text-[#f87171]" role="alert">{errors.bedtime}</p> : null}
+                {errors.bedtime ? <p className="text-xs text-rose-600 dark:text-rose-400" role="alert">{errors.bedtime}</p> : null}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="wakeTime" className="flex items-center text-sm font-medium text-foreground">
@@ -722,9 +736,11 @@ export function RecordForm(): JSX.Element {
                 </Label>
                 <Input id="wakeTime" type="time" inputMode="numeric" autoComplete="off" value={form.wakeTime}
                   onChange={(e) => setForm((prev) => ({ ...prev, wakeTime: e.target.value }))}
+                  aria-invalid={!!errors.wakeTime}
+                  aria-describedby={errors.wakeTime ? "wakeTime-error" : undefined}
                   className="h-11 rounded-none border-0 border-b border-border bg-transparent px-0 text-foreground tabular-nums focus-visible:border-primary focus-visible:ring-0"
                 />
-                {errors.wakeTime ? <p className="text-xs text-[#f87171]" role="alert">{errors.wakeTime}</p> : null}
+                {errors.wakeTime ? <p className="text-xs text-rose-600 dark:text-rose-400" role="alert">{errors.wakeTime}</p> : null}
               </div>
             </div>
 
@@ -739,7 +755,7 @@ export function RecordForm(): JSX.Element {
                 className="w-full rounded-md border-0 bg-card/50 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-1 focus:ring-primary"
                 placeholder="例: 夜中に一度目が覚めた / 寝る前にスマホを見すぎた"
               />
-              {errors.note ? <p className="text-xs text-[#f87171]" role="alert">{errors.note}</p> : null}
+              {errors.note ? <p className="text-xs text-rose-600 dark:text-rose-400" role="alert">{errors.note}</p> : null}
             </div>
 
             {/* 手動入力フォールバック */}

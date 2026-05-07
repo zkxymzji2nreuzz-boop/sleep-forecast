@@ -33,15 +33,17 @@ function BadgeCard({ status }: BadgeCardProps) {
 
   return (
     <div
-      className="relative rounded-xl p-3 flex flex-col items-center text-center gap-1.5"
+      className="relative rounded-xl p-3 flex flex-col items-center text-center gap-1.5 transition-transform duration-200 hover:scale-105"
       style={{
         background: earned
-          ? "rgba(99,102,241,0.1)"
+          ? "linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(165,153,214,0.12) 100%)"
           : "rgba(255,255,255,0.03)",
         border: earned
-          ? "1px solid rgba(99,102,241,0.3)"
+          ? "1px solid rgba(99,102,241,0.45)"
           : "1px solid rgba(255,255,255,0.06)",
-        opacity: earned ? 1 : 0.65,
+        boxShadow: earned ? "0 2px 12px -4px rgba(99,102,241,0.35)" : "none",
+        opacity: earned ? 1 : 0.5,
+        filter: earned ? "none" : "grayscale(0.6)",
       }}
     >
       {/* 達成済みバッジにはキラキラ感 */}

@@ -128,6 +128,9 @@ export function PredictionCard({
         <div className="mt-1 text-white text-base font-medium">
           {emotion.emoji} {emotion.label}
         </div>
+        <p className="mt-1 text-white/60 text-[10px]">
+          5 に近いほど良眠予測
+        </p>
         {variant !== "full" && (
           <div className="mt-2 text-white/80 text-xs text-center max-w-xs">
             {prediction.factorDescription}
@@ -238,8 +241,8 @@ export function PredictionCard({
         </div>
       )}
 
-      {/* 医療免責 */}
-      <p className="text-xs text-white/70 mt-4 leading-relaxed">
+      {/* 医療免責 — コントラスト確保のため半透明黒ラッパを使用 */}
+      <p className="text-xs text-white leading-relaxed mt-4 bg-black/30 backdrop-blur-sm rounded-md px-3 py-2">
         本予測は統計的な参考値です。医療診断・治療を目的としたものではありません。
         体調に不安がある場合は医療機関にご相談ください。
       </p>

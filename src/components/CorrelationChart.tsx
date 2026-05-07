@@ -202,14 +202,30 @@ export function CorrelationChart({
 
   const validR = pearsonR !== null && !isNaN(pearsonR);
 
+  // スクリーンリーダー用の代替テキストを動的生成
+  const chartAltText = React.useMemo(() => {
+    const trend =
+      validR && pearsonR! <= -0.3
+        ? "気圧が下がるほど睡眠品質が低下する傾向があります。"
+        : validR && pearsonR! >= 0.3
+        ? "気圧が上がるほど睡眠品質が向上する傾向があります。"
+        : "現時点では明確な相関は見られません。";
+    return `${records.length}日分の記録をもとにした、気圧変化と睡眠品質の散布図です。${
+      validR ? `相関係数 r = ${pearsonR!.toFixed(2)}。` : ""
+    }${trend}`;
+  }, [records.length, validR, pearsonR]);
+
   return (
     <div>
+      {/* スクリーンリーダー向け代替テキスト */}
+      <p id="corr-chart-desc" className="sr-only">{chartAltText}</p>
       <div className="overflow-hidden" style={{ height }}>
         <Scatter
           data={data}
           options={options}
-          aria-label="気圧と睡眠品質の散布図と回帰直線"
           role="img"
+          aria-label="気圧と睡眠品質の散布図"
+          aria-describedby="corr-chart-desc"
         />
       </div>
       {/* フッター: 相関係数 + 凡例 */}

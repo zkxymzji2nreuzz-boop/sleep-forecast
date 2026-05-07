@@ -153,7 +153,7 @@ export default function PrivacyPage() {
             </li>
           </ul>
           <p className="mt-3 text-muted-foreground">
-            なお、Anthropic の製品ポリシーと同様に、本サービスは広告主がコンテンツを操作・誘導することを一切許可していません。
+            本サービスは、広告コンテンツが記事の中立性を損なうことのないよう、編集コンテンツと広告枠を明確に区別して配信しています。
           </p>
         </section>
 

@@ -1,5 +1,110 @@
 ================================================================
 
+[2026-05-07] Cowork - 全ページOpusレビュー + P0〜P1修正バッチ
+
+## 作業概要
+4エージェント並列Opusレビュー → メタ統合 → P0/P1修正を即日実施
+
+## レビュースコア
+- UX: 6.5/10 / UI: 6.92/10 / 技術A11y: 7.83/10 / SEO: 8.4/10
+- プロダクト平均: 7.41/10
+- レビュー詳細: harness/review-2026-05-07.md
+
+## 修正内容
+
+### P0 CRITICAL (3件)
+- C-01: PredictionCard 免責テキスト `text-white/70` → `text-white + bg-black/30 backdrop-blur-sm`
+  → WCAG AA コントラスト確保 (PredictionCard.tsx)
+- C-02: プライバシーポリシーの "Anthropic" 言及を削除
+  → AdSense審査対応 (privacy/page.tsx)
+- C-03: 利用規約 第4条に「iOSアプリ準備中」注記追加
+  → 景表法リスク回避 (terms/page.tsx)
+
+### P1 HIGH (4件)
+- H-01: PredictionCard スコア下に「5に近いほど良眠予測」説明文追加
+- H-02: 実績バッジ 達成済みにグラデーション+影、未達成は opacity/grayscale 強化
+- H-03: RecordForm バリデーション失敗時 scrollIntoView+focus 追加
+- H-04: RecordForm エラー色 `text-[#f87171]` → `text-rose-600 dark:text-rose-400`
+- H-03b: RecordForm Input に `aria-invalid` + `aria-describedby` 付与
+- H-06: CorrelationChart に `aria-describedby` + sr-only 動的代替テキスト追加
+
+### P2 MEDIUM (2件)
+- M-04: 棒グラフ「急上昇」カラー 緑 → 青（医学的中立化）
+- M-06: layout.tsx keywords の「気象病」重複を「天気痛」に変更
+- M-09: ホームP0 CTA に「まずはサンプルで試してみる」リンク追加 (?demo=30)
+
+## 次セッション申し送り
+- H-05: PredictionCard グラデーションカラーをデザインシステムに統合（中規模変更）
+- M-02: 散布図に相関係数キャプション追加
+- M-03: 棒グラフのグリッド線を淡く
+- M-05: 記事末尾に参考文献セクション追加（E-E-A-T強化）
+- T-07: アフィリエイトリンク設置（楽天/もしも）
+
+================================================================
+
+[2026-05-07] Cowork - ライトモード色修正 + 句読点クリーンアップ (commit 9199cc1)
+
+## 作業概要
+前セッションの Twilight Lavender リデザイン後に残存していた
+ライトモード非対応のハードコードカラーを全修正。
+あわせて UI 全体の句読点（不要な「。」）を整理した。
+
+## 実施内容
+
+### ライトモード対応修正（3ファイル）
+
+#### src/app/dashboard/page.tsx
+- KpiCard コンポーネント: `from-gray-900 to-[#161a24]` グラデーション → `bg-card`
+- KpiCard: `border-gray-700/50` → `border-border`
+- KpiCard: `text-gray-400` → `text-muted-foreground`
+- KpiCard: `text-gray-100` → `text-foreground`
+- 空状態 div: `border-gray-700/50` → `border-border`
+
+#### src/app/terms/page.tsx
+- `text-gray-400` → `text-muted-foreground`（replace_all、8+ 箇所）
+- `border-white/10` → `border-border`（replace_all、7 セクション見出し）
+- `text-gray-300`（`<strong>` タグ）→ `text-foreground`（replace_all、3 箇所）
+
+#### src/components/AchievementsSection.tsx
+- 非アクティブタブ inline style `{ background: "rgba(255,255,255,0.06)", color: "#a8b0c2" }`
+  → `className="bg-muted text-muted-foreground"` に変更（CSS 変数対応）
+
+### 句読点修正（7ファイル・10箇所）
+判断基準: 1文のUIラベル・説明文は「。」削除、2文以上/法的文章/FAQは維持
+
+- src/components/WeeklyRiskForecast.tsx（3箇所）
+  - 「天気予報じゃなく〜です。」→「。」削除
+  - 「それでも〜小さな備えになります。」→「。」削除
+  - 「今は「みんなの予報」。育てると〜」→「今は〜、育てると〜に」
+- src/components/PersonalPressureInsight.tsx（1箇所）
+  - 入浴ケアアドバイスの末尾「。」削除
+- src/components/AccountSection.tsx（4箇所）
+  - 同期説明・確認メール・リンク説明・クラウド同期の末尾「。」削除
+- src/components/PwaInstallPrompt.tsx（2箇所）
+  - インストール手順・オフライン説明の末尾「。」削除
+- src/components/AchievementsSection.tsx（1箇所）
+  - X シェアテキスト「自分だけの予報を作ろう。」→「。」削除
+- src/components/HomeClient.tsx（1箇所）
+  - 3ステップ説明「原因が分かります。」→「。」削除
+- src/components/RecordForm.tsx（1箇所）
+  - 記録後CTAの説明文末尾「。」削除
+
+## 検証
+- git push: [main 9199cc1] 10ファイル変更, 99 insertions, 38 deletions ✅
+- Vercel デプロイ: Ready（2分でビルド完了）✅
+- 本番確認:
+  - KPIカード4枚: 白背景・濃い数値・ミュートラベル ✅
+  - 実績バッジタブ: 非アクティブが bg-muted で視認性良好 ✅
+  - 利用規約 <strong>: 濃いforeground色で正常表示 ✅
+  - 全体ライトモード: 統一感あり、崩れなし ✅
+
+## 次セッションへの申し送り
+- T-07: アフィリエイトリンク設置（楽天/もしも / 枕・アロマ・漢方）未着手・Claude 対応可能
+- T-05, T-06, T-09: 人間主体タスク継続
+- T-08 / T-10 / T-11: 日次アウトリーチ継続
+
+================================================================
+
 [2026-05-07] Cowork - フルリデザイン "Twilight Lavender" 完了 (commit 18cbe9f)
 
 ## 作業概要

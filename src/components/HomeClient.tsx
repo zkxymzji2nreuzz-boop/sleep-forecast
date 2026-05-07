@@ -146,15 +146,21 @@ export function HomeClient() {
             気圧・気温・月齢からあなたの睡眠を読み解く
           </p>
 
-          {/* P0: 記録ゼロ → シンプルに1つのCTA */}
+          {/* P0: 記録ゼロ → メインCTA + サンプル体験リンク */}
           {recordCount === 0 && (
-            <div className="mx-auto flex max-w-sm flex-col items-stretch justify-center gap-3">
+            <div className="mx-auto flex max-w-sm flex-col items-center gap-3">
               <Button asChild size="lg" className="h-12 w-full text-base">
                 <Link href="/record">
                   <Activity className="mr-1" aria-hidden="true" />
                   今日を記録する
                 </Link>
               </Button>
+              <Link
+                href="/?demo=30"
+                className="text-sm text-muted-foreground underline underline-offset-4 hover:text-primary/80 transition-colors"
+              >
+                まずはサンプルで試してみる
+              </Link>
             </div>
           )}
 

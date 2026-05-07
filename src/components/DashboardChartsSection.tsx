@@ -80,7 +80,8 @@ const QUALITY_LABEL_MAP: Record<number, string> = {
 };
 
 const PRESSURE_BUCKETS = ["急上昇 (+3以上)", "横ばい", "急低下 (-3以下)"] as const;
-const PRESSURE_BUCKET_COLORS = ["#4ade80", "#a8b0c2", "#ef4444"];
+// 急上昇は緑(良い)に見えるのを避けるため青に変更 — 医学的に中立な配色
+const PRESSURE_BUCKET_COLORS = ["#60a5fa", "#a8b0c2", "#ef4444"];
 
 const DOW_LABELS = ["日", "月", "火", "水", "木", "金", "土"] as const;
 const DOW_COLORS = [

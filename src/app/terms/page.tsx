@@ -45,6 +45,9 @@ export default function TermsPage() {
 
       <section className="mb-8">
         <h2 className="text-lg font-bold border-b border-border pb-2 mb-4">第4条（サブスクリプション・決済）</h2>
+        <p className="text-sm text-muted-foreground mb-3 p-3 rounded-lg bg-muted/50 border border-border">
+          ※ iOSアプリは現在準備中です。リリース後に本条項が適用されます。
+        </p>
         <ul className="text-sm text-muted-foreground space-y-3">
           <li>1. iOSアプリでは、有料プラン「SleepForecast Pro」をご利用いただけます。料金は月額プラン（¥300/月）または年額プラン（¥3,000/年）です。</li>
           <li>2. 決済はApple Inc.のApp Storeを通じて処理されます。クレジットカード情報等の決済情報は運営者には提供されず、Appleが管理します。</li>

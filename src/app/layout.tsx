@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     "予測",
     "ヘルスケア",
     "SleepForecast",
-    "気象病",
+    "天気痛",
   ],
   robots: { index: true, follow: true },
   manifest: "/manifest.json",
