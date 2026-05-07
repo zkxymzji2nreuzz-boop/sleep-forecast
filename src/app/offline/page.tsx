@@ -16,7 +16,7 @@ export default function OfflinePage() {
         オフラインです
       </h1>
       <p className="mb-8 max-w-sm text-sm leading-relaxed text-muted-foreground">
-        インターネット接続が見つかりません　接続を確認してから再度お試しください
+        インターネット接続が見つかりません 接続を確認してから再度お試しください。
       </p>
       <a
         href="/"

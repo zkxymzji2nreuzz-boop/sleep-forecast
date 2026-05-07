@@ -320,7 +320,7 @@ export function RecordForm(): JSX.Element {
         } catch {
           toast({
             title: "気象データの取得に失敗しました",
-            description: "ネットワークや Open-Meteo API の状態をご確認ください　手動入力でも保存できます",
+            description: "ネットワークや Open-Meteo API の状態をご確認ください 手動入力でも保存できます。",
             variant: "destructive",
           });
           setShowManualFallback(true);
@@ -401,14 +401,14 @@ export function RecordForm(): JSX.Element {
       const q = savedView.quality;
       if (delta <= -5) {
         weatherNarrative = q <= 2
-          ? "気圧が急落した夜でした　低気圧の影響が出やすいパターンかもしれません　記録を続けて傾向を確認しましょう"
-          : "気圧が急落する中でも眠れた夜でした　引き続き記録して、あなたの耐性パターンを掴みましょう";
+          ? "気圧が急落した夜でした、低気圧の影響が出やすいパターンかもしれません 記録を続けて傾向を確認しましょう。"
+          : "気圧が急落する中でも眠れた夜でした 引き続き記録して、あなたの耐性パターンを掴みましょう。";
       } else if (delta <= -3) {
         weatherNarrative = q <= 2
-          ? "低気圧の夜は眠りに影響が出やすい傾向があります　データが増えると相関がはっきり見えてきます"
-          : "気圧がやや低めでも眠れましたね　気象と睡眠の関係を引き続き記録で確認しましょう";
+          ? "低気圧の夜は眠りに影響が出やすい傾向があります データが増えると相関がはっきり見えてきます。"
+          : "気圧がやや低めでも眠れましたね 気象と睡眠の関係を引き続き記録で確認しましょう。";
       } else if (delta >= 3) {
-        weatherNarrative = "気圧が上昇した安定した夜でした　高気圧の日は比較的眠りやすい傾向があります";
+        weatherNarrative = "気圧が上昇した安定した夜でした 高気圧の日は比較的眠りやすい傾向があります。";
       }
     }
 
@@ -455,7 +455,7 @@ export function RecordForm(): JSX.Element {
                 </p>
                 <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
                   あと6日続けると気象との相関分析がスタートします<br />
-                  毎朝15秒でOK　気圧が変わった日ほど記録の価値があります
+                  毎朝15秒でOK 気圧が変わった日ほど記録の価値があります。
                 </p>
               </div>
             )}
@@ -572,7 +572,7 @@ export function RecordForm(): JSX.Element {
               <div className="flex items-start gap-2.5 rounded-xl border border-primary/25 bg-primary/[0.07] px-4 py-3">
                 <BarChart3 className="mt-0.5 h-4 w-4 shrink-0 text-primary/80" aria-hidden="true" />
                 <p className="text-xs leading-relaxed text-muted-foreground">
-                  気圧が下がった日のパターンをダッシュボードで確認してみましょう　あなたの傾向が見えてきます
+                  気圧が下がった日のパターンをダッシュボードで確認してみましょう あなたの傾向が見えてきます。
                 </p>
               </div>
             )}
@@ -637,7 +637,7 @@ export function RecordForm(): JSX.Element {
           <span>連続 {metrics.streak} 日</span>
         </div>
         <h1 className="text-2xl font-bold text-foreground sm:text-3xl">今日の睡眠を記録する</h1>
-        <p className="mt-2 text-sm text-muted-foreground">毎朝15秒でOK　気象データは自動で取得します</p>
+        <p className="mt-2 text-sm text-muted-foreground">毎朝15秒でOK 気象データは自動で取得します。</p>
       </div>
 
       {/* ⑥ 昨夜の予報との照合 */}
@@ -686,7 +686,7 @@ export function RecordForm(): JSX.Element {
           </div>
           {todayWeather.pressureDeltaHpa <= -3 && (
             <p className="mt-2 text-[11px] leading-snug text-rose-600/80 dark:text-rose-300/80">
-              気圧が下がっています　睡眠への影響が出やすい日です
+              気圧が下がっています 睡眠への影響が出やすい日です。
             </p>
           )}
         </div>
@@ -774,7 +774,7 @@ export function RecordForm(): JSX.Element {
             {/* 手動入力フォールバック */}
             {showManualFallback ? (
               <div className="space-y-3 rounded-md border border-dashed border-[#f59e0b]/40 bg-[#f59e0b]/5 p-4" role="group" aria-label="気象データの手動入力">
-                <p className="text-xs text-[#f59e0b]">気象 API に接続できませんでした　以下に手動で入力して保存できます</p>
+                <p className="text-xs text-[#f59e0b]">気象 API に接続できませんでした 以下に手動で入力して保存できます。</p>
                 <div className="grid grid-cols-3 gap-2">
                   <div className="space-y-1">
                     <Label htmlFor="manual-temp" className="text-xs text-muted-foreground">気温 (°C)</Label>
@@ -840,7 +840,7 @@ export function RecordForm(): JSX.Element {
             </div>
 
             <p className="text-center text-xs text-muted-foreground">
-              本サービスは医療行為・診断を目的としたものではありません　記録は健康管理の参考としてご利用ください
+              本サービスは医療行為・診断を目的としたものではありません、記録は健康管理の参考としてご利用ください。
             </p>
           </CardContent>
         </Card>

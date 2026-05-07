@@ -353,12 +353,12 @@ function generateAdvice(
   if (predictedQuality <= 2.0) {
     advice.push({
       severity: "warning",
-      text: "眠りが浅くなると予想されます　寝る 1 時間前からスマホを避けてください",
+      text: "眠りが浅くなると予想されます 寝る 1 時間前からスマホを避けてください。",
     });
   } else if (predictedQuality >= 4.5) {
     advice.push({
       severity: "positive",
-      text: "明日は良好な睡眠が期待できます　いつも通りのルーティンで過ごしましょう",
+      text: "明日は良好な睡眠が期待できます いつも通りのルーティンで過ごしましょう。",
     });
   }
 
@@ -369,7 +369,7 @@ function generateAdvice(
   ) {
     advice.push({
       severity: "warning",
-      text: "気圧低下に備え　就寝 2 時間前から軽めのストレッチや散歩がおすすめです",
+      text: "気圧低下に備え、就寝 2 時間前から軽めのストレッチや散歩がおすすめです。",
     });
   }
 
@@ -377,7 +377,7 @@ function generateAdvice(
   if (factors.includes("full_moon")) {
     advice.push({
       severity: "info",
-      text: "満月周辺です　いつもより 30 分早めの就寝を試してみてください",
+      text: "満月周辺です いつもより 30 分早めの就寝を試してみてください。",
     });
   }
 
@@ -393,7 +393,7 @@ function generateAdvice(
   if (factors.includes("high_humidity") && forecast.humidity >= 70) {
     advice.push({
       severity: "info",
-      text: "湿度が高いため　除湿機や窓の空気循環で環境を整えてください",
+      text: "湿度が高いため、除湿機や窓の空気循環で環境を整えてください。",
     });
   }
 
@@ -401,7 +401,7 @@ function generateAdvice(
   if (records.length < 7) {
     advice.push({
       severity: "info",
-      text: "データを 7 日分集めると、より正確な予測ができます　毎朝記録してみましょう",
+      text: "データを 7 日分集めると、より正確な予測ができます 毎朝記録してみましょう。",
     });
   }
 

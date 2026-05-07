@@ -53,7 +53,7 @@ function ArticleInlineCta() {
           <span className="font-semibold text-foreground">
             毎朝 15 秒の記録で
           </span>
-          、気圧があなたの眠りにどう影響しているかがわかります
+          、気圧があなたの眠りにどう影響しているかがわかります。
           <span className="ml-1 text-xs text-muted-foreground">
             無料・登録不要
           </span>
@@ -297,7 +297,7 @@ export function ArticleLayout({ article, related, dataBadge }: Props) {
           </h2>
         </div>
         <p className="mt-2 text-sm leading-relaxed text-foreground/80">
-          毎朝たった 15 秒の記録から、気圧・気温・月齢があなたの眠りにどう響いているかをやさしく可視化します　7日続けると気象と睡眠の相関分析がスタートします
+          毎朝たった 15 秒の記録から、気圧・気温・月齢があなたの眠りにどう響いているかをやさしく可視化します。7日続けると気象と睡眠の相関分析がスタートします。
         </p>
         <ul className="mt-3 space-y-1 text-xs text-foreground/60">
           <li>✓ 無料・登録不要で今すぐ始められる</li>

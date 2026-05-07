@@ -67,7 +67,7 @@ export function AccountSection() {
       // localStorage が更新されたのでページをリロードして UI を反映
       setTimeout(() => window.location.reload(), 1500);
     } else {
-      setSyncMessage("同期に失敗しました　ネットワークを確認してください");
+      setSyncMessage("同期に失敗しました ネットワークを確認してください。");
     }
   }
 

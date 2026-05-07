@@ -76,14 +76,14 @@ function calcWeeklyStats(allRecords: SleepRecord[]): WeeklyStats | null {
 function buildInsight(stats: WeeklyStats): string {
   const diff = stats.prevAvg !== null ? stats.avg - stats.prevAvg : null;
 
-  if (diff !== null && diff >= 0.5) return "先週より睡眠の質が改善しました　この調子を維持しましょう！";
-  if (diff !== null && diff <= -0.5) return "先週より少し質が下がっています　睡眠環境や生活リズムを確認してみましょう";
+  if (diff !== null && diff >= 0.5) return "先週より睡眠の質が改善しました この調子を維持しましょう！";
+  if (diff !== null && diff <= -0.5) return "先週より少し質が下がっています 睡眠環境や生活リズムを確認してみましょう。";
   if (stats.pressureDropDays >= 2 && stats.pressureDropAvg !== null && stats.pressureDropAvg < stats.avg) {
     return `今週は気圧急落日が${stats.pressureDropDays}日あり、影響が出ていた可能性があります`;
   }
-  if (stats.avg >= 4.0) return "今週は良質な眠りが続いています　すばらしいです！";
-  if (stats.avg <= 2.5) return "今週は睡眠の質が低めです　早めの就寝や環境整備を試してみてください";
-  return "今週の睡眠は安定していました　記録を続けてパターンを把握しましょう";
+  if (stats.avg >= 4.0) return "今週は良質な眠りが続いています すばらしいです！";
+  if (stats.avg <= 2.5) return "今週は睡眠の質が低めです 早めの就寝や環境整備を試してみてください。";
+  return "今週の睡眠は安定していました 記録を続けてパターンを把握しましょう。";
 }
 
 function formatMD(dateStr: string): string {

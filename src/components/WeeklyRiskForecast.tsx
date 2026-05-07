@@ -221,7 +221,7 @@ export function WeeklyRiskForecast({
           role="alert"
         >
           <p className={`text-xs leading-relaxed ${RISK_CONFIG.high.alertTextClass}`}>
-            {getDayOfWeek(nextHighRisk.date)}曜日は気圧が下がりそう　早めに眠る準備をしておくと安心です
+            {getDayOfWeek(nextHighRisk.date)}曜日は気圧が下がりそう 早めに眠る準備をしておくと安心です。
           </p>
         </div>
       )}
@@ -229,7 +229,7 @@ export function WeeklyRiskForecast({
       {/* 免責文 */}
       <div className="mb-4 border-l-2 border-primary/30 pl-3">
         <p className="text-[10px] leading-relaxed text-muted-foreground">
-          気象データから算出した参考予報です　医療行為ではなく、体調管理の目安としてご活用ください
+          気象データから算出した参考予報です、医療行為ではなく、体調管理の目安としてご活用ください。
         </p>
         <p className="mt-1 text-[10px] leading-relaxed text-muted-foreground/60">
           それでも、気圧の変化を知っておくことは、明日のあなたへの小さな備えになります

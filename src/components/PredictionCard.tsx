@@ -245,8 +245,7 @@ export function PredictionCard({
 
       {/* 医療免責 — コントラスト確保のため半透明黒ラッパを使用 */}
       <p className="text-xs text-white leading-relaxed mt-4 bg-black/30 backdrop-blur-sm rounded-md px-3 py-2">
-        本予測は統計的な参考値です　医療診断・治療を目的としたものではありません
-        体調に不安がある場合は医療機関にご相談ください
+        本予測は統計的な参考値です、医療診断・治療を目的としたものではありません。体調に不安がある場合は医療機関にご相談ください。
       </p>
     </div>
   );

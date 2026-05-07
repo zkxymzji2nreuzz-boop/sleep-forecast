@@ -194,7 +194,7 @@ export function getCareHints(score: WSIScore): string[] {
   const hints: string[] = [];
 
   if (Math.abs(score.pressureDelta6h) >= 3) {
-    hints.push("気圧変化が大きい日は　入浴を就寝2時間前に済ませると体が整いやすくなります");
+    hints.push("気圧変化が大きい日は、入浴を就寝2時間前に済ませると体が整いやすくなります。");
   }
   if (score.tempDelta >= 8) {
     hints.push("寒暖差が大きいので、就寝時の室温を一定に保つと自律神経が落ち着きます");
