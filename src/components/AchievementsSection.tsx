@@ -167,7 +167,7 @@ export function AchievementsSection({ records }: AchievementsSectionProps) {
               }`}
               style={
                 isActive
-                  ? { background: "rgba(99,102,241,0.25)", color: "#a5b4fc" }
+                  ? { background: "rgba(99,102,241,0.25)", color: "hsl(var(--primary))" }
                   : undefined
               }
             >

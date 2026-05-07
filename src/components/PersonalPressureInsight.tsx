@@ -107,7 +107,7 @@ export function PersonalPressureInsight({ currentDelta }: PersonalPressureInsigh
           ) : (
             <BarChart2 className="h-4 w-4 flex-shrink-0" style={{ color: "#818cf8" }} aria-hidden="true" />
           )}
-          <p className="text-sm font-semibold" style={{ color: isSensitive ? "#fb923c" : "#818cf8" }}>
+          <p className={`text-sm font-semibold ${isSensitive ? "text-amber-700 dark:text-amber-400" : "text-indigo-600 dark:text-indigo-400"}`}>
             {isSensitive
               ? "あなたは気圧の影響を受けやすい傾向があります"
               : "今日は気圧が急落していますが、あなたは比較的影響を受けにくいようです"}
@@ -119,8 +119,7 @@ export function PersonalPressureInsight({ currentDelta }: PersonalPressureInsigh
           <div className="flex-1 rounded-lg px-3 py-2 text-center" style={{ background: "rgba(0,0,0,0.2)" }}>
             <p className="text-[10px] text-muted-foreground mb-0.5">気圧急落日の平均</p>
             <p
-              className="text-xl font-bold tabular-nums"
-              style={{ color: isSensitive ? "#fb923c" : "#c4b5fd" }}
+              className={`text-xl font-bold tabular-nums ${isSensitive ? "text-amber-700 dark:text-amber-400" : "text-violet-700 dark:text-violet-400"}`}
             >
               {insight.dropAvg.toFixed(1)}
             </p>
@@ -137,8 +136,7 @@ export function PersonalPressureInsight({ currentDelta }: PersonalPressureInsigh
           <div className="flex-1 rounded-lg px-3 py-2 text-center" style={{ background: "rgba(0,0,0,0.2)" }}>
             <p className="text-[10px] text-muted-foreground mb-0.5">差</p>
             <p
-              className="text-xl font-bold tabular-nums"
-              style={{ color: insight.diff < 0 ? "#f87171" : "#4ade80" }}
+              className={`text-xl font-bold tabular-nums ${insight.diff < 0 ? "text-rose-700 dark:text-rose-400" : "text-emerald-700 dark:text-emerald-400"}`}
             >
               {insight.diff > 0 ? "+" : ""}{insight.diff.toFixed(1)}
             </p>
