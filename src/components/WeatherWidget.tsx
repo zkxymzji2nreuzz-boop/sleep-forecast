@@ -781,6 +781,7 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: { padding: { right: 12, left: 4, top: 4, bottom: 4 } },
     plugins: {
       legend: { display: false },
       tooltip: {
@@ -793,9 +794,9 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
             return `${val.toFixed(1)} hPa (${delta >= 0 ? "+" : ""}${delta.toFixed(1)} hPa/h)`;
           },
         },
-        backgroundColor: "hsl(var(--card))",
-        titleColor: "hsl(var(--foreground))",
-        bodyColor: "hsl(var(--muted-foreground))",
+        backgroundColor: "hsl(252 28% 14%)",
+        titleColor: "rgba(241, 245, 249, 0.95)",
+        bodyColor: "rgba(203, 213, 225, 0.85)",
         borderColor: "rgba(255,255,255,0.1)",
         borderWidth: 1,
       },
@@ -803,7 +804,7 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
     scales: {
       x: {
         ticks: {
-          color: "hsl(var(--muted-foreground))",
+          color: "rgba(203, 213, 225, 0.85)",
           font: { size: 10 },
           maxRotation: 0,
           autoSkip: false,
@@ -811,18 +812,18 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
             return targetPoints[index]?.label ?? "";
           },
         },
-        grid: { color: "hsl(var(--border))" },
+        grid: { color: "rgba(255, 255, 255, 0.08)" },
       },
       y: {
         position: "right" as const,
-        min: Math.floor(minVal - spread * 0.2),
-        max: Math.ceil(maxVal + spread * 0.2),
+        min: Math.floor(minVal - Math.max(spread * 0.25, 2)),
+        max: Math.ceil(maxVal + Math.max(spread * 0.25, 2)),
         ticks: {
-          color: "hsl(var(--muted-foreground))",
+          color: "rgba(203, 213, 225, 0.85)",
           font: { size: 11 },
           callback: (val: number | string) => `${val}`,
         },
-        grid: { color: "hsl(var(--border))" },
+        grid: { color: "rgba(255, 255, 255, 0.08)" },
       },
     },
   };

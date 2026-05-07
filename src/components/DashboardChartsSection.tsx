@@ -56,8 +56,8 @@ ChartJS.register(
   Legend,
   Filler
 );
-ChartJS.defaults.color = "hsl(252 23% 65%)";
-ChartJS.defaults.borderColor = "hsl(252 28% 14%)";
+ChartJS.defaults.color = "rgba(203, 213, 225, 0.85)";
+ChartJS.defaults.borderColor = "rgba(255, 255, 255, 0.08)";
 ChartJS.defaults.font.family = "'Inter', sans-serif";
 
 // ---------------------------------------------------------------------------
@@ -203,7 +203,7 @@ function buildLineOptions(): ChartOptions<"line"> {
         position: "top" as const,
         align: "end" as const,
         labels: {
-          color: "hsl(252 23% 65%)",
+          color: "rgba(203, 213, 225, 0.85)",
           font: { size: 11 },
           boxWidth: 16,
           boxHeight: 2,
@@ -233,22 +233,22 @@ function buildLineOptions(): ChartOptions<"line"> {
     },
     scales: {
       x: {
-        grid: { color: "hsl(252 28% 14%)" },
-        ticks: { color: "hsl(252 23% 65%)", maxRotation: 0, autoSkipPadding: 16 },
+        grid: { color: "rgba(255, 255, 255, 0.08)" },
+        ticks: { color: "rgba(203, 213, 225, 0.85)", maxRotation: 0, autoSkipPadding: 16 },
       },
       y: {
         min: 1,
         max: 5,
         ticks: {
           stepSize: 1,
-          color: "hsl(252 23% 65%)",
+          color: "rgba(203, 213, 225, 0.85)",
           callback: (value) => {
             const v = Number(value);
             if (!Number.isInteger(v) || v < 1 || v > 5) return "";
             return QUALITY_LABEL_MAP[v as 1 | 2 | 3 | 4 | 5];
           },
         },
-        grid: { color: "hsl(252 28% 14%)" },
+        grid: { color: "rgba(255, 255, 255, 0.08)" },
       },
     },
   };
@@ -276,14 +276,14 @@ function buildBarOptions(): ChartOptions<"bar"> {
     },
     scales: {
       x: {
-        grid: { color: "hsl(252 28% 14%)" },
-        ticks: { color: "hsl(252 23% 65%)", font: { size: 10 } },
+        grid: { color: "rgba(255, 255, 255, 0.08)" },
+        ticks: { color: "rgba(203, 213, 225, 0.85)", font: { size: 10 } },
       },
       y: {
         min: 0,
         max: 5,
-        ticks: { stepSize: 1, color: "hsl(252 23% 65%)" },
-        grid: { color: "hsl(252 28% 14%)" },
+        ticks: { stepSize: 1, color: "rgba(203, 213, 225, 0.85)" },
+        grid: { color: "rgba(255, 255, 255, 0.08)" },
       },
     },
   };

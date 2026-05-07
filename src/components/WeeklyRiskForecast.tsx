@@ -122,13 +122,13 @@ export function WeeklyRiskForecast({
           })}
         </div>
         {/* 凡例 */}
-        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-0.5">
+        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
           {(["high", "medium", "stable"] as const).map((level) => {
             const cfg = RISK_CONFIG[level];
             return (
-              <div key={level} className="flex items-center gap-1">
-                <div className={`h-1.5 w-3 rounded-full ${cfg.barClass}`} />
-                <span className="text-[9px] text-muted-foreground/70">{cfg.label}</span>
+              <div key={level} className="flex items-center gap-1.5">
+                <div className={`h-2 w-4 rounded-full ${cfg.barClass}`} />
+                <span className="text-xs text-muted-foreground">{cfg.label}</span>
               </div>
             );
           })}

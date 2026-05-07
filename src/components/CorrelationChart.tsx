@@ -138,7 +138,7 @@ export function CorrelationChart({
         borderColor: "#6366f1",
         borderWidth: 1,
         titleColor: "hsl(256 43% 93%)",
-        bodyColor: "hsl(252 23% 65%)",
+        bodyColor: "rgba(203, 213, 225, 0.85)",
         padding: 10,
         callbacks: {
           title: (items: TooltipItem<"scatter">[]) => {
@@ -167,11 +167,11 @@ export function CorrelationChart({
         title: {
           display: true,
           text: "前日比気圧 (hPa)",
-          color: "hsl(252 23% 65%)",
+          color: "rgba(203, 213, 225, 0.85)",
           font: { size: 11 },
         },
-        grid: { color: "hsl(252 28% 14%)" },
-        ticks: { color: "hsl(252 23% 65%)" },
+        grid: { color: "rgba(255, 255, 255, 0.08)" },
+        ticks: { color: "rgba(203, 213, 225, 0.85)" },
       },
       y: {
         type: "linear",
@@ -179,7 +179,7 @@ export function CorrelationChart({
         max: 5,
         ticks: {
           stepSize: 1,
-          color: "hsl(252 23% 65%)",
+          color: "rgba(203, 213, 225, 0.85)",
           callback: (value) => {
             const v = Number(value);
             if (!Number.isInteger(v)) return "";
