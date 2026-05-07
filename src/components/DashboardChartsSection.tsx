@@ -56,8 +56,8 @@ ChartJS.register(
   Legend,
   Filler
 );
-ChartJS.defaults.color = "#a8b0c2";
-ChartJS.defaults.borderColor = "rgba(139, 146, 165, 0.15)";
+ChartJS.defaults.color = "hsl(252 23% 65%)";
+ChartJS.defaults.borderColor = "hsl(252 28% 14%)";
 ChartJS.defaults.font.family = "'Inter', sans-serif";
 
 // ---------------------------------------------------------------------------
@@ -102,11 +102,11 @@ const MOON_BUCKETS = [
 const MOON_BUCKET_COLORS = ["#7c4dff", "#6366f1", "#facc15", "#4ade80"];
 
 const TOOLTIP_BASE = {
-  backgroundColor: "#1a1f2e",
+  backgroundColor: "hsl(252 28% 14%)",
   borderColor: "#6366f1",
   borderWidth: 1,
-  titleColor: "#e6e8ee",
-  bodyColor: "#a8b0c2",
+  titleColor: "hsl(256 43% 93%)",
+  bodyColor: "hsl(252 23% 65%)",
   padding: 10,
 } as const;
 
@@ -200,7 +200,7 @@ function buildLineOptions(): ChartOptions<"line"> {
         position: "top" as const,
         align: "end" as const,
         labels: {
-          color: "#a8b0c2",
+          color: "hsl(252 23% 65%)",
           font: { size: 11 },
           boxWidth: 16,
           boxHeight: 2,
@@ -230,22 +230,22 @@ function buildLineOptions(): ChartOptions<"line"> {
     },
     scales: {
       x: {
-        grid: { color: "rgba(139, 146, 165, 0.10)" },
-        ticks: { color: "#a8b0c2", maxRotation: 0, autoSkipPadding: 16 },
+        grid: { color: "hsl(252 28% 14%)" },
+        ticks: { color: "hsl(252 23% 65%)", maxRotation: 0, autoSkipPadding: 16 },
       },
       y: {
         min: 1,
         max: 5,
         ticks: {
           stepSize: 1,
-          color: "#a8b0c2",
+          color: "hsl(252 23% 65%)",
           callback: (value) => {
             const v = Number(value);
             if (!Number.isInteger(v) || v < 1 || v > 5) return "";
             return QUALITY_LABEL_MAP[v as 1 | 2 | 3 | 4 | 5];
           },
         },
-        grid: { color: "rgba(139, 146, 165, 0.10)" },
+        grid: { color: "hsl(252 28% 14%)" },
       },
     },
   };
@@ -273,14 +273,14 @@ function buildBarOptions(): ChartOptions<"bar"> {
     },
     scales: {
       x: {
-        grid: { color: "rgba(139, 146, 165, 0.10)" },
-        ticks: { color: "#a8b0c2", font: { size: 10 } },
+        grid: { color: "hsl(252 28% 14%)" },
+        ticks: { color: "hsl(252 23% 65%)", font: { size: 10 } },
       },
       y: {
         min: 0,
         max: 5,
-        ticks: { stepSize: 1, color: "#a8b0c2" },
-        grid: { color: "rgba(139, 146, 165, 0.10)" },
+        ticks: { stepSize: 1, color: "hsl(252 23% 65%)" },
+        grid: { color: "hsl(252 28% 14%)" },
       },
     },
   };
@@ -297,8 +297,8 @@ type ChartCardProps = {
 
 function ChartCard({ title, children }: ChartCardProps) {
   return (
-    <section className="mb-6 rounded-xl bg-[#1a1f2e] p-4">
-      <h2 className="mb-3 text-sm font-semibold text-[#e6e8ee]">{title}</h2>
+    <section className="mb-6 rounded-xl bg-card p-4">
+      <h2 className="mb-3 text-sm font-semibold text-foreground">{title}</h2>
       {children}
     </section>
   );
@@ -319,14 +319,14 @@ function LockedChart({ needed, current, children }: LockedChartProps) {
         {children}
       </div>
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-2 rounded-xl border border-gray-700/60 bg-[#0f1117]/90 px-6 py-4 text-center shadow-lg">
-          <Lock className="h-6 w-6 text-[#a8b0c2]" aria-hidden />
-          <p className="text-sm font-semibold text-[#e6e8ee]">
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-border bg-background/90 px-6 py-4 text-center shadow-lg">
+          <Lock className="h-6 w-6 text-muted-foreground" aria-hidden />
+          <p className="text-sm font-semibold text-foreground">
             あと{" "}
-            <span className="text-indigo-300">{remaining} 件</span>{" "}
+            <span className="text-primary/80">{remaining} 件</span>{" "}
             で解放
           </p>
-          <p className="text-xs text-[#a8b0c2]">記録を続けると分析が見えてきます</p>
+          <p className="text-xs text-muted-foreground">記録を続けると分析が見えてきます</p>
         </div>
       </div>
     </div>
@@ -358,7 +358,7 @@ export function DashboardChartsSection({ records }: Props) {
           backgroundColor: "rgba(99, 102, 241, 0.10)",
           borderWidth: 2,
           pointBackgroundColor: "#6366f1",
-          pointBorderColor: "#1a1f2e",
+          pointBorderColor: "hsl(252 28% 14%)",
           pointBorderWidth: 2,
           pointRadius: 3,
           pointHoverRadius: 5,
@@ -480,22 +480,22 @@ export function DashboardChartsSection({ records }: Props) {
       <ChartCard title="気象・曜日別の平均品質">
         <LockedChart needed={DEMO_THRESHOLD} current={records.length}>
           <Tabs defaultValue="pressure" className="w-full">
-            <TabsList className="mb-3 grid w-full grid-cols-3 gap-1 bg-[#0f1117] p-1">
+            <TabsList className="mb-3 grid w-full grid-cols-3 gap-1 bg-background p-1">
               <TabsTrigger
                 value="pressure"
-                className="rounded-md text-[#a8b0c2] data-[state=active]:bg-indigo-500/10 data-[state=active]:text-indigo-300 data-[state=active]:shadow-none"
+                className="rounded-md text-muted-foreground data-[state=active]:bg-primary/[0.07] data-[state=active]:text-primary/80 data-[state=active]:shadow-none"
               >
                 気圧別
               </TabsTrigger>
               <TabsTrigger
                 value="moon"
-                className="rounded-md text-[#a8b0c2] data-[state=active]:bg-indigo-500/10 data-[state=active]:text-indigo-300 data-[state=active]:shadow-none"
+                className="rounded-md text-muted-foreground data-[state=active]:bg-primary/[0.07] data-[state=active]:text-primary/80 data-[state=active]:shadow-none"
               >
                 月齢別
               </TabsTrigger>
               <TabsTrigger
                 value="dow"
-                className="rounded-md text-[#a8b0c2] data-[state=active]:bg-indigo-500/10 data-[state=active]:text-indigo-300 data-[state=active]:shadow-none"
+                className="rounded-md text-muted-foreground data-[state=active]:bg-primary/[0.07] data-[state=active]:text-primary/80 data-[state=active]:shadow-none"
               >
                 曜日別
               </TabsTrigger>
@@ -529,7 +529,7 @@ export function DashboardChartsSection({ records }: Props) {
                   role="img"
                 />
               </div>
-              <p className="mt-2 text-[10px] text-[#a8b0c2]">
+              <p className="mt-2 text-[10px] text-muted-foreground">
                 曜日ごとの平均睡眠品質。週末の生活リズムの乱れや週明けの疲れを確認できます。
               </p>
             </TabsContent>

@@ -132,11 +132,11 @@ export function CorrelationChart({
         display: false,
       },
       tooltip: {
-        backgroundColor: "#1a1f2e",
+        backgroundColor: "hsl(252 28% 14%)",
         borderColor: "#6366f1",
         borderWidth: 1,
-        titleColor: "#e6e8ee",
-        bodyColor: "#a8b0c2",
+        titleColor: "hsl(256 43% 93%)",
+        bodyColor: "hsl(252 23% 65%)",
         padding: 10,
         callbacks: {
           title: (items: TooltipItem<"scatter">[]) => {
@@ -165,11 +165,11 @@ export function CorrelationChart({
         title: {
           display: true,
           text: "前日比気圧 (hPa)",
-          color: "#a8b0c2",
+          color: "hsl(252 23% 65%)",
           font: { size: 11 },
         },
-        grid: { color: "rgba(139, 146, 165, 0.10)" },
-        ticks: { color: "#a8b0c2" },
+        grid: { color: "hsl(252 28% 14%)" },
+        ticks: { color: "hsl(252 23% 65%)" },
       },
       y: {
         type: "linear",
@@ -177,7 +177,7 @@ export function CorrelationChart({
         max: 5,
         ticks: {
           stepSize: 1,
-          color: "#a8b0c2",
+          color: "hsl(252 23% 65%)",
           callback: (value) => {
             const v = Number(value);
             if (!Number.isInteger(v)) return "";
@@ -192,7 +192,7 @@ export function CorrelationChart({
   if (records.length === 0) {
     return (
       <div
-        className="flex items-center justify-center text-sm text-[#a8b0c2]"
+        className="flex items-center justify-center text-sm text-muted-foreground"
         style={{ height }}
       >
         データがありません
@@ -213,13 +213,13 @@ export function CorrelationChart({
         />
       </div>
       {/* フッター: 相関係数 + 凡例 */}
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-y-2 text-[11px] text-[#a8b0c2]">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-y-2 text-[11px] text-muted-foreground">
         {validR && (
           <span className="shrink-0">
             相関係数 r = <span className={
               pearsonR! <= -0.3 ? "font-semibold text-rose-400"
               : pearsonR! >= 0.3 ? "font-semibold text-emerald-400"
-              : "text-[#a8b0c2]"
+              : "text-muted-foreground"
             }>{pearsonR!.toFixed(2)}</span>
           </span>
         )}

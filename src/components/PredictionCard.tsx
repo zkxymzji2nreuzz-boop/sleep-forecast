@@ -20,12 +20,29 @@ function getEmotionStatus(score: number): { label: string; emoji: string } {
   return { label: "快眠", emoji: "😁" };
 }
 
-/** スコアに対応するテキスト色 */
+/**
+ * スコア別カードグラデーション（Oura Ring方式）
+ * - 快眠(≥4.5): エメラルド
+ * - 良好(≥3.5): ティール
+ * - ふつう(≥2.5): ラベンダー（ブランドカラー）
+ * - やや悪い(≥1.5): アンバー
+ * - 悪い(<1.5): ローズ
+ */
+function getScoreGradient(score: number): string {
+  if (score >= 4.5) return "from-emerald-600 via-teal-500 to-emerald-400";
+  if (score >= 3.5) return "from-teal-500 via-emerald-400 to-cyan-400";
+  if (score >= 2.5) return "from-violet-600 via-purple-500 to-indigo-500";
+  if (score >= 1.5) return "from-orange-500 via-amber-400 to-yellow-400";
+  return "from-rose-600 via-rose-500 to-orange-400";
+}
+
+/** スコアに対応するテキスト色（カード上の白背景）*/
 function getScoreColor(score: number): string {
-  if (score <= 2.0) return "text-rose-300";
-  if (score <= 3.0) return "text-orange-300";
-  if (score <= 4.0) return "text-yellow-200";
-  return "text-emerald-300";
+  if (score >= 4.5) return "text-emerald-100";
+  if (score >= 3.5) return "text-teal-100";
+  if (score >= 2.5) return "text-white";
+  if (score >= 1.5) return "text-amber-100";
+  return "text-rose-100";
 }
 
 /** 信頼度に対応するラベルと進捗率 */
@@ -56,23 +73,24 @@ export function PredictionCard({
     return (
       <div
         className={`
-          relative bg-[#1a1f2e] border border-white/10
+          relative bg-card border border-border
           rounded-xl p-6 overflow-hidden text-center
           ${variant === "full" ? "min-h-[320px]" : "min-h-[200px]"}
           ${className}
         `}
       >
-        <Moon className="h-8 w-8 mb-2 text-indigo-300/60 mx-auto" aria-hidden="true" />
-        <p className="text-sm font-semibold text-[#e6e8ee] mb-1">
+        <Moon className="h-8 w-8 mb-2 text-primary/40 mx-auto" aria-hidden="true" />
+        <p className="text-sm font-semibold text-foreground mb-1">
           予測データがありません
         </p>
-        <p className="text-xs text-[#a8b0c2]">
+        <p className="text-xs text-muted-foreground">
           記録を追加すると、明日の眠気予報が表示されます
         </p>
       </div>
     );
   }
 
+  const gradient = getScoreGradient(prediction.predictedQuality);
   const scoreColor = getScoreColor(prediction.predictedQuality);
   const emotion = getEmotionStatus(prediction.predictedQuality);
   const confidenceInfo = getConfidenceInfo(prediction.confidence);
@@ -80,7 +98,7 @@ export function PredictionCard({
   return (
     <div
       className={`
-        relative bg-gradient-to-br from-indigo-500 via-purple-500 to-rose-400
+        relative bg-gradient-to-br ${gradient}
         rounded-xl p-6 overflow-hidden
         ${variant === "full" ? "min-h-[320px]" : "min-h-[200px]"}
         ${className}
@@ -110,7 +128,6 @@ export function PredictionCard({
         <div className="mt-1 text-white text-base font-medium">
           {emotion.emoji} {emotion.label}
         </div>
-        {/* factorDescription は full バリアントの「主な要因」欄に表示するため、ここでは非表示 */}
         {variant !== "full" && (
           <div className="mt-2 text-white/80 text-xs text-center max-w-xs">
             {prediction.factorDescription}
@@ -157,13 +174,13 @@ export function PredictionCard({
                 className="bg-white/5 rounded-md p-2 flex gap-2 items-start"
               >
                 {item.severity === "warning" && (
-                  <AlertCircle className="h-4 w-4 text-rose-300 flex-shrink-0 mt-0.5" />
+                  <AlertCircle className="h-4 w-4 text-rose-200 flex-shrink-0 mt-0.5" />
                 )}
                 {item.severity === "info" && (
-                  <Info className="h-4 w-4 text-sky-300 flex-shrink-0 mt-0.5" />
+                  <Info className="h-4 w-4 text-sky-200 flex-shrink-0 mt-0.5" />
                 )}
                 {item.severity === "positive" && (
-                  <CheckCircle className="h-4 w-4 text-emerald-300 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-4 w-4 text-emerald-200 flex-shrink-0 mt-0.5" />
                 )}
                 <span className="text-white text-xs leading-relaxed">
                   {item.text}
@@ -201,9 +218,9 @@ export function PredictionCard({
                     <span
                       className={`text-xs font-mono tabular-nums ${
                         item.severity === "bad"
-                          ? "text-rose-300"
+                          ? "text-rose-200"
                           : item.severity === "good"
-                          ? "text-emerald-300"
+                          ? "text-emerald-200"
                           : "text-white/40"
                       }`}
                     >
@@ -222,7 +239,7 @@ export function PredictionCard({
       )}
 
       {/* 医療免責 */}
-      <p className="text-xs text-indigo-100 mt-4 leading-relaxed opacity-75">
+      <p className="text-xs text-white/70 mt-4 leading-relaxed">
         本予測は統計的な参考値です。医療診断・治療を目的としたものではありません。
         体調に不安がある場合は医療機関にご相談ください。
       </p>

@@ -60,22 +60,22 @@ export function CookieConsent() {
       aria-modal="false"
       className="fixed bottom-[4.5rem] left-0 right-0 z-50 mx-auto max-w-screen-md px-3 pb-2 md:bottom-4"
     >
-      <div className="rounded-2xl border border-indigo-400/20 bg-[#1a1f2e]/95 px-5 py-4 shadow-xl shadow-black/40 backdrop-blur-md sm:flex sm:items-start sm:gap-5">
+      <div className="rounded-2xl border border-primary/15 bg-card/95 px-5 py-4 shadow-xl shadow-black/40 backdrop-blur-md sm:flex sm:items-start sm:gap-5">
         {/* アイコン */}
         <div className="mb-3 flex shrink-0 items-center gap-2 sm:mb-0">
-          <Cookie className="h-5 w-5 text-indigo-300/70" aria-hidden="true" />
+          <Cookie className="h-5 w-5 text-primary/70" aria-hidden="true" />
         </div>
 
         {/* 本文 */}
-        <div className="flex-1 text-sm leading-relaxed text-[#e6e8ee]/80">
+        <div className="flex-1 text-sm leading-relaxed text-foreground/80">
           <p>
             このサイトは利便性の向上・アクセス分析のため{" "}
-            <strong className="font-semibold text-[#e6e8ee]">Cookie（Google Analytics）</strong>
+            <strong className="font-semibold text-foreground">Cookie（Google Analytics）</strong>
             を使用しています。「同意する」を押すと Cookie の利用に同意したことになります。
             詳しくは{" "}
             <Link
               href="/privacy"
-              className="underline underline-offset-2 hover:text-indigo-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 focus-visible:ring-offset-1 focus-visible:ring-offset-[#1a1f2e]"
+              className="underline underline-offset-2 hover:text-primary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/80 focus-visible:ring-offset-1 focus-visible:ring-offset-card"
             >
               プライバシーポリシー
             </Link>
@@ -88,14 +88,14 @@ export function CookieConsent() {
           <button
             type="button"
             onClick={handleAccept}
-            className="rounded-full bg-indigo-500 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e]"
+            className="rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
           >
             同意する
           </button>
           <button
             type="button"
             onClick={handleReject}
-            className="rounded-full border border-white/20 px-4 py-1.5 text-xs font-medium text-[#a8b0c2] transition-colors hover:border-white/40 hover:text-[#e6e8ee] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e]"
+            className="rounded-full border border-border/60 px-4 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border focus-visible:ring-offset-2 focus-visible:ring-offset-card"
           >
             拒否する
           </button>
@@ -104,7 +104,7 @@ export function CookieConsent() {
             type="button"
             onClick={() => setShow(false)}
             aria-label="バナーを閉じる（後で設定から変更できます）"
-            className="rounded-full p-1 text-[#a8b0c2] transition-colors hover:text-[#e6e8ee] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+            className="rounded-full p-1 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border"
           >
             <X className="h-3.5 w-3.5" aria-hidden="true" />
           </button>

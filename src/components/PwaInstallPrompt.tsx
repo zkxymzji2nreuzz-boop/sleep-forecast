@@ -92,32 +92,31 @@ export function PwaInstallPrompt() {
 
   return (
     <div
-      className="mx-4 mb-4 rounded-xl border border-indigo-400/20 bg-indigo-500/8 px-4 py-3"
-      style={{ background: "rgba(99,102,241,0.07)" }}
+      className="mx-4 mb-4 rounded-xl border border-primary/15 bg-primary/[0.07] px-4 py-3"
       role="banner"
       aria-label="ホーム画面への追加を促すバナー"
     >
       <div className="flex items-start gap-3">
-        <Smartphone className="h-5 w-5 text-indigo-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
+        <Smartphone className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" aria-hidden="true" />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-[#e6e8ee]">
+          <p className="text-sm font-semibold text-foreground">
             ホーム画面に追加して、さらに使いやすく
           </p>
           {showIosHint ? (
-            <p className="mt-1 text-xs text-[#a8b0c2] leading-relaxed">
+            <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
               Safariの共有ボタン（
-              <span className="font-mono text-indigo-300">⬆</span>
+              <span className="font-mono text-primary/80">⬆</span>
               ）→「ホーム画面に追加」でアプリとして使えます。
             </p>
           ) : (
-            <p className="mt-1 text-xs text-[#a8b0c2] leading-relaxed">
+            <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
               インストールするとオフラインでも閲覧でき、通知も確実に届きます。
             </p>
           )}
           {!showIosHint && (
             <button
               onClick={handleInstall}
-              className="mt-2 inline-flex h-7 items-center rounded-md bg-indigo-500 px-3 text-xs font-semibold text-white hover:bg-indigo-600 transition-colors"
+              className="mt-2 inline-flex h-7 items-center rounded-md bg-primary px-3 text-xs font-semibold text-white hover:opacity-90 transition-colors"
             >
               インストール
             </button>
@@ -125,7 +124,7 @@ export function PwaInstallPrompt() {
         </div>
         <button
           onClick={handleDismiss}
-          className="p-1 rounded-full text-[#a8b0c2] hover:text-[#e6e8ee] flex-shrink-0"
+          className="p-1 rounded-full text-muted-foreground hover:text-foreground flex-shrink-0"
           aria-label="閉じる"
         >
           <X className="h-4 w-4" />

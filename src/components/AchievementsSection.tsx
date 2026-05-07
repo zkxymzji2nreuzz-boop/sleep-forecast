@@ -68,7 +68,7 @@ function BadgeCard({ status }: BadgeCardProps) {
       {/* バッジ名 */}
       <p
         className="text-[11px] font-semibold leading-tight"
-        style={{ color: earned ? badge.color : "#a8b0c2" }}
+        style={{ color: earned ? badge.color : "hsl(var(--muted-foreground))" }}
       >
         {badge.name}
       </p>
@@ -83,7 +83,7 @@ function BadgeCard({ status }: BadgeCardProps) {
         </span>
       ) : (
         <div className="w-full">
-          <div className="w-full bg-white/10 rounded-full h-1 overflow-hidden">
+          <div className="w-full bg-muted rounded-full h-1 overflow-hidden">
             <div
               className="h-1 rounded-full transition-all duration-500"
               style={{
@@ -93,7 +93,7 @@ function BadgeCard({ status }: BadgeCardProps) {
               }}
             />
           </div>
-          <p className="text-[9px] text-[#a8b0c2] mt-0.5">{progressLabel}</p>
+          <p className="text-[9px] text-muted-foreground mt-0.5">{progressLabel}</p>
         </div>
       )}
     </div>
@@ -138,15 +138,15 @@ export function AchievementsSection({ records }: AchievementsSectionProps) {
       : statuses.filter((s) => s.badge.category === activeCategory);
 
   return (
-    <div className="rounded-2xl border border-white/5 bg-[#1a1f2e] p-5">
+    <div className="rounded-2xl border border-border bg-card p-5">
       {/* ヘッダー */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Trophy className="h-4 w-4 text-indigo-400" aria-hidden="true" />
-          <h2 className="text-sm font-bold text-[#e6e8ee]">実績バッジ</h2>
+          <Trophy className="h-4 w-4 text-primary" aria-hidden="true" />
+          <h2 className="text-sm font-bold text-foreground">実績バッジ</h2>
         </div>
-        <span className="text-xs text-[#a8b0c2]">
-          <span className="text-indigo-300 font-semibold">{earnedCount}</span>
+        <span className="text-xs text-muted-foreground">
+          <span className="text-primary/80 font-semibold">{earnedCount}</span>
           {" / "}
           {statuses.length} 達成
         </span>
@@ -175,7 +175,7 @@ export function AchievementsSection({ records }: AchievementsSectionProps) {
 
       {/* バッジグリッド */}
       {records.length === 0 ? (
-        <p className="text-sm text-[#a8b0c2] text-center py-6">
+        <p className="text-sm text-muted-foreground text-center py-6">
           記録を始めるとバッジが解放されます
         </p>
       ) : (
@@ -189,12 +189,12 @@ export function AchievementsSection({ records }: AchievementsSectionProps) {
       {/* 達成バッジあり: サマリー + シェアボタン */}
       {earnedCount > 0 && records.length > 0 && (
         <div className="mt-3 flex items-center justify-between">
-          <p className="text-[11px] text-[#a8b0c2] leading-relaxed">
+          <p className="text-[11px] text-muted-foreground leading-relaxed">
             {earnedCount}個のバッジを獲得中。記録を続けてさらに解放しましょう！
           </p>
           <button
             onClick={() => shareAchievements(earnedCount, statuses)}
-            className="ml-2 flex-shrink-0 flex items-center gap-1 text-[11px] text-[#a8b0c2] hover:text-indigo-300 hover:bg-indigo-500/10 px-2 py-1 rounded-full transition-colors"
+            className="ml-2 flex-shrink-0 flex items-center gap-1 text-[11px] text-muted-foreground hover:text-primary/80 hover:bg-primary/[0.07] px-2 py-1 rounded-full transition-colors"
             aria-label="X（Twitter）でシェア"
           >
             <Share2 className="h-3 w-3" />

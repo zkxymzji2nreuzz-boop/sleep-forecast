@@ -74,13 +74,13 @@ export function AccountSection() {
   return (
     <section
       aria-labelledby="settings-account-heading"
-      className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6"
+      className="rounded-2xl border border-border bg-card/50 p-5 sm:p-6"
     >
       <h2
         id="settings-account-heading"
-        className="mb-4 flex items-center gap-2 border-l-[3px] border-indigo-400/70 pl-4 text-base font-bold text-[#e6e8ee] leading-snug"
+        className="mb-4 flex items-center gap-2 border-l-[3px] border-primary/70 pl-4 text-base font-bold text-foreground leading-snug"
       >
-        <Cloud className="h-4 w-4 text-indigo-300/70" aria-hidden="true" />
+        <Cloud className="h-4 w-4 text-primary/70" aria-hidden="true" />
         クラウド同期
       </h2>
 
@@ -92,14 +92,14 @@ export function AccountSection() {
               <CloudOff className="h-3.5 w-3.5" aria-hidden="true" />
               データはこの端末にのみ保存されています
             </p>
-            <p className="mt-1 text-xs text-[#a8b0c2]">
+            <p className="mt-1 text-xs text-muted-foreground">
               メールアドレスを登録すると、複数端末でデータを同期・引き継ぎできます。
             </p>
           </div>
 
           {!emailSent ? (
             <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[#a8b0c2]">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 メールアドレスで登録（パスワード不要）
               </p>
               <div className="flex gap-2">
@@ -117,12 +117,12 @@ export function AccountSection() {
                   placeholder="your@email.com"
                   autoComplete="email"
                   inputMode="email"
-                  className="flex-1 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-[#e6e8ee] placeholder-[#a8b0c2]/50 focus:border-indigo-400/60 focus:outline-none focus:ring-1 focus:ring-indigo-400/20"
+                  className="flex-1 rounded-lg border border-border bg-card/60 px-3 py-2 text-sm text-foreground placeholder-muted-foreground/50 focus:border-primary/60 focus:outline-none focus:ring-1 focus:ring-primary/20"
                 />
                 <button
                   onClick={() => void handleSendMagicLink()}
                   disabled={emailLoading || !email}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-400 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
                 >
                   {emailLoading ? (
                     <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -137,7 +137,7 @@ export function AccountSection() {
                   {emailError}
                 </p>
               )}
-              <p className="text-xs text-[#a8b0c2]">
+              <p className="text-xs text-muted-foreground">
                 確認メールのリンクをクリックするだけで登録完了。
               </p>
             </div>
@@ -147,7 +147,7 @@ export function AccountSection() {
                 <Check className="h-4 w-4" aria-hidden="true" />
                 確認メールを送信しました
               </p>
-              <p className="mt-1 text-xs text-[#a8b0c2]">
+              <p className="mt-1 text-xs text-muted-foreground">
                 {email} のメールに届いたリンクをクリックして登録を完了してください。
               </p>
             </div>
@@ -162,20 +162,20 @@ export function AccountSection() {
               クラウドバックアップ有効
             </p>
             {authState.email && (
-              <p className="mt-1 text-xs text-[#a8b0c2]">
+              <p className="mt-1 text-xs text-muted-foreground">
                 {authState.email}
               </p>
             )}
           </div>
 
-          <p className="text-sm text-[#a8b0c2]">
+          <p className="text-sm text-muted-foreground">
             別の端末で記録したデータをこの端末に取り込む場合は、クラウドから同期してください。
           </p>
 
           <button
             onClick={() => void handleSyncFromCloud()}
             disabled={syncing}
-            className="inline-flex items-center gap-2 rounded-full border border-indigo-400/40 px-5 py-2.5 text-sm font-medium text-indigo-300 transition-colors hover:border-indigo-400/70 hover:text-indigo-200 disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-full border border-primary/25 px-5 py-2.5 text-sm font-medium text-primary/80 transition-colors hover:border-primary/40 hover:text-primary/70 disabled:opacity-50"
           >
             {syncing ? (
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -186,7 +186,7 @@ export function AccountSection() {
           </button>
 
           {syncMessage && (
-            <p className="text-xs text-[#a8b0c2]">{syncMessage}</p>
+            <p className="text-xs text-muted-foreground">{syncMessage}</p>
           )}
         </div>
       )}

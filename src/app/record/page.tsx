@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function RecordPage() {
   return (
-    <main className="min-h-screen bg-[#0d1117] text-white">
+    <main className="min-h-screen bg-background text-foreground">
       <div className="max-w-2xl mx-auto px-4 py-6">
         <Breadcrumb
           items={[

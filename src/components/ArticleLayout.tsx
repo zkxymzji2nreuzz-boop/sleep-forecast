@@ -42,19 +42,19 @@ function ArticleInlineCta() {
   return (
     <aside
       aria-label="SleepForecast アプリのご案内"
-      className="not-prose my-10 flex flex-col gap-3 rounded-2xl border border-indigo-300/20 bg-gradient-to-br from-indigo-500/10 via-purple-500/6 to-transparent p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+      className="not-prose my-10 flex flex-col gap-3 rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/10 via-primary/[0.06] to-transparent p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
     >
       <div className="flex items-start gap-3">
         <Moon
-          className="mt-0.5 h-5 w-5 shrink-0 text-indigo-300"
+          className="mt-0.5 h-5 w-5 shrink-0 text-primary/80"
           aria-hidden="true"
         />
-        <p className="text-sm leading-relaxed text-[#e6e8ee]/90">
-          <span className="font-semibold text-[#e6e8ee]">
+        <p className="text-sm leading-relaxed text-foreground/90">
+          <span className="font-semibold text-foreground">
             毎朝 15 秒の記録で
           </span>
           、気圧があなたの眠りにどう影響しているかがわかります。
-          <span className="ml-1 text-xs text-[#a8b0c2]">
+          <span className="ml-1 text-xs text-muted-foreground">
             無料・登録不要
           </span>
         </p>
@@ -62,7 +62,7 @@ function ArticleInlineCta() {
       <Button
         asChild
         size="sm"
-        className="shrink-0 rounded-full bg-indigo-500 px-5 text-sm font-medium text-white hover:bg-indigo-400 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1117]"
+        className="shrink-0 rounded-full bg-primary px-5 text-sm font-medium text-white hover:opacity-90 focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <Link href="/record">今すぐ無料で始める →</Link>
       </Button>
@@ -114,7 +114,7 @@ function RelatedActions({ article }: { article: ArticleFull }) {
   // 睡眠記録を促すアクション（汎用・常時追加）
   actions.push({
     href: "/record",
-    icon: <PenLine className="h-4 w-4 text-indigo-300" aria-hidden />,
+    icon: <PenLine className="h-4 w-4 text-primary/80" aria-hidden />,
     label: "今日の睡眠を記録する",
     description: "記録を続けると、気象との相関があなただけのグラフで見えてきます。",
   });
@@ -146,10 +146,10 @@ function RelatedActions({ article }: { article: ArticleFull }) {
   return (
     <section
       aria-label="この記事を読んだ方へのおすすめアクション"
-      className="mt-12 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6"
+      className="mt-12 rounded-2xl border border-border bg-card/50 p-5 sm:p-6"
     >
-      <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-[#e6e8ee]">
-        <Sparkles className="h-3.5 w-3.5 text-indigo-300" aria-hidden />
+      <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
+        <Sparkles className="h-3.5 w-3.5 text-primary/80" aria-hidden />
         この記事を読んだ次のステップ
       </h2>
       <ul className="space-y-3">
@@ -157,12 +157,12 @@ function RelatedActions({ article }: { article: ArticleFull }) {
           <li key={action.href}>
             <Link
               href={action.href}
-              className="flex items-start gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 transition-all duration-300 hover:border-indigo-300/25 hover:bg-gradient-to-br hover:from-indigo-500/[0.08] hover:to-purple-500/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300"
+              className="flex items-start gap-3 rounded-xl border border-border bg-card/50 p-4 transition-all duration-300 hover:border-primary/25 hover:bg-gradient-to-br hover:from-primary/[0.08] hover:to-primary/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80"
             >
               <span className="mt-0.5 flex-shrink-0">{action.icon}</span>
               <div>
-                <p className="text-sm font-semibold text-[#e6e8ee]">{action.label}</p>
-                <p className="mt-0.5 text-xs leading-relaxed text-[#a8b0c2]">{action.description}</p>
+                <p className="text-sm font-semibold text-foreground">{action.label}</p>
+                <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{action.description}</p>
               </div>
             </Link>
           </li>
@@ -179,7 +179,7 @@ export function ArticleLayout({ article, related, dataBadge }: Props) {
       <div>
         <Link
           href="/articles"
-          className="mb-10 inline-flex min-h-[44px] items-center gap-1.5 rounded-sm text-[13px] text-[#a8b0c2] transition-colors hover:text-[#e6e8ee] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1117]"
+          className="mb-10 inline-flex min-h-[44px] items-center gap-1.5 rounded-sm text-[13px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           ほかの読みものを見る
@@ -190,27 +190,27 @@ export function ArticleLayout({ article, related, dataBadge }: Props) {
       <header className="relative mb-10">
         {/* カテゴリバッジ (BookOpen アイコン + ピル) */}
         <div className="mb-4 flex items-center gap-2">
-          <BookOpen className="h-3.5 w-3.5 text-indigo-300" aria-hidden="true" />
-          <span className="rounded-full border border-indigo-300/20 bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-200/80">
+          <BookOpen className="h-3.5 w-3.5 text-primary/80" aria-hidden="true" />
+          <span className="rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-xs font-medium text-primary/70">
             {article.category}
           </span>
         </div>
 
-        <h1 className="text-[28px] font-bold leading-[1.35] tracking-tight text-[#e6e8ee] sm:text-[34px]">
+        <h1 className="text-[28px] font-bold leading-[1.35] tracking-tight text-foreground sm:text-[34px]">
           {article.title}
         </h1>
-        <p className="mt-3 text-sm text-[#a8b0c2] sm:text-base">
+        <p className="mt-3 text-sm text-muted-foreground sm:text-base">
           {article.description}
         </p>
 
-        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3 text-xs text-[#a8b0c2]">
+        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3 text-xs text-muted-foreground">
           {article.tags.length > 0 && (
             <span className="inline-flex flex-wrap items-center gap-1.5">
               <Tag className="h-3.5 w-3.5" aria-hidden="true" />
               {article.tags.map((t) => (
                 <span
                   key={t}
-                  className="rounded-full border border-indigo-300/20 bg-indigo-500/10 px-2.5 py-0.5 text-[11px] text-indigo-200/80"
+                  className="rounded-full border border-primary/15 bg-primary/10 px-2.5 py-0.5 text-[11px] text-primary/70"
                 >
                   #{t}
                 </span>
@@ -222,7 +222,7 @@ export function ArticleLayout({ article, related, dataBadge }: Props) {
         {/* 旧 border-b の代わりに、柔らかなグラデーションディバイダー */}
         <div
           aria-hidden="true"
-          className="mt-6 h-px bg-gradient-to-r from-transparent via-indigo-400/40 to-transparent"
+          className="mt-6 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent"
         />
       </header>
 
@@ -230,11 +230,11 @@ export function ArticleLayout({ article, related, dataBadge }: Props) {
       {article.toc.length >= 3 && (
         <nav
           aria-label="目次"
-          className="mb-12 rounded-2xl border border-indigo-300/20 bg-gradient-to-br from-indigo-500/[0.06] via-purple-500/[0.04] to-transparent p-5 sm:p-6"
+          className="mb-12 rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/[0.06] via-primary/[0.04] to-transparent p-5 sm:p-6"
         >
           <div className="mb-3 flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-indigo-300" aria-hidden="true" />
-            <h2 className="text-sm font-semibold tracking-wide text-[#e6e8ee]">
+            <Sparkles className="h-4 w-4 text-primary/80" aria-hidden="true" />
+            <h2 className="text-sm font-semibold tracking-wide text-foreground">
               目次
             </h2>
           </div>
@@ -243,9 +243,9 @@ export function ArticleLayout({ article, related, dataBadge }: Props) {
               <li key={item.id} className="leading-relaxed">
                 <Link
                   href={`#${item.id}`}
-                  className="inline-flex gap-2 rounded-sm text-[#e6e8ee]/85 transition-colors hover:text-indigo-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1117]"
+                  className="inline-flex gap-2 rounded-sm text-foreground/85 transition-colors hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
-                  <span className="mt-0.5 text-[11px] tabular-nums text-indigo-300/70">
+                  <span className="mt-0.5 text-[11px] tabular-nums text-primary/80/70">
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <span>{item.text}</span>
@@ -259,7 +259,7 @@ export function ArticleLayout({ article, related, dataBadge }: Props) {
       {/* 本文 (remark 変換済み HTML) — インライン CTA を第2 h2 直後に挿入 (REQ-P2-03) */}
       {(() => {
         const proseClass =
-          "prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-[#e6e8ee] prose-h2:mb-5 prose-h2:mt-14 prose-h2:border-l-[3px] prose-h2:border-indigo-400/70 prose-h2:pl-4 prose-h2:text-2xl prose-h2:leading-snug prose-h3:mt-10 prose-h3:text-xl prose-h3:text-[#e6e8ee] prose-p:leading-[1.9] prose-p:text-[#e6e8ee]/90 prose-a:text-indigo-300 prose-a:decoration-indigo-400/40 prose-a:underline-offset-4 hover:prose-a:decoration-indigo-300 prose-blockquote:rounded-r-xl prose-blockquote:border-l-indigo-400/60 prose-blockquote:bg-indigo-500/[0.04] prose-blockquote:py-2 prose-blockquote:pr-4 prose-blockquote:text-[#e6e8ee]/80 prose-strong:font-semibold prose-strong:text-[#e6e8ee] prose-code:rounded-md prose-code:bg-white/[0.06] prose-code:px-1.5 prose-code:py-0.5 prose-code:text-indigo-200 prose-code:before:content-none prose-code:after:content-none prose-li:my-1 prose-li:leading-[1.85] prose-li:text-[#e6e8ee]/90";
+          "prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-foreground prose-h2:mb-5 prose-h2:mt-14 prose-h2:border-l-[3px] prose-h2:border-primary/70 prose-h2:pl-4 prose-h2:text-2xl prose-h2:leading-snug prose-h3:mt-10 prose-h3:text-xl prose-h3:text-foreground prose-p:leading-[1.9] prose-p:text-foreground/90 prose-a:text-primary/80 prose-a:decoration-primary/40 prose-a:underline-offset-4 hover:prose-a:decoration-primary/80 prose-blockquote:rounded-r-xl prose-blockquote:border-l-primary/60 prose-blockquote:bg-primary/[0.04] prose-blockquote:py-2 prose-blockquote:pr-4 prose-blockquote:text-foreground/80 prose-strong:font-semibold prose-strong:text-foreground prose-code:rounded-md prose-code:bg-card/70 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-primary/70 prose-code:before:content-none prose-code:after:content-none prose-li:my-1 prose-li:leading-[1.85] prose-li:text-foreground/90";
         const [part1, part2] = splitHtmlAtNthH2(article.contentHtml, 2);
         return (
           <>
@@ -286,20 +286,20 @@ export function ArticleLayout({ article, related, dataBadge }: Props) {
       <RelatedActions article={article} />
 
       {/* CTA区切り */}
-      <div className="mt-14 h-px bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent" />
+      <div className="mt-14 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
       {/* CTA: 記録を促す (ウェルネスグラデーション) */}
-      <aside className="mt-8 rounded-3xl border border-indigo-300/25 bg-gradient-to-br from-indigo-500/15 via-purple-500/12 to-rose-500/8 p-7 shadow-[0_12px_40px_-16px_rgba(124,77,255,0.4)] sm:p-8">
+      <aside className="mt-8 rounded-3xl border border-primary/25 bg-gradient-to-br from-primary/15 via-primary/[0.12] to-primary/[0.08] p-7 shadow-[0_12px_40px_-16px_rgba(124,77,255,0.4)] sm:p-8">
         <div className="flex items-center gap-2">
-          <Moon className="h-5 w-5 text-indigo-200" aria-hidden="true" />
-          <h2 className="text-xl font-bold text-[#e6e8ee]">
+          <Moon className="h-5 w-5 text-primary/70" aria-hidden="true" />
+          <h2 className="text-xl font-bold text-foreground">
             この記事を読んだら、今夜の眠りを記録してみませんか？
           </h2>
         </div>
-        <p className="mt-2 text-sm leading-relaxed text-[#e6e8ee]/80">
+        <p className="mt-2 text-sm leading-relaxed text-foreground/80">
           毎朝たった 15 秒の記録から、気圧・気温・月齢があなたの眠りにどう響いているかを、やさしく見える化します。7日続けると、気象と睡眠の相関分析がスタートします。
         </p>
-        <ul className="mt-3 space-y-1 text-xs text-[#e6e8ee]/60">
+        <ul className="mt-3 space-y-1 text-xs text-foreground/60">
           <li>✓ 無料・登録不要で今すぐ始められる</li>
           <li>✓ データはあなたの端末のみに保存（外部送信なし）</li>
           <li>✓ 気圧・気温・月齢を自動取得</li>
@@ -307,7 +307,7 @@ export function ArticleLayout({ article, related, dataBadge }: Props) {
         <div className="mt-5">
           <Button
             asChild
-            className="w-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-3 font-medium text-white shadow-lg shadow-indigo-500/25 hover:from-indigo-400 hover:to-purple-400 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1117] sm:w-auto"
+            className="w-full rounded-full bg-gradient-to-r from-primary to-primary/60 px-6 py-3 font-medium text-white shadow-lg shadow-primary/20 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:w-auto"
           >
             <Link href="/record">今日の睡眠を記録する →</Link>
           </Button>
@@ -330,7 +330,7 @@ export function ArticleLayout({ article, related, dataBadge }: Props) {
               href={tweetUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-5 py-2.5 text-sm font-medium text-[#e6e8ee] transition-all hover:border-[#1d9bf0]/40 hover:bg-[#1d9bf0]/10 hover:text-[#1d9bf0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-border bg-card/60 px-5 py-2.5 text-sm font-medium text-foreground transition-all hover:border-[#1d9bf0]/40 hover:bg-[#1d9bf0]/10 hover:text-[#1d9bf0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80"
             >
               <Twitter className="h-4 w-4" aria-hidden="true" />
               この記事を X でシェアする
@@ -342,8 +342,8 @@ export function ArticleLayout({ article, related, dataBadge }: Props) {
       {/* 関連記事 */}
       {related.length > 0 && (
         <section className="mt-14">
-          <h2 className="mb-6 flex items-center gap-2 text-base font-semibold text-[#e6e8ee]">
-            <Sparkles className="h-4 w-4 text-indigo-300" aria-hidden="true" />
+          <h2 className="mb-6 flex items-center gap-2 text-base font-semibold text-foreground">
+            <Sparkles className="h-4 w-4 text-primary/80" aria-hidden="true" />
             こちらの読みものもおすすめ
           </h2>
           <ul className="grid gap-4 sm:grid-cols-2">
@@ -351,15 +351,15 @@ export function ArticleLayout({ article, related, dataBadge }: Props) {
               <li key={r.slug}>
                 <Link
                   href={`/articles/${r.slug}`}
-                  className="block rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 transition-all duration-500 hover:-translate-y-0.5 hover:border-indigo-300/25 hover:bg-gradient-to-br hover:from-indigo-500/[0.08] hover:to-purple-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f1117]"
+                  className="block rounded-2xl border border-border bg-card/50 p-4 transition-all duration-500 hover:-translate-y-0.5 hover:border-primary/25 hover:bg-gradient-to-br hover:from-primary/[0.08] hover:to-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
-                  <div className="text-[10px] font-medium text-indigo-400">
+                  <div className="text-[10px] font-medium text-primary">
                     {r.category}
                   </div>
-                  <div className="mt-1 text-sm font-semibold text-[#e6e8ee]">
+                  <div className="mt-1 text-sm font-semibold text-foreground">
                     {r.title}
                   </div>
-                  <p className="mt-1 line-clamp-2 text-xs text-[#a8b0c2]">
+                  <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
                     {r.description}
                   </p>
                 </Link>
@@ -373,13 +373,13 @@ export function ArticleLayout({ article, related, dataBadge }: Props) {
       <AdBanner slot="article-end" format="horizontal" className="mt-10" />
 
       {/* 医療免責 (必須・text-xs 固定) */}
-      <div className="mt-14 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+      <div className="mt-14 rounded-2xl border border-border bg-card/50 p-5">
         <div className="flex items-start gap-2">
           <Info
-            className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#a8b0c2]"
+            className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground"
             aria-hidden="true"
           />
-          <p className="text-xs leading-relaxed text-[#a8b0c2]">
+          <p className="text-xs leading-relaxed text-muted-foreground">
             本記事は一般的な情報提供を目的としたものであり、医学的な診断・治療の代替ではありません。
             体調に不安がある場合は、必ず医療機関にご相談ください。
           </p>

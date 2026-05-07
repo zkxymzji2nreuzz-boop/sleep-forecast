@@ -56,7 +56,7 @@ export function AdBanner({ slot, format = "auto", className = "" }: Props) {
     return (
       <div
         aria-hidden="true"
-        className="rounded-xl border border-dashed border-white/[0.06] bg-white/[0.02] py-6 flex items-center justify-center text-xs text-[#a8b0c2]/50"
+        className="rounded-xl border border-dashed border-card/70 bg-card/50 py-6 flex items-center justify-center text-xs text-muted-foreground/40"
       >
         広告スペース
       </div>

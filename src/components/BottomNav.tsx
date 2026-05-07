@@ -24,11 +24,6 @@ const RIGHT_NAV: NavItem[] = [
 /**
  * モバイル用ボトムナビゲーション。
  * 4タブ + 中央FAB（記録ボタン）構成。
- *
- * pt-5 で上部に 20px の余白を設けることで FAB が nav の bounding box 内に収まり、
- * タップ可能領域が正しく確保される。視覚的なセパレーターは absolute div で再現。
- *
- * デスクトップ (md 以上) では非表示にし、Header のデスクトップナビを利用する。
  */
 export function BottomNav() {
   const pathname = usePathname();
@@ -50,7 +45,7 @@ export function BottomNav() {
           aria-current={isActive ? "page" : undefined}
           className={cn(
             "flex min-h-[44px] flex-col items-center justify-center gap-1 px-2 py-2 text-xs font-medium transition-colors",
-            isActive ? "text-indigo-400" : "text-[#a8b0c2] hover:text-[#e6e8ee]"
+            isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
           )}
         >
           <Icon
@@ -70,14 +65,13 @@ export function BottomNav() {
       aria-label="ボトムナビゲーション"
       className={cn(
         "fixed bottom-0 left-0 right-0 z-50 md:hidden",
-        "bg-[#0f1117]",
-        // pt-5 = 20px: FAB が nav の bounding box 内に収まりタップ可能になる
+        "bg-background",
         "pt-5 pb-[env(safe-area-inset-bottom)]"
       )}
     >
-      {/* border-t 代替: pt-5 の位置に視覚的セパレーターを配置 */}
+      {/* border-t 代替: 視覚的セパレーター */}
       <div
-        className="pointer-events-none absolute inset-x-0 top-5 h-px bg-white/10"
+        className="pointer-events-none absolute inset-x-0 top-5 h-px bg-border"
         aria-hidden="true"
       />
 
@@ -97,12 +91,12 @@ export function BottomNav() {
               className={cn(
                 "flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-all duration-150 active:scale-95",
                 isRecordActive
-                  ? "bg-indigo-600 shadow-indigo-500/40"
-                  : "bg-indigo-500 shadow-indigo-500/30 hover:bg-indigo-600"
+                  ? "bg-primary shadow-primary/30"
+                  : "bg-primary shadow-primary/20 hover:opacity-90"
               )}
             >
               <PenLine
-                className="h-6 w-6 text-white"
+                className="h-6 w-6 text-primary-foreground"
                 aria-hidden="true"
                 strokeWidth={2.5}
               />
@@ -110,7 +104,7 @@ export function BottomNav() {
             <span
               className={cn(
                 "text-xs font-medium leading-none",
-                isRecordActive ? "text-indigo-400" : "text-[#a8b0c2]"
+                isRecordActive ? "text-primary" : "text-muted-foreground"
               )}
             >
               記録

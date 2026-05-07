@@ -218,30 +218,30 @@ export function MonthlySummaryReport({ records }: MonthlySummaryReportProps) {
   const maxDistCount = Math.max(...Object.values(summary.qualityDist), 1);
 
   return (
-    <div className="rounded-2xl border border-white/5 bg-[#1a1f2e] p-5">
+    <div className="rounded-2xl border border-border bg-card p-5">
       {/* ヘッダー */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <CalendarDays className="h-4 w-4 text-indigo-400" aria-hidden="true" />
-          <h2 className="text-sm font-bold text-[#e6e8ee]">月次サマリー</h2>
+          <CalendarDays className="h-4 w-4 text-primary" aria-hidden="true" />
+          <h2 className="text-sm font-bold text-foreground">月次サマリー</h2>
         </div>
         {/* 月ナビ + シェアボタン */}
         <div className="flex items-center gap-1">
           <button
             onClick={() => setSelectedIdx((i) => Math.min(i + 1, availableMonths.length - 1))}
             disabled={selectedIdx >= availableMonths.length - 1}
-            className="p-1 rounded text-[#a8b0c2] hover:text-[#e6e8ee] disabled:opacity-30"
+            className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-30"
             aria-label="前の月"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <span className="text-sm font-semibold text-[#e6e8ee] min-w-[88px] text-center">
+          <span className="text-sm font-semibold text-foreground min-w-[88px] text-center">
             {formatYearMonth(currentYM)}
           </span>
           <button
             onClick={() => setSelectedIdx((i) => Math.max(i - 1, 0))}
             disabled={selectedIdx <= 0}
-            className="p-1 rounded text-[#a8b0c2] hover:text-[#e6e8ee] disabled:opacity-30"
+            className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-30"
             aria-label="次の月"
           >
             <ChevronRight className="h-4 w-4" />
@@ -249,7 +249,7 @@ export function MonthlySummaryReport({ records }: MonthlySummaryReportProps) {
           {summary.totalRecords > 0 && (
             <button
               onClick={() => shareMonthly(summary)}
-              className="ml-1 p-1.5 rounded-full text-[#a8b0c2] hover:text-indigo-300 hover:bg-indigo-500/10 transition-colors"
+              className="ml-1 p-1.5 rounded-full text-muted-foreground hover:text-primary/80 hover:bg-primary/[0.07] transition-colors"
               aria-label="X（Twitter）でシェア"
               title="Xでシェア"
             >
@@ -260,67 +260,67 @@ export function MonthlySummaryReport({ records }: MonthlySummaryReportProps) {
       </div>
 
       {summary.totalRecords === 0 ? (
-        <p className="text-sm text-[#a8b0c2] text-center py-4">この月の記録はありません</p>
+        <p className="text-sm text-muted-foreground text-center py-4">この月の記録はありません</p>
       ) : (
         <>
           {/* KPI グリッド */}
           <div className="grid grid-cols-2 gap-2 mb-4 sm:grid-cols-4">
             {/* 記録件数 */}
-            <div className="rounded-lg bg-white/5 p-3 text-center">
-              <p className="text-[10px] text-[#a8b0c2] mb-1">記録日数</p>
-              <p className="text-2xl font-bold text-[#e6e8ee]">{summary.totalRecords}</p>
-              <p className="text-[10px] text-[#a8b0c2]">日</p>
+            <div className="rounded-lg bg-muted p-3 text-center">
+              <p className="text-[10px] text-muted-foreground mb-1">記録日数</p>
+              <p className="text-2xl font-bold text-foreground">{summary.totalRecords}</p>
+              <p className="text-[10px] text-muted-foreground">日</p>
             </div>
             {/* 平均品質 */}
-            <div className="rounded-lg bg-white/5 p-3 text-center">
-              <p className="text-[10px] text-[#a8b0c2] mb-1">平均品質</p>
+            <div className="rounded-lg bg-muted p-3 text-center">
+              <p className="text-[10px] text-muted-foreground mb-1">平均品質</p>
               <p
                 className="text-2xl font-bold"
-                style={{ color: QUALITY_COLOR[Math.round(summary.avgQuality) as 1 | 2 | 3 | 4 | 5] ?? "#e6e8ee" }}
+                style={{ color: QUALITY_COLOR[Math.round(summary.avgQuality) as 1 | 2 | 3 | 4 | 5] ?? "hsl(256 43% 93%)" }}
               >
                 {summary.avgQuality.toFixed(1)}
               </p>
-              <p className="text-[10px] text-[#a8b0c2]">/ 5.0</p>
+              <p className="text-[10px] text-muted-foreground">/ 5.0</p>
             </div>
             {/* 最良日 */}
-            <div className="rounded-lg bg-white/5 p-3 text-center">
-              <p className="text-[10px] text-[#a8b0c2] mb-1">最良日</p>
+            <div className="rounded-lg bg-muted p-3 text-center">
+              <p className="text-[10px] text-muted-foreground mb-1">最良日</p>
               {summary.bestDay ? (
                 <>
                   <p className="text-sm font-bold text-emerald-300">{formatDate(summary.bestDay.date)}</p>
-                  <p className="text-[10px] text-[#a8b0c2]">{QUALITY_LABEL[summary.bestDay.quality as 1 | 3 | 5] ?? `品質${summary.bestDay.quality}`}</p>
+                  <p className="text-[10px] text-muted-foreground">{QUALITY_LABEL[summary.bestDay.quality as 1 | 3 | 5] ?? `品質${summary.bestDay.quality}`}</p>
                 </>
-              ) : <p className="text-xs text-[#a8b0c2]">—</p>}
+              ) : <p className="text-xs text-muted-foreground">—</p>}
             </div>
             {/* 最悪日 */}
-            <div className="rounded-lg bg-white/5 p-3 text-center">
-              <p className="text-[10px] text-[#a8b0c2] mb-1">最悪日</p>
+            <div className="rounded-lg bg-muted p-3 text-center">
+              <p className="text-[10px] text-muted-foreground mb-1">最悪日</p>
               {summary.worstDay ? (
                 <>
                   <p className="text-sm font-bold text-rose-300">{formatDate(summary.worstDay.date)}</p>
-                  <p className="text-[10px] text-[#a8b0c2]">{QUALITY_LABEL[summary.worstDay.quality as 1 | 3 | 5] ?? `品質${summary.worstDay.quality}`}</p>
+                  <p className="text-[10px] text-muted-foreground">{QUALITY_LABEL[summary.worstDay.quality as 1 | 3 | 5] ?? `品質${summary.worstDay.quality}`}</p>
                 </>
-              ) : <p className="text-xs text-[#a8b0c2]">—</p>}
+              ) : <p className="text-xs text-muted-foreground">—</p>}
             </div>
           </div>
 
           {/* 品質分布バー */}
           <div className="mb-4">
-            <p className="text-[10px] text-[#a8b0c2] font-semibold mb-2 uppercase tracking-wide">品質分布</p>
+            <p className="text-[10px] text-muted-foreground font-semibold mb-2 uppercase tracking-wide">品質分布</p>
             <div className="space-y-1.5">
               {([5, 3, 1] as const).map((q) => {
                 const count = summary.qualityDist[q];
                 const pct = (count / maxDistCount) * 100;
                 return (
                   <div key={q} className="flex items-center gap-2">
-                    <span className="text-[10px] text-[#a8b0c2] w-20 shrink-0 whitespace-nowrap">{QUALITY_LABEL[q]}</span>
-                    <div className="flex-1 bg-white/10 rounded-full h-2 overflow-hidden">
+                    <span className="text-[10px] text-muted-foreground w-20 shrink-0 whitespace-nowrap">{QUALITY_LABEL[q]}</span>
+                    <div className="flex-1 bg-muted rounded-full h-2 overflow-hidden">
                       <div
                         className="h-2 rounded-full transition-all duration-500"
                         style={{ width: `${pct}%`, backgroundColor: QUALITY_COLOR[q] }}
                       />
                     </div>
-                    <span className="text-[10px] text-[#a8b0c2] w-6 text-right">{count}</span>
+                    <span className="text-[10px] text-muted-foreground w-6 text-right">{count}</span>
                   </div>
                 );
               })}
@@ -329,22 +329,22 @@ export function MonthlySummaryReport({ records }: MonthlySummaryReportProps) {
 
           {/* 気圧影響・連続記録 */}
           <div className="flex gap-2 mb-4">
-            <div className="flex-1 rounded-lg bg-white/5 px-3 py-2">
-              <p className="text-[10px] text-[#a8b0c2]">気圧急落日</p>
-              <p className="text-lg font-bold text-indigo-300">{summary.pressureDropCount} <span className="text-xs font-normal text-[#a8b0c2]">日</span></p>
+            <div className="flex-1 rounded-lg bg-muted px-3 py-2">
+              <p className="text-[10px] text-muted-foreground">気圧急落日</p>
+              <p className="text-lg font-bold text-primary/80">{summary.pressureDropCount} <span className="text-xs font-normal text-muted-foreground">日</span></p>
               {summary.pressureDropAvg !== null && (
-                <p className="text-[10px] text-[#a8b0c2]">その日の平均 {summary.pressureDropAvg.toFixed(1)}</p>
+                <p className="text-[10px] text-muted-foreground">その日の平均 {summary.pressureDropAvg.toFixed(1)}</p>
               )}
             </div>
-            <div className="flex-1 rounded-lg bg-white/5 px-3 py-2">
-              <p className="text-[10px] text-[#a8b0c2]">最長連続記録</p>
-              <p className="text-lg font-bold text-orange-300">{summary.longestStreak} <span className="text-xs font-normal text-[#a8b0c2]">日</span></p>
+            <div className="flex-1 rounded-lg bg-muted px-3 py-2">
+              <p className="text-[10px] text-muted-foreground">最長連続記録</p>
+              <p className="text-lg font-bold text-orange-300">{summary.longestStreak} <span className="text-xs font-normal text-muted-foreground">日</span></p>
             </div>
           </div>
 
           {/* インサイト文 */}
           {insight && (
-            <p className="text-xs text-[#a8b0c2] leading-relaxed border-t border-white/5 pt-3">
+            <p className="text-xs text-muted-foreground leading-relaxed border-t border-border pt-3">
               {insight}
             </p>
           )}

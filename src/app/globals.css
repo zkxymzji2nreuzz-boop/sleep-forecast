@@ -3,69 +3,94 @@
 @tailwind utilities;
 
 /*
- * SleepForecast ダークテーマ固定
- * - 背景      #0f1117
- * - カード    #1a1f2e
- * - アクセント #6366f1
- * - 本文      #e6e8ee
- * - 補助      #a8b0c2
+ * SleepForecast — トワイライトラベンダー テーマ
+ * パターン③ Twilight Lavender (2026-05-07 フルリデザイン)
+ *
+ * ライトモード（:root）
+ *   背景:    #FBF9FC  (HSL 280 33% 98%)
+ *   カード:  #F3F0F9  (HSL 261 42% 96%)
+ *   Primary: #6B5BA8  (HSL 253 31% 51%)
+ *   本文:    #1A1625  (HSL 256 26% 12%)
+ *   補助:    #574F7A  (HSL 253 25% 38%) — WCAG AA 8.4:1
+ *
+ * ダークモード（.dark）
+ *   背景:    #15121F  (HSL 253 26% 10%)
+ *   カード:  #1E1A2E  (HSL 252 28% 14%)
+ *   Primary: #A599D6  (HSL 252 43% 72%)
+ *   本文:    #EAE6F5  (HSL 256 43% 93%)
+ *   補助:    #9B93BB  (HSL 252 23% 65%) — WCAG AA 6.7:1
  */
+
 @layer base {
+  /* ─── ライトモード ─────────────────────────────────── */
   :root {
-    --color-muted: #a8b0c2;
-    /* HSL 値は shadcn/ui 互換のため各トークンを hsl() で定義 */
-    --background: 225 24% 8%; /* #0f1117 */
-    --foreground: 225 18% 91%; /* #e6e8ee */
+    --background: 280 33% 98%;       /* #FBF9FC */
+    --foreground: 256 26% 12%;       /* #1A1625 */
 
-    --card: 223 25% 14%; /* #1a1f2e */
-    --card-foreground: 225 18% 91%;
+    --card: 261 42% 96%;             /* #F3F0F9 */
+    --card-foreground: 256 26% 12%;
 
-    --popover: 223 25% 14%;
-    --popover-foreground: 225 18% 91%;
+    --popover: 261 42% 96%;
+    --popover-foreground: 256 26% 12%;
 
-    --primary: 239 84% 67%; /* #6366f1 indigo-500 */
+    --primary: 253 31% 51%;          /* #6B5BA8 */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 223 20% 20%;
-    --secondary-foreground: 225 18% 91%;
+    --secondary: 261 30% 90%;        /* #E2DCF0 */
+    --secondary-foreground: 256 26% 12%;
 
-    --muted: 223 20% 22%;
-    --muted-foreground: 218 13% 65%; /* #9aa0b2 — contrast ratio ≥4.5:1 */
+    --muted: 261 30% 90%;
+    --muted-foreground: 253 25% 38%; /* #574F7A — WCAG AA 8.4:1 on #FBF9FC */
 
-    --accent: 239 84% 67%; /* #6366f1 indigo-500 */
+    --accent: 253 31% 51%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 223 20% 22%;
-    --input: 223 20% 22%;
-    --ring: 239 84% 67%;
+    --border: 261 30% 90%;           /* #E2DCF0 */
+    --input: 261 42% 96%;
+    --ring: 253 31% 51%;
 
     --radius: 0.75rem;
+
+    /* スコア別ダイナミックカラー（共通） */
+    --score-great: 160 84% 39%;      /* #10b981 emerald */
+    --score-good: 152 69% 53%;       /* #34d399 emerald-400 */
+    --score-neutral: 43 96% 56%;     /* #f59e0b amber */
+    --score-poor: 25 95% 53%;        /* #f97316 orange */
+    --score-bad: 0 91% 64%;          /* #ef4444 rose */
   }
 
-  /* ダーク固定: :root と同じ値をそのまま使う */
+  /* ─── ダークモード ─────────────────────────────────── */
   .dark {
-    --background: 225 24% 8%;
-    --foreground: 225 18% 91%;
-    --card: 223 25% 14%;
-    --card-foreground: 225 18% 91%;
-    --popover: 223 25% 14%;
-    --popover-foreground: 225 18% 91%;
-    --primary: 239 84% 67%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 223 20% 20%;
-    --secondary-foreground: 225 18% 91%;
-    --muted: 223 20% 22%;
-    --muted-foreground: 218 13% 65%; /* #9aa0b2 — contrast ratio ≥4.5:1 on #0f1117 */
-    --accent: 239 84% 67%;
-    --accent-foreground: 0 0% 100%;
+    --background: 253 26% 10%;       /* #15121F */
+    --foreground: 256 43% 93%;       /* #EAE6F5 */
+
+    --card: 252 28% 14%;             /* #1E1A2E */
+    --card-foreground: 256 43% 93%;
+
+    --popover: 252 28% 14%;
+    --popover-foreground: 256 43% 93%;
+
+    --primary: 252 43% 72%;          /* #A599D6 */
+    --primary-foreground: 253 26% 10%;
+
+    --secondary: 250 27% 21%;        /* #2D2845 */
+    --secondary-foreground: 256 43% 93%;
+
+    --muted: 250 27% 21%;
+    --muted-foreground: 252 23% 65%; /* #9B93BB — WCAG AA 6.7:1 on #15121F */
+
+    --accent: 252 43% 72%;
+    --accent-foreground: 253 26% 10%;
+
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 223 20% 22%;
-    --input: 223 20% 22%;
-    --ring: 239 84% 67%;
+
+    --border: 250 27% 21%;           /* #2D2845 */
+    --input: 250 27% 21%;
+    --ring: 252 43% 72%;
   }
 }
 
@@ -76,7 +101,7 @@
 
   html,
   body {
-    @apply bg-[#0f1117] text-[#e6e8ee] antialiased;
+    @apply bg-background text-foreground antialiased;
   }
 
   body {

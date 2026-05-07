@@ -10,11 +10,13 @@ import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { CookieConsent } from "@/components/CookieConsent";
 import { AuthProvider } from "@/components/AuthProvider";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/react";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://sleep-forecast.vercel.app";
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -72,12 +74,42 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0f1117",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FBF9FC" },
+    { media: "(prefers-color-scheme: dark)", color: "#15121F" },
+  ],
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
   viewportFit: "cover",
 };
+
+/**
+ * FOUC対策スクリプト（Flash of Unstyled Content 防止）
+ *
+ * React hydration より前に実行され、localStorage の値または
+ * prefers-color-scheme に基づいて <html> の class を設定する。
+ * これにより、ページ読み込み時に「一瞬ライトが光る」現象を防ぐ。
+ */
+const themeScript = `
+(function() {
+  try {
+    var stored = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (stored === 'dark' || (!stored && prefersDark)) {
+      document.documentElement.classList.add('dark');
+    } else if (stored === 'light') {
+      document.documentElement.classList.remove('dark');
+    } else {
+      // stored が null でかつ prefersDark が false → ライト
+      document.documentElement.classList.remove('dark');
+    }
+  } catch(e) {
+    // localStorage が使えない場合はダークにフォールバック
+    document.documentElement.classList.add('dark');
+  }
+})();
+`;
 
 export default function RootLayout({
   children,
@@ -85,32 +117,40 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   // middleware.ts が x-nonce ヘッダーに nonce を設定する
-  // layout.tsx (Server Component) で読み取り、<Script> コンポーネントに渡す
   const nonce = headers().get("x-nonce") ?? "";
 
   return (
-    <html lang="ja" className="dark">
-      <body className="bg-[#0f1117] text-[#e6e8ee] antialiased">
-        <AuthProvider>
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-indigo-500 focus:px-4 focus:py-2 focus:text-white focus:outline-none"
-          >
-            メインコンテンツへスキップ
-          </a>
-          <div className="flex min-h-screen flex-col pb-20 md:pb-0">
-            <Header />
-            <main id="main-content" className="min-h-[calc(100vh-128px)] flex-1">{children}</main>
-            <Footer />
-          </div>
-          <BottomNav />
-          <PwaInstallPrompt />
-          <NotificationChecker />
-          <CookieConsent />
-          <GoogleAnalytics nonce={nonce} />
-          <Toaster />
-          <Analytics />
-        </AuthProvider>
+    <html lang="ja" suppressHydrationWarning>
+      <head>
+        {/* FOUC対策: hydration 前にテーマクラスを適用 */}
+        <script
+          nonce={nonce || undefined}
+          dangerouslySetInnerHTML={{ __html: themeScript }}
+        />
+      </head>
+      <body className="bg-background text-foreground antialiased">
+        <ThemeProvider>
+          <AuthProvider>
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:outline-none"
+            >
+              メインコンテンツへスキップ
+            </a>
+            <div className="flex min-h-screen flex-col pb-20 md:pb-0">
+              <Header />
+              <main id="main-content" className="min-h-[calc(100vh-128px)] flex-1">{children}</main>
+              <Footer />
+            </div>
+            <BottomNav />
+            <PwaInstallPrompt />
+            <NotificationChecker />
+            <CookieConsent />
+            <GoogleAnalytics nonce={nonce} />
+            <Toaster />
+            <Analytics />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

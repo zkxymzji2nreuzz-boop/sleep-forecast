@@ -35,20 +35,20 @@ export function OnboardingBanner() {
   return (
     <div
       role="banner"
-      className="mb-8 rounded-2xl border border-indigo-400/30 bg-gradient-to-br from-indigo-500/10 via-purple-500/[0.06] to-transparent p-5"
+      className="mb-8 rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/10 via-purple-500/[0.06] to-transparent p-5"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1">
-          <p className="mb-1 flex items-center gap-2 text-sm font-bold text-[#e6e8ee]">
-            <Moon className="h-4 w-4 text-indigo-300" aria-hidden="true" />
+          <p className="mb-1 flex items-center gap-2 text-sm font-bold text-foreground">
+            <Moon className="h-4 w-4 text-primary/80" aria-hidden="true" />
             はじめましょう
           </p>
-          <p className="mb-3 text-xs leading-relaxed text-[#a8b0c2]">
+          <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
             まずは今日の眠りを記録してみましょう。15秒で完了します。
           </p>
           <Link
             href="/record"
-            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-4 py-2 text-xs font-medium text-white shadow-lg shadow-indigo-500/20 transition-colors hover:from-indigo-400 hover:to-purple-400"
+            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-primary to-primary/60 px-4 py-2 text-xs font-medium text-white shadow-lg shadow-primary/20 transition-colors hover:opacity-90"
           >
             記録を始める
             <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
@@ -57,7 +57,7 @@ export function OnboardingBanner() {
         <button
           onClick={handleDismiss}
           aria-label="バナーを閉じる"
-          className="flex flex-shrink-0 items-center justify-center min-h-[44px] min-w-[44px] rounded-full p-3 text-[#a8b0c2] transition-colors hover:text-[#e6e8ee]"
+          className="flex flex-shrink-0 items-center justify-center min-h-[44px] min-w-[44px] rounded-full p-3 text-muted-foreground transition-colors hover:text-foreground"
         >
           <X className="h-4 w-4" aria-hidden="true" />
         </button>

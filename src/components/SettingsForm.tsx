@@ -45,15 +45,15 @@ function SettingsSkeleton() {
   return (
     <div className="space-y-6 animate-pulse" aria-hidden="true">
       {/* Section1 skeleton */}
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6 space-y-4">
-        <div className="h-5 w-24 rounded bg-white/10" />
-        <div className="h-11 rounded-xl bg-white/10" />
-        <div className="h-4 w-48 rounded bg-white/5" />
+      <div className="rounded-2xl border border-border bg-card/50 p-5 sm:p-6 space-y-4">
+        <div className="h-5 w-24 rounded bg-muted" />
+        <div className="h-11 rounded-xl bg-muted" />
+        <div className="h-4 w-48 rounded bg-secondary/40" />
       </div>
       {/* Section2 skeleton */}
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6 space-y-4">
-        <div className="h-5 w-28 rounded bg-white/10" />
-        <div className="h-4 w-64 rounded bg-white/5" />
+      <div className="rounded-2xl border border-border bg-card/50 p-5 sm:p-6 space-y-4">
+        <div className="h-5 w-28 rounded bg-muted" />
+        <div className="h-4 w-64 rounded bg-secondary/40" />
         <div className="h-10 w-36 rounded-full bg-red-500/10" />
       </div>
     </div>
@@ -80,18 +80,18 @@ function DeleteConfirmDialog({ open, onCancel, onConfirm, recordCount }: AlertDi
       aria-modal="true"
       aria-labelledby="delete-dialog-title"
     >
-      <div className="mx-4 w-full max-w-sm rounded-2xl border border-white/10 bg-[#1a1f2e] p-6 shadow-2xl">
-        <h2 id="delete-dialog-title" className="mb-3 text-base font-bold text-[#e6e8ee]">
+      <div className="mx-4 w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-2xl">
+        <h2 id="delete-dialog-title" className="mb-3 text-base font-bold text-foreground">
           全記録を削除しますか？
         </h2>
-        <p className="mb-6 text-sm leading-relaxed text-[#a8b0c2]">
-          保存されている <strong className="text-[#e6e8ee]">{recordCount} 件</strong> の睡眠記録がすべて削除されます。
+        <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
+          保存されている <strong className="text-foreground">{recordCount} 件</strong> の睡眠記録がすべて削除されます。
           この操作は取り消せません。
         </p>
         <div className="flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 rounded-full border border-white/10 py-2.5 text-sm font-medium text-[#a8b0c2] transition-colors hover:border-white/20 hover:text-[#e6e8ee]"
+            className="flex-1 rounded-full border border-border py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:border-border/60 hover:text-foreground"
           >
             キャンセル
           </button>
@@ -349,16 +349,16 @@ export function SettingsForm() {
       {/* ── セクション1: 地域設定 ── */}
       <section
         aria-labelledby="settings-region-heading"
-        className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6"
+        className="rounded-2xl border border-border bg-card/50 p-5 sm:p-6"
       >
         <h2
           id="settings-region-heading"
-          className="mb-4 flex items-center gap-2 border-l-[3px] border-indigo-400/70 pl-4 text-base font-bold text-[#e6e8ee] leading-snug"
+          className="mb-4 flex items-center gap-2 border-l-[3px] border-primary/70 pl-4 text-base font-bold text-foreground leading-snug"
         >
-          <MapPin className="h-4 w-4 text-indigo-300/70" aria-hidden="true" />
+          <MapPin className="h-4 w-4 text-primary/70" aria-hidden="true" />
           地域設定
         </h2>
-        <p className="mb-3 text-sm text-[#a8b0c2]">
+        <p className="mb-3 text-sm text-muted-foreground">
           天気・気圧データを取得する都道府県を選択してください。
         </p>
 
@@ -367,7 +367,7 @@ export function SettingsForm() {
           type="button"
           onClick={handleGeoDetect}
           disabled={geoLoading}
-          className="mb-3 inline-flex items-center gap-2 rounded-full border border-indigo-400/30 px-4 py-2 text-sm font-medium text-indigo-300 transition-colors hover:border-indigo-400/60 hover:text-indigo-200 disabled:opacity-50"
+          className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/15 px-4 py-2 text-sm font-medium text-primary/80 transition-colors hover:border-primary/40 hover:text-primary/70 disabled:opacity-50"
         >
           {geoLoading ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
@@ -395,23 +395,23 @@ export function SettingsForm() {
               setPrefCode(e.target.value);
               setSaved(false);
             }}
-            className="w-full appearance-none rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 pr-10 text-sm text-[#e6e8ee] outline-none focus:border-indigo-400/60 focus:ring-2 focus:ring-indigo-400/20"
+            className="w-full appearance-none rounded-xl border border-border bg-card/60 px-4 py-3 pr-10 text-sm text-foreground outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
             aria-label="都道府県を選択"
           >
             {PREFECTURES.map((pref) => (
-              <option key={pref.code} value={pref.code} className="bg-[#1a1f2e]">
+              <option key={pref.code} value={pref.code} className="bg-card">
                 {pref.name}
               </option>
             ))}
           </select>
           <ChevronDown
-            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#a8b0c2]"
+            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden="true"
           />
         </div>
 
         {selectedPref && (
-          <p className="mb-4 text-xs text-[#a8b0c2]">
+          <p className="mb-4 text-xs text-muted-foreground">
             {selectedPref.name}（{selectedPref.latitude.toFixed(2)}°N, {selectedPref.longitude.toFixed(2)}°E）
           </p>
         )}
@@ -419,7 +419,7 @@ export function SettingsForm() {
         <button
           onClick={handleSavePrefecture}
           disabled={saved}
-          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo-500/20 transition-all hover:from-indigo-400 hover:to-purple-400 disabled:opacity-70"
+          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary/60 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-primary/20 transition-all hover:opacity-90 disabled:opacity-70"
         >
           {saved ? (
             <>
@@ -438,17 +438,17 @@ export function SettingsForm() {
       {/* ── セクション2: データ管理 ── */}
       <section
         aria-labelledby="settings-data-heading"
-        className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6"
+        className="rounded-2xl border border-border bg-card/50 p-5 sm:p-6"
       >
         <h2
           id="settings-data-heading"
-          className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-base font-bold text-[#e6e8ee] leading-snug"
+          className="mb-4 border-l-[3px] border-primary/70 pl-4 text-base font-bold text-foreground leading-snug"
         >
           データ管理
         </h2>
-        <p className="mb-4 text-sm text-[#a8b0c2]">
+        <p className="mb-4 text-sm text-muted-foreground">
           ブラウザに保存されている睡眠記録を管理できます。
-          現在 <strong className="text-[#e6e8ee]">{recordCount} 件</strong> の記録があります。
+          現在 <strong className="text-foreground">{recordCount} 件</strong> の記録があります。
         </p>
 
         {deleteSuccess && (
@@ -462,7 +462,7 @@ export function SettingsForm() {
           <button
             onClick={handleExportCsv}
             disabled={recordCount === 0}
-            className="inline-flex items-center gap-2 rounded-full border border-indigo-400/40 px-5 py-2.5 text-sm font-medium text-indigo-300 transition-colors hover:border-indigo-400/70 hover:text-indigo-200 disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex items-center gap-2 rounded-full border border-primary/25 px-5 py-2.5 text-sm font-medium text-primary/80 transition-colors hover:border-primary/40 hover:text-primary/70 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {csvExported ? (
               <>
@@ -480,7 +480,7 @@ export function SettingsForm() {
           <button
             onClick={handleExportJson}
             disabled={recordCount === 0}
-            className="inline-flex items-center gap-2 rounded-full border border-indigo-400/40 px-5 py-2.5 text-sm font-medium text-indigo-300 transition-colors hover:border-indigo-400/70 hover:text-indigo-200 disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex items-center gap-2 rounded-full border border-primary/25 px-5 py-2.5 text-sm font-medium text-primary/80 transition-colors hover:border-primary/40 hover:text-primary/70 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {jsonExported ? (
               <>
@@ -505,7 +505,7 @@ export function SettingsForm() {
           </button>
         </div>
 
-        <p className="mt-3 text-xs text-[#a8b0c2]">
+        <p className="mt-3 text-xs text-muted-foreground">
           ※ データはブラウザの localStorage に保存されています。削除すると元に戻せません。
         </p>
       </section>
@@ -514,16 +514,16 @@ export function SettingsForm() {
       {notifSupported && (
         <section
           aria-labelledby="settings-notif-heading"
-          className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6"
+          className="rounded-2xl border border-border bg-card/50 p-5 sm:p-6"
         >
           <h2
             id="settings-notif-heading"
-            className="mb-4 flex items-center gap-2 border-l-[3px] border-indigo-400/70 pl-4 text-base font-bold text-[#e6e8ee] leading-snug"
+            className="mb-4 flex items-center gap-2 border-l-[3px] border-primary/70 pl-4 text-base font-bold text-foreground leading-snug"
           >
-            <Bell className="h-4 w-4 text-indigo-300/70" aria-hidden="true" />
+            <Bell className="h-4 w-4 text-primary/70" aria-hidden="true" />
             通知設定
           </h2>
-          <p className="mb-4 text-sm text-[#a8b0c2]">
+          <p className="mb-4 text-sm text-muted-foreground">
             毎日の記録を忘れないよう、リマインダー通知を受け取れます。
           </p>
 
@@ -531,7 +531,7 @@ export function SettingsForm() {
           {notifPermission === "default" && (
             <button
               onClick={handleRequestPermission}
-              className="mb-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo-500/20 transition-all hover:from-indigo-400 hover:to-purple-400"
+              className="mb-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary/60 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-primary/20 transition-all hover:opacity-90"
             >
               <Bell className="h-4 w-4" aria-hidden="true" />
               通知を許可する
@@ -545,7 +545,7 @@ export function SettingsForm() {
                 <BellOff className="h-3.5 w-3.5" aria-hidden="true" />
                 通知がブラウザでブロックされています
               </p>
-              <p className="mt-1 text-xs text-[#a8b0c2]">
+              <p className="mt-1 text-xs text-muted-foreground">
                 ブラウザのサイト設定から通知を許可してください。
               </p>
             </div>
@@ -557,8 +557,8 @@ export function SettingsForm() {
               {/* ON/OFF トグル */}
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-[#e6e8ee]">リマインダー通知</p>
-                  <p className="mt-0.5 text-xs text-[#a8b0c2]">
+                  <p className="text-sm font-medium text-foreground">リマインダー通知</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
                     今日の記録がない場合、設定時刻にお知らせします
                   </p>
                 </div>
@@ -568,8 +568,8 @@ export function SettingsForm() {
                   aria-checked={notifEnabled}
                   onClick={() => handleToggleNotif(!notifEnabled)}
                   className={[
-                    "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
-                    notifEnabled ? "bg-indigo-500" : "bg-white/10",
+                    "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                    notifEnabled ? "bg-primary" : "bg-muted",
                   ].join(" ")}
                 >
                   <span
@@ -583,10 +583,10 @@ export function SettingsForm() {
 
               {/* 時刻ピッカー（通知ONの時のみ表示） */}
               {notifEnabled && (
-                <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4 space-y-3">
+                <div className="rounded-xl border border-border bg-card/50 p-4 space-y-3">
                   <label
                     htmlFor="notif-time"
-                    className="block text-xs font-semibold uppercase tracking-wider text-[#a8b0c2]"
+                    className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground"
                   >
                     リマインダー時刻
                   </label>
@@ -596,11 +596,11 @@ export function SettingsForm() {
                       type="time"
                       value={notifTime}
                       onChange={(e) => setNotifTime(e.target.value)}
-                      className="h-10 rounded-lg border border-white/10 bg-white/[0.04] px-3 text-sm tabular-nums text-[#e6e8ee] focus:border-indigo-400/60 focus:outline-none focus:ring-1 focus:ring-indigo-400/20"
+                      className="h-10 rounded-lg border border-border bg-card/60 px-3 text-sm tabular-nums text-foreground focus:border-primary/60 focus:outline-none focus:ring-1 focus:ring-primary/20"
                     />
                     <button
                       onClick={handleSaveNotifTime}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-indigo-400/40 px-4 py-2 text-xs font-medium text-indigo-300 transition-colors hover:border-indigo-400/70 hover:text-indigo-200"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 px-4 py-2 text-xs font-medium text-primary/80 transition-colors hover:border-primary/40 hover:text-primary/70"
                     >
                       {notifTimeSaved ? (
                         <>
@@ -621,7 +621,7 @@ export function SettingsForm() {
                   {/* テスト通知 */}
                   <button
                     onClick={handleTestNotif}
-                    className="inline-flex items-center gap-1.5 text-xs text-[#a8b0c2] hover:text-indigo-300 transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary/80 transition-colors"
                   >
                     <BellRing className="h-3.5 w-3.5" aria-hidden="true" />
                     {notifTestSent ? "テスト通知を送信しました" : "テスト通知を送信"}
@@ -634,21 +634,21 @@ export function SettingsForm() {
       )}
 
       {/* ── セクション4: バージョン情報 ── */}
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
-        <h2 className="mb-4 border-l-[3px] border-indigo-400/70 pl-4 text-base font-bold text-[#e6e8ee] leading-snug">
+      <section className="rounded-2xl border border-border bg-card/50 p-5 sm:p-6">
+        <h2 className="mb-4 border-l-[3px] border-primary/70 pl-4 text-base font-bold text-foreground leading-snug">
           アプリ情報
         </h2>
-        <dl className="space-y-2 text-sm text-[#a8b0c2]">
+        <dl className="space-y-2 text-sm text-muted-foreground">
           <div className="flex gap-4">
-            <dt className="w-28 shrink-0 text-[#a8b0c2]">アプリ名</dt>
-            <dd className="text-[#e6e8ee]">SleepForecast</dd>
+            <dt className="w-28 shrink-0 text-muted-foreground">アプリ名</dt>
+            <dd className="text-foreground">SleepForecast</dd>
           </div>
           <div className="flex gap-4">
-            <dt className="w-28 shrink-0 text-[#a8b0c2]">データ保存先</dt>
+            <dt className="w-28 shrink-0 text-muted-foreground">データ保存先</dt>
             <dd>localStorage（端末内）+ クラウド同期（任意）</dd>
           </div>
           <div className="flex gap-4">
-            <dt className="w-28 shrink-0 text-[#a8b0c2]">外部送信</dt>
+            <dt className="w-28 shrink-0 text-muted-foreground">外部送信</dt>
             <dd>なし（気象 API・クラウド同期を除く）</dd>
           </div>
         </dl>
@@ -694,25 +694,25 @@ function CookieSettingsSection() {
   return (
     <section
       aria-labelledby="settings-cookie-heading"
-      className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6"
+      className="rounded-2xl border border-border bg-card/50 p-5 sm:p-6"
     >
       <h2
         id="settings-cookie-heading"
-        className="mb-4 flex items-center gap-2 border-l-[3px] border-indigo-400/70 pl-4 text-base font-bold text-[#e6e8ee] leading-snug"
+        className="mb-4 flex items-center gap-2 border-l-[3px] border-primary/70 pl-4 text-base font-bold text-foreground leading-snug"
       >
-        <Cookie className="h-4 w-4 text-indigo-300/70" aria-hidden="true" />
+        <Cookie className="h-4 w-4 text-primary/70" aria-hidden="true" />
         Cookie 設定
       </h2>
-      <p className="mb-4 text-sm text-[#a8b0c2]">
+      <p className="mb-4 text-sm text-muted-foreground">
         Google Analytics（アクセス解析）の Cookie 使用に関する同意設定を変更できます。
         拒否しても、すべての機能は通常どおりご利用いただけます。
       </p>
 
       {/* 現在の状態 */}
       {consent && (
-        <p className="mb-3 text-xs text-[#a8b0c2]">
+        <p className="mb-3 text-xs text-muted-foreground">
           現在の設定:{" "}
-          <span className={consent === "accepted" ? "font-semibold text-emerald-400" : "font-semibold text-[#e6e8ee]/60"}>
+          <span className={consent === "accepted" ? "font-semibold text-emerald-400" : "font-semibold text-foreground/60"}>
             {consent === "accepted" ? "同意済み" : "拒否"}
           </span>
         </p>
@@ -729,7 +729,7 @@ function CookieSettingsSection() {
           type="button"
           onClick={() => handleChange("accepted")}
           disabled={consent === "accepted"}
-          className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500 px-4 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-indigo-400 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300"
+          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-white transition-colors hover:opacity-90 disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80"
         >
           同意する
         </button>
@@ -737,7 +737,7 @@ function CookieSettingsSection() {
           type="button"
           onClick={() => handleChange("rejected")}
           disabled={consent === "rejected"}
-          className="inline-flex items-center gap-1.5 rounded-full border border-white/20 px-4 py-1.5 text-xs font-medium text-[#a8b0c2] transition-colors hover:border-white/40 hover:text-[#e6e8ee] disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+          className="inline-flex items-center gap-1.5 rounded-full border border-border/60 px-4 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:text-foreground disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border"
         >
           拒否する
         </button>

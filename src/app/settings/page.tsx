@@ -27,14 +27,14 @@ export default function SettingsPage() {
   return (
     <div className="container mx-auto max-w-[680px] px-5 pb-20">
       {/* グラデーション・ミニヒーロー */}
-      <div className="relative mb-10 rounded-b-[2rem] bg-gradient-to-b from-indigo-500/[0.06] via-purple-500/[0.03] to-transparent pb-8 pt-10 sm:pt-14 px-5">
+      <div className="relative mb-10 rounded-b-[2rem] bg-gradient-to-b from-primary/[0.06] via-primary/[0.03] to-transparent pb-8 pt-10 sm:pt-14 px-5">
         <div className="mb-3 flex justify-center">
-          <Settings className="h-8 w-8 text-indigo-300/60" aria-hidden="true" />
+          <Settings className="h-8 w-8 text-primary/60" aria-hidden="true" />
         </div>
-        <h1 className="text-center text-2xl font-bold tracking-tight text-[#e6e8ee] sm:text-3xl">
+        <h1 className="text-center text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
           設定
         </h1>
-        <div className="mt-6 h-px bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent" />
+        <div className="mt-6 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
       </div>
 
       <Breadcrumb items={[{ name: "ホーム", href: "/" }, { name: "設定" }]} />

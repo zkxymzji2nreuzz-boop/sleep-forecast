@@ -48,24 +48,24 @@ export function Breadcrumb({ items }: Props) {
       {/* 視覚的パンくず */}
       <nav
         aria-label="パンくずリスト"
-        className="mb-6 flex flex-wrap items-center gap-1.5 text-xs text-[#a8b0c2]"
+        className="mb-6 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground"
       >
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
           return (
             <span key={`${item.name}-${index}`} className="inline-flex items-center gap-1">
               {index > 0 && (
-                <ChevronRight className="h-3 w-3 text-indigo-400/30" aria-hidden="true" />
+                <ChevronRight className="h-3 w-3 text-primary/15" aria-hidden="true" />
               )}
               {item.href && !isLast ? (
                 <Link
                   href={item.href}
-                  className="transition-colors hover:text-[#e6e8ee] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-1 focus-visible:ring-offset-[#0f1117]"
+                  className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 focus-visible:ring-offset-1 focus-visible:ring-offset-background"
                 >
                   {item.name}
                 </Link>
               ) : (
-                <span aria-current={isLast ? "page" : undefined} className="text-[#e6e8ee]/70">
+                <span aria-current={isLast ? "page" : undefined} className="text-foreground/80">
                   {item.name}
                 </span>
               )}

@@ -21,10 +21,10 @@ export function ContinuousRecordBadge({
   };
 
   const textColor: Record<"bronze" | "silver" | "gold" | "platinum", string> = {
-    bronze: "text-[#1a1f2e]",
-    silver: "text-[#1a1f2e]",
-    gold: "text-[#1a1f2e]",
-    platinum: "text-[#1a1f2e]",
+    bronze: "text-background",
+    silver: "text-background",
+    gold: "text-background",
+    platinum: "text-foreground",
   };
 
   return (

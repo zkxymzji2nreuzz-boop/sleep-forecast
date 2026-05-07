@@ -67,7 +67,7 @@ const DashboardChartsSection = dynamic(
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="mb-6 h-[280px] animate-pulse rounded-xl bg-[#1a1f2e]"
+            className="mb-6 h-[280px] animate-pulse rounded-xl bg-card"
             aria-hidden
           />
         ))}
@@ -174,21 +174,21 @@ export default function DashboardPage() {
       <div className="container mx-auto max-w-screen-md px-4 py-8 pb-16 sm:py-12">
         <Breadcrumb items={[{ name: "ホーム", href: "/" }, { name: "ダッシュボード" }]} />
         <header className="mb-6">
-          <h1 className="text-2xl font-bold text-[#e6e8ee]">睡眠ダッシュボード</h1>
-          <p className="mt-1 text-sm text-[#a8b0c2]">
+          <h1 className="text-2xl font-bold text-foreground">睡眠ダッシュボード</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             過去 30 日の記録から、気象と睡眠品質の関係を分析します。
           </p>
         </header>
-        <div className="flex flex-col items-center justify-center gap-6 rounded-xl border border-gray-700/50 bg-[#1a1f2e] px-6 py-16 text-center">
-          <Moon className="h-12 w-12 text-indigo-400 opacity-60" aria-hidden />
+        <div className="flex flex-col items-center justify-center gap-6 rounded-xl border border-gray-700/50 bg-card px-6 py-16 text-center">
+          <Moon className="h-12 w-12 text-primary opacity-60" aria-hidden />
           <div>
-            <h2 className="text-lg font-semibold text-[#e6e8ee]">まだ記録がありません</h2>
-            <p className="mt-2 text-sm text-[#a8b0c2]">
+            <h2 className="text-lg font-semibold text-foreground">まだ記録がありません</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
               毎日の睡眠を記録すると、気圧との関係やあなただけのパターンが見えてきます。<br />
               まずは今日の眠りを記録してみましょう。
             </p>
           </div>
-          <Button asChild size="lg" className="bg-indigo-500 text-white hover:bg-indigo-600">
+          <Button asChild size="lg" className="bg-primary text-white hover:opacity-90">
             <Link href="/record">
               今日を記録する
               <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
@@ -207,12 +207,12 @@ export default function DashboardPage() {
       {demoCount !== null && <DemoModeBanner recordCount={demoCount} />}
 
       <header className="mb-6">
-        <h1 className="text-2xl font-bold text-[#e6e8ee]">睡眠ダッシュボード</h1>
-        <p className="mt-1 text-sm text-[#a8b0c2]">
+        <h1 className="text-2xl font-bold text-foreground">睡眠ダッシュボード</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
           過去 30 日の記録から、気象と睡眠品質の関係を分析します。
         </p>
         {/* データ保存場所の注記 */}
-        <p className="mt-2 text-xs text-[#a8b0c2]/70">
+        <p className="mt-2 text-xs text-muted-foreground/70">
           <Info className="mb-0.5 mr-1 inline-block h-3 w-3" aria-hidden />
           記録はこのブラウザの端末内に保存されています。他の端末・ブラウザとは同期されません。
         </p>
@@ -295,7 +295,7 @@ export default function DashboardPage() {
       {/* ── ② インサイト（KPI直下・グラフより先に表示） ── */}
       {insights.length > 0 && (
         <section aria-label="睡眠インサイト" className="mb-6 space-y-3">
-          <h2 className="mb-2 text-sm font-semibold text-[#e6e8ee]">
+          <h2 className="mb-2 text-sm font-semibold text-foreground">
             あなたへの気づき
           </h2>
           <ul className="space-y-3">
@@ -306,13 +306,13 @@ export default function DashboardPage() {
               >
                 {INSIGHT_ICON[item.severity]}
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm leading-relaxed text-[#e6e8ee]">
+                  <p className="text-sm leading-relaxed text-foreground">
                     {item.message}
                   </p>
                   {item.articleSlug && item.articleLabel && (
                     <Link
                       href={`/articles/${item.articleSlug}`}
-                      className="mt-1.5 inline-flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 hover:underline"
+                      className="mt-1.5 inline-flex items-center gap-1 text-xs text-primary hover:text-primary/80 hover:underline"
                     >
                       {item.articleLabel}
                       <ArrowRight className="h-3 w-3" aria-hidden />
@@ -332,15 +332,15 @@ export default function DashboardPage() {
       <AdBanner slot="dashboard-charts" format="horizontal" className="mb-6" />
 
       {/* ── ⑥ 「今日を記録する」CTA — 常時表示 ── */}
-      <div className="mb-6 flex items-center justify-between gap-3 rounded-lg border border-indigo-400/20 bg-indigo-500/[0.05] p-4">
+      <div className="mb-6 flex items-center justify-between gap-3 rounded-lg border border-primary/15 bg-primary/[0.07] p-4">
         <div>
-          <p className="text-sm font-medium text-[#e6e8ee]">今日の眠りを記録する</p>
-          <p className="mt-0.5 text-xs text-[#a8b0c2]">毎日記録すると、あなただけの傾向が見えてきます</p>
+          <p className="text-sm font-medium text-foreground">今日の眠りを記録する</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">毎日記録すると、あなただけの傾向が見えてきます</p>
         </div>
         <Button
           asChild
           size="sm"
-          className="flex-shrink-0 bg-indigo-500 text-white hover:bg-indigo-600"
+          className="flex-shrink-0 bg-primary text-white hover:opacity-90"
         >
           <Link href="/record">
             記録する
@@ -396,9 +396,9 @@ type KpiCardProps = {
 function KpiCard({ icon, label, value, subtitle, small }: KpiCardProps) {
   return (
     // B案: グラデーション背景 + ホバー時 violet ボーダー
-    <div className="flex flex-col gap-2 rounded-xl border border-gray-700/50 bg-gradient-to-br from-gray-900 to-[#161a24] p-4 shadow-md transition-all duration-200 hover:border-indigo-400/30 hover:shadow-lg">
+    <div className="flex flex-col gap-2 rounded-xl border border-gray-700/50 bg-gradient-to-br from-gray-900 to-[#161a24] p-4 shadow-md transition-all duration-200 hover:border-primary/15 hover:shadow-lg">
       <div className="flex items-center gap-2 text-gray-400">
-        <span className="text-indigo-400">{icon}</span>
+        <span className="text-primary">{icon}</span>
         <span className="text-xs font-medium">{label}</span>
       </div>
       <p
@@ -409,7 +409,7 @@ function KpiCard({ icon, label, value, subtitle, small }: KpiCardProps) {
         {value}
       </p>
       {subtitle && (
-        <p className="text-xs text-[#a8b0c2]">{subtitle}</p>
+        <p className="text-xs text-muted-foreground">{subtitle}</p>
       )}
     </div>
   );
@@ -470,7 +470,7 @@ function WeatherAdviceCard({ weather }: { weather: WeatherData }) {
     tips.push({
       icon: "🧣",
       text: "冷え込みが強い夜。湯たんぽや靴下で足元を温めると深部体温が下がりやすくなります。",
-      color: "border-indigo-400/50 bg-indigo-500/[0.05]",
+      color: "border-primary/25 bg-primary/[0.07]",
     });
   }
 
@@ -494,17 +494,17 @@ function WeatherAdviceCard({ weather }: { weather: WeatherData }) {
   return (
     <section
       aria-label="今夜の睡眠アドバイス"
-      className="mb-6 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4"
+      className="mb-6 rounded-xl border border-border bg-card/50 p-4"
     >
-      <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#e6e8ee]">
-        <Moon className="h-4 w-4 text-indigo-300" aria-hidden />
+      <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
+        <Moon className="h-4 w-4 text-primary/80" aria-hidden />
         今夜の睡眠アドバイス
       </h2>
       <ul className="space-y-2">
         {tips.slice(0, 3).map((tip, i) => (
           <li
             key={i}
-            className={`flex items-start gap-3 rounded-lg border-l-4 p-3 text-sm leading-relaxed text-[#e6e8ee]/90 ${tip.color}`}
+            className={`flex items-start gap-3 rounded-lg border-l-4 p-3 text-sm leading-relaxed text-foreground/90 ${tip.color}`}
           >
             <span className="text-base leading-none" aria-hidden>{tip.icon}</span>
             <span>{tip.text}</span>

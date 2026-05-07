@@ -186,11 +186,11 @@ function TodayWeatherSection({ hourlyWeather }: { hourlyWeather: HourlyWeatherDa
 
   return (
     <div className="px-4 pb-3">
-      <p className="mb-1 text-right text-[9px] text-[#a8b0c2]">← → スクロール</p>
+      <p className="mb-1 text-right text-[9px] text-muted-foreground">← → スクロール</p>
       <div className="flex">
         <div style={{ flexShrink: 0, width: "56px" }}>
           {TODAY_LABEL_ROWS.map(({ label, h }) => (
-            <div key={label} style={{ height: `${h}px`, display: "flex", alignItems: "center", fontSize: "10px", color: "#a8b0c2", fontWeight: label === "時刻" ? 600 : 400 }}>
+            <div key={label} style={{ height: `${h}px`, display: "flex", alignItems: "center", fontSize: "10px", color: "hsl(var(--muted-foreground))", fontWeight: label === "時刻" ? 600 : 400 }}>
               {label}
             </div>
           ))}
@@ -204,14 +204,14 @@ function TodayWeatherSection({ hourlyWeather }: { hourlyWeather: HourlyWeatherDa
               const pa = pressureArrow(hourlyDeltas[i]);
               const hourLabel = hour === 0 ? "翌0時" : `${hour}時`;
               return (
-                <div key={time} style={{ flexShrink: 0, width: "54px", display: "flex", flexDirection: "column", borderLeft: isCurrent ? "1px solid rgba(99,102,241,0.30)" : "1px solid rgba(255,255,255,0.04)", background: isCurrent ? "rgba(99,102,241,0.08)" : "transparent" }}>
-                  <div style={{ height: `${HEADER_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 600, color: isCurrent ? "#818cf8" : "#a8b0c2" }}>{hourLabel}</div>
+                <div key={time} style={{ flexShrink: 0, width: "54px", display: "flex", flexDirection: "column", borderLeft: isCurrent ? "1px solid hsl(var(--primary) / 0.30)" : "1px solid rgba(255,255,255,0.04)", background: isCurrent ? "hsl(var(--primary) / 0.08)" : "transparent" }}>
+                  <div style={{ height: `${HEADER_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 600, color: isCurrent ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))" }}>{hourLabel}</div>
                   <div style={{ height: `${ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "17px" }}>{w.emoji}</div>
-                  <div style={{ height: `${ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "#e6e8ee" }}>{Math.round(hourlyWeather.temps[i])}°</div>
+                  <div style={{ height: `${ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "hsl(var(--foreground))" }}>{Math.round(hourlyWeather.temps[i])}°</div>
                   <div style={{ height: `${ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", color: precipColor(hourlyWeather.precipProbs[i]) }}>{hourlyWeather.precipProbs[i]}%</div>
-                  <div style={{ height: `${ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "#a8b0c2" }}>{hourlyWeather.precipMm[i].toFixed(1)}mm</div>
-                  <div style={{ height: `${ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "#a8b0c2" }}>{hourlyWeather.humidity[i]}%</div>
-                  <div style={{ height: `${HEADER_H}px`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "#a8b0c2", gap: "1px" }}>
+                  <div style={{ height: `${ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "hsl(var(--muted-foreground))" }}>{hourlyWeather.precipMm[i].toFixed(1)}mm</div>
+                  <div style={{ height: `${ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "hsl(var(--muted-foreground))" }}>{hourlyWeather.humidity[i]}%</div>
+                  <div style={{ height: `${HEADER_H}px`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontSize: "10px", color: "hsl(var(--muted-foreground))", gap: "1px" }}>
                     <span>{Math.round(hourlyWeather.pressures[i])}</span>
                     <span style={{ fontSize: "11px", color: pa.color }}>{pa.arrow}</span>
                   </div>
@@ -239,7 +239,7 @@ function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
       <div style={{ display: "flex" }}>
         <div style={{ flexShrink: 0, width: "68px" }}>
           {WEEKLY_LABEL_ROWS.map((label) => (
-            <div key={label} style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", fontSize: "10px", color: "#a8b0c2", fontWeight: label === "日付" ? 600 : 400, whiteSpace: "nowrap" }}>
+            <div key={label} style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", fontSize: "10px", color: "hsl(var(--muted-foreground))", fontWeight: label === "日付" ? 600 : 400, whiteSpace: "nowrap" }}>
               {label}
             </div>
           ))}
@@ -271,8 +271,8 @@ function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
             return (
               <div key={day.date} style={{ display: "flex", flexDirection: "column", borderLeft: columnBorder, background: columnBg }}>
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: "10px", fontWeight: 700, color: isDangerDay ? "#f87171" : isCurrentDay ? "#818cf8" : "#a8b0c2" }}>{dayLabel}</span>
-                  <span style={{ fontSize: "9px", color: "#a8b0c2" }}>{weekLabel}</span>
+                  <span style={{ fontSize: "10px", fontWeight: 700, color: isDangerDay ? "#f87171" : isCurrentDay ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))" }}>{dayLabel}</span>
+                  <span style={{ fontSize: "9px", color: "hsl(var(--muted-foreground))" }}>{weekLabel}</span>
                 </div>
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px" }}>{weather.emoji}</div>
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "#fb923c" }}>{Math.round(day.tempMax)}°</div>
@@ -288,7 +288,7 @@ function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
                       ⚠ 要注意
                     </span>
                   ) : (
-                    <span style={{ fontSize: "10px", color: "#4a5060" }}>—</span>
+                    <span style={{ fontSize: "10px", color: "hsl(var(--muted-foreground))" }}>—</span>
                   )}
                 </div>
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px" }}>{moonEmoji}</div>
@@ -335,7 +335,7 @@ function SleepScoreHero({
       className="rounded-2xl p-5"
       style={{ background: `${color}12`, border: `1px solid ${color}35` }}
     >
-      <p className="text-xs font-semibold text-[#a8b0c2] mb-3">今夜の睡眠スコア</p>
+      <p className="text-xs font-semibold text-muted-foreground mb-3">今夜の睡眠スコア</p>
 
       {/* バッジ（主役）*/}
       <div className="flex items-center gap-3 mb-2">
@@ -350,7 +350,7 @@ function SleepScoreHero({
           style={{ color: `${color}cc` }}
         >
           {score100}
-          <span className="text-xs font-normal text-[#a8b0c2]"> / 100</span>
+          <span className="text-xs font-normal text-muted-foreground"> / 100</span>
         </span>
       </div>
 
@@ -361,7 +361,7 @@ function SleepScoreHero({
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleToggle(); } }}
         aria-expanded={expanded}
         aria-controls="sleep-score-detail"
-        className="w-full text-left text-xs text-[#a8b0c2] flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 rounded"
+        className="w-full text-left text-xs text-muted-foreground flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/80 rounded"
       >
         {!expanded && (
           <span
@@ -378,34 +378,34 @@ function SleepScoreHero({
 
       {/* 展開: 内訳 */}
       {expanded && (
-        <div id="sleep-score-detail" className="mt-3 pt-3 border-t border-white/10">
-          <p className="text-xs leading-relaxed text-[#b0b8cc]">{wsiScore.reason}</p>
+        <div id="sleep-score-detail" className="mt-3 pt-3 border-t border-border">
+          <p className="text-xs leading-relaxed text-muted-foreground">{wsiScore.reason}</p>
           <div className="mt-3 grid grid-cols-3 gap-2">
             <div className="rounded-lg bg-black/20 p-2 text-center">
-              <p className="text-[9px] text-[#a8b0c2]">気圧変化</p>
-              <p className="text-sm font-bold text-[#e6e8ee] tabular-nums">
+              <p className="text-[9px] text-muted-foreground">気圧変化</p>
+              <p className="text-sm font-bold text-foreground tabular-nums">
                 {wsiScore.pressureDelta6h >= 0 ? "+" : ""}{wsiScore.pressureDelta6h.toFixed(1)}
-                <span className="text-[9px] font-normal text-[#a8b0c2]">hPa</span>
+                <span className="text-[9px] font-normal text-muted-foreground">hPa</span>
               </p>
               <p className="text-[9px] tabular-nums" style={{ color: contrib.pressure >= 0 ? "#10b981" : "#f87171" }}>
                 {contrib.pressure >= 0 ? "+" : ""}{contrib.pressure}pt
               </p>
             </div>
             <div className="rounded-lg bg-black/20 p-2 text-center">
-              <p className="text-[9px] text-[#a8b0c2]">寒暖差</p>
-              <p className="text-sm font-bold text-[#e6e8ee] tabular-nums">
+              <p className="text-[9px] text-muted-foreground">寒暖差</p>
+              <p className="text-sm font-bold text-foreground tabular-nums">
                 {wsiScore.tempDelta.toFixed(0)}
-                <span className="text-[9px] font-normal text-[#a8b0c2]">°C</span>
+                <span className="text-[9px] font-normal text-muted-foreground">°C</span>
               </p>
               <p className="text-[9px] tabular-nums" style={{ color: contrib.temp >= 0 ? "#10b981" : "#f87171" }}>
                 {contrib.temp >= 0 ? "+" : ""}{contrib.temp}pt
               </p>
             </div>
             <div className="rounded-lg bg-black/20 p-2 text-center">
-              <p className="text-[9px] text-[#a8b0c2]">湿度</p>
-              <p className="text-sm font-bold text-[#e6e8ee] tabular-nums">
+              <p className="text-[9px] text-muted-foreground">湿度</p>
+              <p className="text-sm font-bold text-foreground tabular-nums">
                 {wsiScore.humidity}
-                <span className="text-[9px] font-normal text-[#a8b0c2]">%</span>
+                <span className="text-[9px] font-normal text-muted-foreground">%</span>
               </p>
               <p className="text-[9px] tabular-nums" style={{ color: contrib.humid >= 0 ? "#10b981" : "#f87171" }}>
                 {contrib.humid >= 0 ? "+" : ""}{contrib.humid}pt
@@ -414,12 +414,12 @@ function SleepScoreHero({
           </div>
           {/* ケアヒント */}
           {hints.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-white/10 flex gap-2 text-xs leading-relaxed text-[#b0b8cc]">
-              <span className="mt-0.5 shrink-0 text-indigo-400">💡</span>
+            <div className="mt-3 pt-3 border-t border-border flex gap-2 text-xs leading-relaxed text-muted-foreground">
+              <span className="mt-0.5 shrink-0 text-primary">💡</span>
               <span>{hints[0]}</span>
             </div>
           )}
-          <p className="mt-2 text-[9px] text-[#a8b0c2] text-right">※ スコアは目安です</p>
+          <p className="mt-2 text-[9px] text-muted-foreground text-right">※ スコアは目安です</p>
         </div>
       )}
 
@@ -561,11 +561,11 @@ function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: Pres
             <p className="text-sm font-semibold" style={{ color: "#f87171" }}>
               🌧 今夜は気圧が急変しそうです
             </p>
-            <p className="mt-1 text-xs text-[#a8b0c2]">
+            <p className="mt-1 text-xs text-muted-foreground">
               気圧急変の夜です。眠れなかったら明朝記録してみてください
             </p>
           </div>
-          <button onClick={dismiss} className="flex-shrink-0 rounded-full p-3 text-xs text-[#a8b0c2] hover:text-[#e6e8ee] min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="閉じる">✕</button>
+          <button onClick={dismiss} className="flex-shrink-0 rounded-full p-3 text-xs text-muted-foreground hover:text-foreground min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="閉じる">✕</button>
         </div>
       </div>
     );
@@ -583,11 +583,11 @@ function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: Pres
             <p className="text-sm font-semibold" style={{ color: "#f87171" }}>
               🌧 今夜は気圧が急変しそうです
             </p>
-            <p className="mt-1 text-xs text-[#a8b0c2]">
+            <p className="mt-1 text-xs text-muted-foreground">
               気圧急変の日だけ、就寝前に1回お知らせします
             </p>
           </div>
-          <button onClick={dismiss} className="flex-shrink-0 rounded-full p-3 text-xs text-[#a8b0c2] hover:text-[#e6e8ee] min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="閉じる">✕</button>
+          <button onClick={dismiss} className="flex-shrink-0 rounded-full p-3 text-xs text-muted-foreground hover:text-foreground min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="閉じる">✕</button>
         </div>
         <button
           onClick={() => requestAndNotify(true)}
@@ -596,7 +596,7 @@ function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: Pres
         >
           通知を受け取る
         </button>
-        <p className="mt-2 text-center text-[10px] text-[#a8b0c2]">ブラウザを開いているときのみ届きます</p>
+        <p className="mt-2 text-center text-[10px] text-muted-foreground">ブラウザを開いているときのみ届きます</p>
       </div>
     );
   }
@@ -608,7 +608,7 @@ function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: Pres
       style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.07)" }}
     >
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs text-[#a8b0c2]">
+        <p className="text-xs text-muted-foreground">
           気圧急変の日だけ、就寝前に1回お知らせします
         </p>
         <div className="flex items-center gap-2 flex-shrink-0">
@@ -619,7 +619,7 @@ function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: Pres
           >
             通知を受け取る
           </button>
-          <button onClick={dismiss} className="rounded-full p-3 text-xs text-[#a8b0c2] hover:text-[#e6e8ee] min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="閉じる">✕</button>
+          <button onClick={dismiss} className="rounded-full p-3 text-xs text-muted-foreground hover:text-foreground min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="閉じる">✕</button>
         </div>
       </div>
     </div>
@@ -701,7 +701,7 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
 
   if (targetPoints.length < 2) {
     return (
-      <div className="flex h-32 items-center justify-center text-sm text-[#a8b0c2]">
+      <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
         データ取得中…
       </div>
     );
@@ -796,9 +796,9 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
             return `${val.toFixed(1)} hPa (${delta >= 0 ? "+" : ""}${delta.toFixed(1)} hPa/h)`;
           },
         },
-        backgroundColor: "#1e2433",
-        titleColor: "#e6e8ee",
-        bodyColor: "#b0b8cc",
+        backgroundColor: "hsl(var(--card))",
+        titleColor: "hsl(var(--foreground))",
+        bodyColor: "hsl(var(--muted-foreground))",
         borderColor: "rgba(255,255,255,0.1)",
         borderWidth: 1,
       },
@@ -806,7 +806,7 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
     scales: {
       x: {
         ticks: {
-          color: "#a8b0c2",
+          color: "hsl(var(--muted-foreground))",
           font: { size: 9 },
           maxRotation: 0,
           autoSkip: false,
@@ -814,18 +814,18 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
             return targetPoints[index]?.label ?? "";
           },
         },
-        grid: { color: "#1e2433" },
+        grid: { color: "hsl(var(--border))" },
       },
       y: {
         position: "right" as const,
         min: Math.floor(minVal - spread * 0.2),
         max: Math.ceil(maxVal + spread * 0.2),
         ticks: {
-          color: "#a8b0c2",
+          color: "hsl(var(--muted-foreground))",
           font: { size: 10 },
           callback: (val: number | string) => `${val}`,
         },
-        grid: { color: "#1e2433" },
+        grid: { color: "hsl(var(--border))" },
       },
     },
   };
@@ -836,15 +836,15 @@ function NightPressureChart({ hourlyPressureTimes, hourlyPressureValues }: Night
       <div className="mb-2 flex gap-4">
         <div className="flex items-center gap-1.5">
           <div className="h-0.5 w-5 rounded" style={{ background: "#378ADD" }} />
-          <span className="text-[10px] text-[#a8b0c2]">安定</span>
+          <span className="text-[10px] text-muted-foreground">安定</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="h-0.5 w-5 rounded" style={{ background: "#f59e0b" }} />
-          <span className="text-[10px] text-[#a8b0c2]">やや変化</span>
+          <span className="text-[10px] text-muted-foreground">やや変化</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="h-0.5 w-5 rounded" style={{ background: "#f87070" }} />
-          <span className="text-[10px] text-[#a8b0c2]">急落</span>
+          <span className="text-[10px] text-muted-foreground">急落</span>
         </div>
       </div>
 
@@ -943,8 +943,8 @@ function WakeupSubSection({
   const { name, color, level, advice, Icon } = getWakeupLevel(morningScore);
 
   return (
-    <div className="mt-3 pt-3 border-t border-dashed border-white/15">
-      <p className="text-[10px] font-semibold text-[#a8b0c2] mb-2 tracking-wide uppercase">
+    <div className="mt-3 pt-3 border-t border-dashed border-border/60">
+      <p className="text-[10px] font-semibold text-muted-foreground mb-2 tracking-wide uppercase">
         ☀️ 明日の目覚め予報
       </p>
 
@@ -989,7 +989,7 @@ function WakeupSubSection({
       </div>
 
       {/* アクションアドバイス */}
-      <p className="text-[11px] text-[#a8b0c2] leading-relaxed">{advice}</p>
+      <p className="text-[11px] text-muted-foreground leading-relaxed">{advice}</p>
     </div>
   );
 }
@@ -1025,9 +1025,9 @@ function CorrelationChart() {
 
   if (points.length === 0) {
     return (
-      <div className="rounded-xl border border-white/10 bg-black/20 p-5 text-center">
-        <p className="text-sm font-semibold text-[#e6e8ee] mb-1">7件記録すると表示されます</p>
-        <p className="text-xs text-[#a8b0c2]">気圧と睡眠品質の相関を可視化します</p>
+      <div className="rounded-xl border border-border bg-black/20 p-5 text-center">
+        <p className="text-sm font-semibold text-foreground mb-1">7件記録すると表示されます</p>
+        <p className="text-xs text-muted-foreground">気圧と睡眠品質の相関を可視化します</p>
       </div>
     );
   }
@@ -1065,7 +1065,7 @@ function CorrelationChart() {
         <rect x={Math.max(PAD.left, toX(1016))} y={PAD.top} width={Math.max(0, W - PAD.right - Math.max(PAD.left, toX(1016)))} height={chartH} fill="rgba(74,222,128,0.05)" />
         {([1, 3, 5] as const).map((q) => (
           <g key={q}>
-            <line x1={PAD.left} y1={toY(q)} x2={W - PAD.right} y2={toY(q)} stroke="#1e2433" strokeWidth="1" />
+            <line x1={PAD.left} y1={toY(q)} x2={W - PAD.right} y2={toY(q)} stroke="hsl(var(--border))" strokeWidth="1" />
             {/* Y軸マーカー: 色付き丸 */}
             <circle cx={PAD.left - 8} cy={toY(q)} r="4" fill={QUALITY_COLORS[q] ?? "#a8b0c2"} fillOpacity="0.85" />
           </g>
@@ -1074,25 +1074,25 @@ function CorrelationChart() {
           <line x1={PAD.left} y1={clamp(slope * pMin + intercept)} x2={W - PAD.right} y2={clamp(slope * pMax + intercept)} stroke="#7856ff" strokeWidth="1.5" strokeDasharray="5 3" opacity="0.65" />
         )}
         {points.map((p, i) => (
-          <circle key={i} cx={toX(p.pressure)} cy={toY(p.quality)} r="5" fill={QUALITY_COLORS[p.quality] ?? "#a8b0c2"} fillOpacity="0.85" stroke="#0f1117" strokeWidth="1.5" />
+          <circle key={i} cx={toX(p.pressure)} cy={toY(p.quality)} r="5" fill={QUALITY_COLORS[p.quality] ?? "#a8b0c2"} fillOpacity="0.85" stroke="hsl(var(--background))" strokeWidth="1.5" />
         ))}
         {[pMin, Math.round((pMin + pMax) / 2), pMax].map((p) => (
-          <text key={p} x={toX(p)} y={H - 14} textAnchor="middle" fill="#a8b0c2" fontSize="10">{Math.round(p)}</text>
+          <text key={p} x={toX(p)} y={H - 14} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize="10">{Math.round(p)}</text>
         ))}
-        <text x={W / 2} y={H - 2} textAnchor="middle" fill="#a8b0c2" fontSize="9">気圧 (hPa)</text>
+        <text x={W / 2} y={H - 2} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize="9">気圧 (hPa)</text>
       </svg>
       <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
         {([5, 3, 1] as const).map((q) => (
           <div key={q} className="flex items-center gap-1">
             <div className="w-2.5 h-2.5 rounded-full" style={{ background: QUALITY_COLORS[q] }} />
-            <span className="text-[10px] text-[#a8b0c2]">
+            <span className="text-[10px] text-muted-foreground">
               {q === 5 ? "よく眠れた" : q === 3 ? "なんとか眠れた" : "眠れなかった"}
             </span>
           </div>
         ))}
         <div className="flex items-center gap-1">
           <div className="w-4 h-0.5" style={{ background: "#7856ff", borderTop: "1px dashed #7856ff" }} />
-          <span className="text-[10px] text-[#a8b0c2]">傾向線</span>
+          <span className="text-[10px] text-muted-foreground">傾向線</span>
         </div>
       </div>
     </div>
@@ -1108,7 +1108,7 @@ function SkeletonBlock({ className }: { className?: string }) {
     <div
       className={`rounded-xl ${className}`}
       style={{
-        background: "linear-gradient(90deg, #1a1f2e 25%, #252b3b 50%, #1a1f2e 75%)",
+        background: "linear-gradient(90deg, hsl(var(--card)) 25%, hsl(var(--muted)) 50%, hsl(var(--card)) 75%)",
         backgroundSize: "200% 100%",
         animation: "skeleton-shimmer 1.5s infinite",
       }}
@@ -1125,7 +1125,7 @@ function WeatherWidgetSkeleton() {
           100% { background-position: -200% 0; }
         }
       `}</style>
-      <div className="space-y-4 rounded-2xl border border-white/5 bg-[#1a1f2e] p-5">
+      <div className="space-y-4 rounded-2xl border border-border bg-card p-5">
         <SkeletonBlock className="h-4 w-28" />
         <SkeletonBlock className="h-64" />
         <SkeletonBlock className="h-48" />
@@ -1237,18 +1237,18 @@ export function WeatherWidget() {
   // ── エラー ──
   if (error) {
     return (
-      <div className="rounded-2xl border border-white/5 bg-[#1a1f2e] p-5 text-center">
+      <div className="rounded-2xl border border-border bg-card p-5 text-center">
         <p className="text-2xl mb-2" aria-hidden="true">⚠️</p>
-        <p className="text-sm font-semibold text-[#e6e8ee] mb-1">
+        <p className="text-sm font-semibold text-foreground mb-1">
           気象データの取得に失敗しました
         </p>
-        <p className="text-xs text-[#a8b0c2] mb-4">
+        <p className="text-xs text-muted-foreground mb-4">
           通信状況をご確認のうえ、再度お試しください
         </p>
         <button
           type="button"
           onClick={() => window.location.reload()}
-          className="inline-flex h-9 items-center justify-center rounded-md border border-indigo-400/40 bg-transparent px-4 text-xs font-medium text-[#e6e8ee] hover:bg-indigo-500/10"
+          className="inline-flex h-9 items-center justify-center rounded-md border border-primary/40 bg-transparent px-4 text-xs font-medium text-foreground hover:bg-primary/10"
         >
           リトライ
         </button>
@@ -1259,17 +1259,17 @@ export function WeatherWidget() {
   // ── 空状態（データなし） ──
   if (!data || !wsiScore) {
     return (
-      <div className="rounded-2xl border border-white/5 bg-[#1a1f2e] p-5 text-center">
-        <p className="text-sm font-semibold text-[#e6e8ee] mb-1">
+      <div className="rounded-2xl border border-border bg-card p-5 text-center">
+        <p className="text-sm font-semibold text-foreground mb-1">
           データを読み込めませんでした
         </p>
-        <p className="text-xs text-[#a8b0c2] mb-4">
+        <p className="text-xs text-muted-foreground mb-4">
           気象データが見つかりません
         </p>
         <button
           type="button"
           onClick={() => window.location.reload()}
-          className="inline-flex h-9 items-center justify-center rounded-md border border-indigo-400/40 bg-transparent px-4 text-xs font-medium text-[#e6e8ee] hover:bg-indigo-500/10"
+          className="inline-flex h-9 items-center justify-center rounded-md border border-primary/40 bg-transparent px-4 text-xs font-medium text-foreground hover:bg-primary/10"
         >
           リトライ
         </button>
@@ -1284,23 +1284,23 @@ export function WeatherWidget() {
   return (
     <section
       aria-labelledby="weather-widget-heading"
-      className="rounded-2xl border border-white/5 bg-[#1a1f2e] overflow-hidden"
+      className="rounded-2xl border border-border bg-card overflow-hidden"
     >
       {/* ── ヘッダー ── */}
       <div className="flex items-center justify-between px-5 pt-5 pb-1">
-        <h2 id="weather-widget-heading" className="text-sm font-bold text-[#e6e8ee]">
+        <h2 id="weather-widget-heading" className="text-sm font-bold text-foreground">
           🌤 天気 &amp; 睡眠予報
         </h2>
-        <span className="text-xs text-[#a8b0c2]">📍 {locationName}</span>
+        <span className="text-xs text-muted-foreground">📍 {locationName}</span>
       </div>
 
       {/* 都道府県未設定バナー（新規ユーザーには非表示・OnboardingBanner との重複を避ける） */}
       {showPrefBanner && (
-        <div className="mx-5 mt-2 mb-1 flex items-center justify-between rounded-lg bg-indigo-500/10 border border-indigo-400/20 px-3 py-2 text-xs">
-          <span className="text-[#a8b0c2]">東京の気象データを表示中</span>
+        <div className="mx-5 mt-2 mb-1 flex items-center justify-between rounded-lg bg-primary/10 border border-primary/20 px-3 py-2 text-xs">
+          <span className="text-muted-foreground">東京の気象データを表示中</span>
           <a
             href="/settings"
-            className="text-indigo-300 underline decoration-indigo-400/40 underline-offset-2 hover:decoration-indigo-300 whitespace-nowrap ml-2"
+            className="text-primary/80 underline decoration-primary/40 underline-offset-2 hover:decoration-primary whitespace-nowrap ml-2"
           >
             地域を設定する →
           </a>
@@ -1333,32 +1333,32 @@ export function WeatherWidget() {
       {/* ── ②.6 気圧急落パーソナルアラート（個人データ相関） ── */}
       <PersonalPressureInsight currentDelta={data.current.pressureDeltaHpa} />
 
-      <div className="mx-4 border-t border-white/5" />
+      <div className="mx-4 border-t border-border" />
 
       {/* ── ③ 今日の天気 ── */}
       {data.hourlyWeather?.times?.length > 0 && (
         <>
           <div className="px-4 pt-3 pb-1">
-            <p className="text-xs font-semibold text-[#a8b0c2] tracking-wide uppercase">今日の天気</p>
+            <p className="text-xs font-semibold text-muted-foreground tracking-wide uppercase">今日の天気</p>
           </div>
           <TodayWeatherSection hourlyWeather={data.hourlyWeather} />
         </>
       )}
 
-      <div className="mx-4 border-t border-white/5" />
+      <div className="mx-4 border-t border-border" />
 
       {/* ── ④ 週間天気予報 ── */}
       <div className="px-4 pt-3 pb-4">
-        <p className="mb-2 text-xs font-semibold text-[#a8b0c2] tracking-wide uppercase">週間天気予報</p>
+        <p className="mb-2 text-xs font-semibold text-muted-foreground tracking-wide uppercase">週間天気予報</p>
         <DailyForecastSection forecast={data.forecast} />
       </div>
 
-      <div className="mx-5 border-t border-white/5" />
+      <div className="mx-5 border-t border-border" />
 
       {/* ── ⑤ 気圧グラフ（1時間前〜12時間後、Chart.js） ── */}
       {data.hourlyPressure.values.length > 1 && (
         <div className="px-5 pt-5 pb-4">
-          <p className="mb-3 text-xs font-semibold text-[#a8b0c2] tracking-wide uppercase">
+          <p className="mb-3 text-xs font-semibold text-muted-foreground tracking-wide uppercase">
             気圧推移（1時間前〜これから12時間）
           </p>
           <NightPressureChart
@@ -1368,23 +1368,23 @@ export function WeatherWidget() {
         </div>
       )}
 
-      <div className="mx-5 border-t border-white/5" />
+      <div className="mx-5 border-t border-border" />
 
       {/* ── ⑥ 睡眠×気圧 相関グラフ ── */}
       <div className="px-5 pt-5 pb-6">
-        <p className="mb-3 text-xs font-semibold text-[#a8b0c2] tracking-wide uppercase">睡眠 × 気圧 相関</p>
+        <p className="mb-3 text-xs font-semibold text-muted-foreground tracking-wide uppercase">睡眠 × 気圧 相関</p>
         <CorrelationChart />
       </div>
 
       {/* ── 帰属クレジット (Open-Meteo CC BY 4.0 ライセンス義務) ── */}
-      <div className="border-t border-white/5 px-5 py-3">
-        <p className="text-[9px] text-[#a8b0c2]/40">
+      <div className="border-t border-border px-5 py-3">
+        <p className="text-[9px] text-muted-foreground/40">
           Weather data provided by{" "}
           <a
             href="https://open-meteo.com/"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline underline-offset-2 hover:text-[#a8b0c2]/70 transition-colors"
+            className="underline underline-offset-2 hover:text-muted-foreground/70 transition-colors"
           >
             Open-Meteo.com
           </a>{" "}

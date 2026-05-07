@@ -139,10 +139,10 @@ export function HomeClient() {
       {/* ─── ヒーローセクション（P0 / P1: 記録7件未満） ─────────────────────── */}
       {isLoaded && recordCount < 7 && (
         <section className="mb-12 text-center sm:mb-16">
-          <h1 className="mb-4 text-3xl font-bold leading-tight tracking-tight text-[#e6e8ee] sm:text-4xl md:text-5xl">
+          <h1 className="mb-4 text-3xl font-bold leading-tight tracking-tight text-foreground sm:text-4xl md:text-5xl">
             気象病・低気圧から<br />明日の眠りを予報する
           </h1>
-          <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed text-[#a8b0c2] sm:text-base">
+          <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
             気圧・気温・月齢からあなたの睡眠を読み解く
           </p>
 
@@ -171,7 +171,7 @@ export function HomeClient() {
                 asChild
                 variant="outline"
                 size="sm"
-                className="h-9 border-indigo-400/40 text-sm text-[#e6e8ee] hover:bg-indigo-500/10 hover:text-[#e6e8ee]"
+                className="h-9 border-indigo-400/40 text-sm text-foreground hover:bg-indigo-500/10 hover:text-foreground"
               >
                 <Link href="/dashboard">ダッシュボードを見る</Link>
               </Button>
@@ -191,7 +191,7 @@ export function HomeClient() {
                 asChild
                 variant="outline"
                 size="sm"
-                className="h-9 border-indigo-400/40 text-sm text-[#e6e8ee] hover:bg-indigo-500/10 hover:text-[#e6e8ee]"
+                className="h-9 border-indigo-400/40 text-sm text-foreground hover:bg-indigo-500/10 hover:text-foreground"
               >
                 <Link href="/record">今日を記録する</Link>
               </Button>
@@ -261,7 +261,7 @@ export function HomeClient() {
         <section aria-labelledby="howto-heading" className="mb-12 sm:mb-16">
           <h2
             id="howto-heading"
-            className="mb-6 text-center text-xl font-semibold text-[#e6e8ee] sm:text-2xl"
+            className="mb-6 text-center text-xl font-semibold text-foreground sm:text-2xl"
           >
             3 ステップで始める
           </h2>
@@ -288,13 +288,13 @@ export function HomeClient() {
             ].map(({ step, title, desc, href }) => (
               <li
                 key={step}
-                className="flex gap-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4"
+                className="flex gap-4 rounded-xl border border-border bg-card/50 p-4"
               >
-                <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-indigo-500/15 text-xs font-bold text-indigo-300">
+                <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/[0.07] text-xs font-bold text-primary/80">
                   {step}
                 </span>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-[#e6e8ee]">
+                  <p className="text-sm font-semibold text-foreground">
                     {href ? (
                       <a href={href} className="hover:underline decoration-indigo-400/50">
                         {title}
@@ -303,7 +303,7 @@ export function HomeClient() {
                       title
                     )}
                   </p>
-                  <p className="mt-0.5 text-xs leading-relaxed text-[#a8b0c2]">{desc}</p>
+                  <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{desc}</p>
                 </div>
               </li>
             ))}
@@ -315,7 +315,7 @@ export function HomeClient() {
       <section aria-labelledby="faq-heading" className="mb-12 sm:mb-16">
         <h2
           id="faq-heading"
-          className="mb-6 text-center text-xl font-semibold text-[#e6e8ee] sm:text-2xl"
+          className="mb-6 text-center text-xl font-semibold text-foreground sm:text-2xl"
         >
           よくある質問
         </h2>
@@ -323,7 +323,7 @@ export function HomeClient() {
           {FAQ_ITEMS.map((item, i) => (
             <div
               key={i}
-              className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden"
+              className="rounded-xl border border-border bg-card/50 overflow-hidden"
             >
               <dt>
                 <button
@@ -333,9 +333,9 @@ export function HomeClient() {
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
                   className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left"
                 >
-                  <span className="text-sm font-medium text-[#e6e8ee]">{item.q}</span>
+                  <span className="text-sm font-medium text-foreground">{item.q}</span>
                   <ChevronDown
-                    className={`h-4 w-4 flex-shrink-0 text-indigo-400 transition-transform duration-200 ${
+                    className={`h-4 w-4 flex-shrink-0 text-primary transition-transform duration-200 ${
                       openFaq === i ? "rotate-180" : ""
                     }`}
                     aria-hidden="true"
@@ -345,7 +345,7 @@ export function HomeClient() {
               <dd
                 id={`faq-answer-${i}`}
                 hidden={openFaq !== i}
-                className="px-4 pb-4 text-sm leading-relaxed text-[#a8b0c2]"
+                className="px-4 pb-4 text-sm leading-relaxed text-muted-foreground"
               >
                 {item.a}
               </dd>
@@ -354,7 +354,7 @@ export function HomeClient() {
         </dl>
       </section>
 
-      <p className="text-center text-xs text-[#a8b0c2]/80">
+      <p className="text-center text-xs text-muted-foreground/80">
         ※ 本サービスは医療行為・診断ではありません
       </p>
     </div>

@@ -4,14 +4,12 @@ import Link from "next/link";
 import { Moon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 /**
  * ヘッダーのナビゲーション定義。
- * - デスクトップ (md 以上): 横並びナビを表示
- * - モバイル (md 未満): BottomNav がナビを担うため、ここではロゴのみ表示
- *
- * REQ-P1-01: ハンバーガーメニューの死んだコードを除去し、
- *            モバイル/デスクトップ双方で正しくナビが表示されることを確認済み。
+ * - デスクトップ (md 以上): 横並びナビ + ThemeToggle を表示
+ * - モバイル (md 未満): BottomNav がナビを担うため、ロゴ + ThemeToggle のみ表示
  */
 const NAV_ITEMS = [
   { label: "ホーム", href: "/" },
@@ -28,41 +26,46 @@ export function Header() {
     href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-[#0f1117]/90 backdrop-blur supports-[backdrop-filter]:bg-[#0f1117]/75">
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75">
       <div className="container mx-auto flex h-16 max-w-screen-md items-center justify-between px-4">
         {/* ロゴ: モバイル・デスクトップ共通 */}
         <Link
           href="/"
-          className="flex items-center gap-2 text-[#e6e8ee] transition-opacity hover:opacity-80"
+          className="flex items-center gap-2 text-foreground transition-opacity hover:opacity-80"
           aria-label="SleepForecast ホーム"
         >
-          <Moon className="h-6 w-6 text-indigo-400" aria-hidden="true" />
+          <Moon className="h-6 w-6 text-primary" aria-hidden="true" />
           <span className="text-base font-semibold tracking-tight sm:text-lg">
             SleepForecast
           </span>
         </Link>
 
-        {/* デスクトップのみ: 横並びナビ（モバイルは BottomNav が担当） */}
-        <nav
-          className="hidden items-center gap-1 md:flex"
-          aria-label="グローバルナビゲーション"
-        >
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-current={isActive(item.href) ? "page" : undefined}
-              className={cn(
-                "rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                isActive(item.href)
-                  ? "text-indigo-300"
-                  : "text-[#e6e8ee]/80 hover:bg-white/5 hover:text-[#e6e8ee]"
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <div className="flex items-center gap-1">
+          {/* デスクトップのみ: 横並びナビ（モバイルは BottomNav が担当） */}
+          <nav
+            className="hidden items-center gap-1 md:flex"
+            aria-label="グローバルナビゲーション"
+          >
+            {NAV_ITEMS.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={isActive(item.href) ? "page" : undefined}
+                className={cn(
+                  "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  isActive(item.href)
+                    ? "text-primary"
+                    : "text-foreground/70 hover:bg-muted hover:text-foreground"
+                )}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* テーマトグル: モバイル・デスクトップ共通 */}
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
