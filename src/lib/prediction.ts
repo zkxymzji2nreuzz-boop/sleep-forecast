@@ -305,26 +305,26 @@ function generateFactorDescription(
   forecast: WeatherData
 ): string {
   if (factors.length === 0 || factors[0] === "neutral") {
-    return "特に顕著な気象変化はありません。";
+    return "特に顕著な気象変化はありません";
   }
 
   const descriptions: Record<PredictionFactor, string> = {
-    pressure_drop: `気圧が ${Math.abs(Math.round(forecast.pressureDeltaHpa * 10) / 10)}hPa 低下する予想。`,
-    pressure_rise: `気圧が ${Math.round(forecast.pressureDeltaHpa * 10) / 10}hPa 上昇する予想。`,
-    full_moon: "満月の前後で月の引力の影響が考えられます。",
-    new_moon: "新月周辺で睡眠が浅くなりやすい傾向。",
-    high_temperature: `気温が ${Math.round(forecast.temperatureC)}°C まで上がる予想。`,
-    low_temperature: `気温が ${Math.round(forecast.temperatureC)}°C まで下がる予想。`,
-    high_humidity: `湿度が ${forecast.humidity}% に達する予想。`,
-    neutral: "特に顕著な気象変化はありません。",
+    pressure_drop: `気圧が ${Math.abs(Math.round(forecast.pressureDeltaHpa * 10) / 10)}hPa 低下する予想`,
+    pressure_rise: `気圧が ${Math.round(forecast.pressureDeltaHpa * 10) / 10}hPa 上昇する予想`,
+    full_moon: "満月の前後で月の引力の影響が考えられます",
+    new_moon: "新月周辺で睡眠が浅くなりやすい傾向",
+    high_temperature: `気温が ${Math.round(forecast.temperatureC)}°C まで上がる予想`,
+    low_temperature: `気温が ${Math.round(forecast.temperatureC)}°C まで下がる予想`,
+    high_humidity: `湿度が ${forecast.humidity}% に達する予想`,
+    neutral: "特に顕著な気象変化はありません",
   };
 
   // 第 1 要因と第 2 要因を組み合わせ (長さ 80 字以内)
   let desc = descriptions[factors[0]];
   if (factors.length >= 2 && factors[1] !== "neutral") {
     const second = descriptions[factors[1]];
-    if ((desc + second).length <= 80) {
-      desc = desc.slice(0, -1) + "、" + second;
+    if ((desc + "、" + second).length <= 80) {
+      desc = desc + "、" + second;
     }
   }
 
@@ -358,7 +358,7 @@ function generateAdvice(
   } else if (predictedQuality >= 4.5) {
     advice.push({
       severity: "positive",
-      text: "明日は良好な睡眠が期待できます。いつも通りのルーティンで過ごしましょう。",
+      text: "明日は良好な睡眠が期待できます　いつも通りのルーティンで過ごしましょう",
     });
   }
 
@@ -377,7 +377,7 @@ function generateAdvice(
   if (factors.includes("full_moon")) {
     advice.push({
       severity: "info",
-      text: "満月周辺です。いつもより 30 分早めの就寝を試してみてください。",
+      text: "満月周辺です　いつもより 30 分早めの就寝を試してみてください",
     });
   }
 
@@ -385,7 +385,7 @@ function generateAdvice(
   if (factors.includes("high_temperature") && forecast.temperatureC >= 25) {
     advice.push({
       severity: "info",
-      text: "気温が高いので、就寝 1 時間前から室温を 18〜20°C に冷やすと良好です。",
+      text: "気温が高いので、就寝 1 時間前から室温を 18〜20°C に冷やすと良好です",
     });
   }
 
@@ -401,7 +401,7 @@ function generateAdvice(
   if (records.length < 7) {
     advice.push({
       severity: "info",
-      text: "データを 7 日分集めると、より正確な予測ができます。毎朝記録してみましょう。",
+      text: "データを 7 日分集めると、より正確な予測ができます　毎朝記録してみましょう",
     });
   }
 
@@ -415,7 +415,7 @@ function generateAdvice(
     : [
         {
           severity: "info",
-          text: "毎日の記録を続けて、あなた独自の睡眠パターンを発見しましょう。",
+          text: "毎日の記録を続けて、あなた独自の睡眠パターンを発見しましょう",
         },
       ];
 }

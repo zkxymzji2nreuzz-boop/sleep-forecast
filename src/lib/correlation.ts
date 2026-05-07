@@ -290,7 +290,7 @@ export function generateInsights(records: SleepRecord[]): InsightItem[] {
     insights.push({
       key: "pressure_drop",
       severity: "warning",
-      message: `気圧が 3hPa 以上下がる日は、そうでない日と比べて睡眠品質が約 ${dropPct}% 低下しています。`,
+      message: `気圧が 3hPa 以上下がる日は、そうでない日と比べて睡眠品質が約 ${dropPct}% 低下しています`,
       articleSlug: "kiatsu-jiritsu-shinkei",
       articleLabel: "自律神経の整え方を読む",
     });
