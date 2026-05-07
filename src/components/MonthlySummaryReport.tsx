@@ -136,14 +136,14 @@ function generateInsight(summary: MonthlySummary): string {
   } else if (summary.avgQuality >= 3.0) {
     parts.push("まずまずの眠りが続いた月でした");
   } else {
-    parts.push("睡眠の質が低めの月でした 原因を振り返ってみましょう。");
+    parts.push("睡眠の質が低めの月でした、原因を振り返ってみましょう。");
   }
 
   if (summary.pressureDropCount > 0 && summary.pressureDropAvg !== null) {
     const diff = summary.pressureDropAvg - summary.avgQuality;
     if (diff <= -0.5) {
       parts.push(
-        `気圧急落日（${summary.pressureDropCount}日）は平均より${Math.abs(diff).toFixed(1)}点低く、影響を受けていた可能性があります`
+        `気圧急落日（${summary.pressureDropCount}日）は平均より${Math.abs(diff).toFixed(1)}点低く、影響を受けていた可能性があります。`
       );
     } else if (summary.pressureDropCount >= 3) {
       parts.push(`気圧が急落した日が${summary.pressureDropCount}日ありましたが、比較的影響を受けにくかったようです`);
@@ -151,7 +151,7 @@ function generateInsight(summary: MonthlySummary): string {
   }
 
   if (summary.longestStreak >= 7) {
-    parts.push(`${summary.longestStreak}日連続記録達成！素晴らしい継続力です`);
+    parts.push(`${summary.longestStreak}日連続記録達成！素晴らしい継続力です。`);
   } else if (summary.longestStreak >= 3) {
     parts.push(`最長${summary.longestStreak}日連続で記録できました`);
   }

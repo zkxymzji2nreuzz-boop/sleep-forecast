@@ -704,7 +704,7 @@ function CookieSettingsSection() {
         Cookie 設定
       </h2>
       <p className="mb-4 text-sm text-muted-foreground">
-        Google Analytics（アクセス解析）の Cookie 使用に関する同意設定を変更できます
+        Google Analytics（アクセス解析）の Cookie 使用に関する同意設定を変更できます。
         拒否しても、すべての機能は通常どおりご利用いただけます。
       </p>
 

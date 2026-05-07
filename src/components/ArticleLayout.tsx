@@ -116,7 +116,7 @@ function RelatedActions({ article }: { article: ArticleFull }) {
     href: "/record",
     icon: <PenLine className="h-4 w-4 text-primary/80" aria-hidden />,
     label: "今日の睡眠を記録する",
-    description: "記録を続けると、気象との相関があなただけのグラフで見えてきます",
+    description: "記録を続けると、気象との相関があなただけのグラフで見えてきます。",
   });
 
   // ダッシュボードへのアクション（気圧・相関・分析系タグがある場合）
@@ -139,7 +139,7 @@ function RelatedActions({ article }: { article: ArticleFull }) {
       href: "/articles",
       icon: <Sparkles className="h-4 w-4 text-rose-600 dark:text-rose-300" aria-hidden />,
       label: "ほかの読みものを見る",
-      description: "気象病・睡眠・自律神経に関するコラムをまとめています",
+      description: "気象病・睡眠・自律神経に関するコラムをまとめています。",
     });
   }
 
@@ -297,7 +297,7 @@ export function ArticleLayout({ article, related, dataBadge }: Props) {
           </h2>
         </div>
         <p className="mt-2 text-sm leading-relaxed text-foreground/80">
-          毎朝たった 15 秒の記録から、気圧・気温・月齢があなたの眠りにどう響いているかをやさしく可視化します。7日続けると気象と睡眠の相関分析がスタートします。
+          毎朝たった 15 秒の記録から、気圧・気温・月齢があなたの眠りにどう響いているかを可視化します。7日続けると気象と睡眠の相関分析がスタートします。
         </p>
         <ul className="mt-3 space-y-1 text-xs text-foreground/60">
           <li>✓ 無料・登録不要で今すぐ始められる</li>

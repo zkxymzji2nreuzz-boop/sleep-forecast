@@ -92,7 +92,7 @@ function buildReasonText(
     case 1:
       return `${mainReason}ため、自律神経が乱れやすく、眠りに影響が出やすい気象条件です`;
     case 2:
-      return `${mainReason}ため、眠りに影響が出やすい傾向があります。早めの就寝をお勧めします`;
+      return `${mainReason}ため、眠りに影響が出やすい傾向があります。早めの就寝をお勧めします。`;
     case 3:
       return `${mainReason}ため、やや影響が出やすい気象条件です`;
     case 4:

@@ -353,7 +353,7 @@ function generateAdvice(
   if (predictedQuality <= 2.0) {
     advice.push({
       severity: "warning",
-      text: "眠りが浅くなると予想されます 寝る 1 時間前からスマホを避けてください。",
+      text: "眠りが浅くなると予想されます、寝る 1 時間前からスマホを避けてください。",
     });
   } else if (predictedQuality >= 4.5) {
     advice.push({
