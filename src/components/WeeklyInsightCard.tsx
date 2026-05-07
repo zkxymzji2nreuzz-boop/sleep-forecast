@@ -12,10 +12,6 @@ import { TrendingDown, TrendingUp, Minus } from "lucide-react";
 import { getRecords, formatDateJst } from "@/lib/storage";
 import type { SleepRecord } from "@/lib/types";
 
-const QUALITY_COLOR: Record<number, string> = {
-  1: "#ef4444", 2: "#f97316", 3: "#f59e0b", 4: "#34d399", 5: "#10b981",
-};
-
 /** ライト/ダーク両対応のテキストカラークラス（WCAG AA準拠） */
 function getQualityTextClass(q: number): string {
   if (q >= 4.5) return "text-emerald-700 dark:text-emerald-400";
