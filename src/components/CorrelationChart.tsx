@@ -189,6 +189,22 @@ export function CorrelationChart({
     },
   };
 
+  const validR = pearsonR !== null && !isNaN(pearsonR);
+
+  // スクリーンリーダー用の代替テキストを動的生成（hooks は早期returnより前に呼ぶ）
+  const chartAltText = React.useMemo(() => {
+    if (records.length === 0) return "";
+    const trend =
+      validR && pearsonR !== null && pearsonR <= -0.3
+        ? "気圧が下がるほど睡眠品質が低下する傾向があります。"
+        : validR && pearsonR !== null && pearsonR >= 0.3
+        ? "気圧が上がるほど睡眠品質が向上する傾向があります。"
+        : "現時点では明確な相関は見られません。";
+    return `${records.length}日分の記録をもとにした、気圧変化と睡眠品質の散布図です。${
+      validR && pearsonR !== null ? `相関係数 r = ${pearsonR.toFixed(2)}。` : ""
+    }${trend}`;
+  }, [records.length, validR, pearsonR]);
+
   if (records.length === 0) {
     return (
       <div
@@ -199,21 +215,6 @@ export function CorrelationChart({
       </div>
     );
   }
-
-  const validR = pearsonR !== null && !isNaN(pearsonR);
-
-  // スクリーンリーダー用の代替テキストを動的生成
-  const chartAltText = React.useMemo(() => {
-    const trend =
-      validR && pearsonR! <= -0.3
-        ? "気圧が下がるほど睡眠品質が低下する傾向があります。"
-        : validR && pearsonR! >= 0.3
-        ? "気圧が上がるほど睡眠品質が向上する傾向があります。"
-        : "現時点では明確な相関は見られません。";
-    return `${records.length}日分の記録をもとにした、気圧変化と睡眠品質の散布図です。${
-      validR ? `相関係数 r = ${pearsonR!.toFixed(2)}。` : ""
-    }${trend}`;
-  }, [records.length, validR, pearsonR]);
 
   return (
     <div>
@@ -230,13 +231,13 @@ export function CorrelationChart({
       </div>
       {/* フッター: 相関係数 + 凡例 */}
       <div className="mt-3 flex flex-wrap items-center justify-between gap-y-2 text-[11px] text-muted-foreground">
-        {validR && (
+        {validR && pearsonR !== null && (
           <span className="shrink-0">
             相関係数 r = <span className={
-              pearsonR! <= -0.3 ? "font-semibold text-rose-400"
-              : pearsonR! >= 0.3 ? "font-semibold text-emerald-400"
+              pearsonR <= -0.3 ? "font-semibold text-rose-400"
+              : pearsonR >= 0.3 ? "font-semibold text-emerald-400"
               : "text-muted-foreground"
-            }>{pearsonR!.toFixed(2)}</span>
+            }>{pearsonR.toFixed(2)}</span>
           </span>
         )}
         <div className="flex flex-wrap gap-x-3 gap-y-1">
