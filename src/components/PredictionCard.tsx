@@ -21,19 +21,21 @@ function getEmotionStatus(score: number): { label: string; emoji: string } {
 }
 
 /**
- * スコア別カードグラデーション（Oura Ring方式）
- * - 快眠(≥4.5): エメラルド
- * - 良好(≥3.5): ティール
- * - ふつう(≥2.5): ラベンダー（ブランドカラー）
- * - やや悪い(≥1.5): アンバー
- * - 悪い(<1.5): ローズ
+ * スコア別カードグラデーション
+ * デザインシステム統合: 彩度を落とし Twilight Lavender (violet/indigo) をブレンド。
+ * 各スコアの感情色を保ちつつ、ブランドカラーとの統一感を出す。
+ * - 快眠(≥4.5): ティール → インディゴ
+ * - 良好(≥3.5): エメラルド → バイオレット
+ * - ふつう(≥2.5): バイオレット → インディゴ（ブランドカラー）
+ * - やや悪い(≥1.5): アンバー → バイオレット
+ * - 悪い(<1.5): ローズ → バイオレット
  */
 function getScoreGradient(score: number): string {
-  if (score >= 4.5) return "from-emerald-600 via-teal-500 to-emerald-400";
-  if (score >= 3.5) return "from-teal-500 via-emerald-400 to-cyan-400";
-  if (score >= 2.5) return "from-violet-600 via-purple-500 to-indigo-500";
-  if (score >= 1.5) return "from-orange-500 via-amber-400 to-yellow-400";
-  return "from-rose-600 via-rose-500 to-orange-400";
+  if (score >= 4.5) return "from-teal-700 via-emerald-600 to-indigo-700";
+  if (score >= 3.5) return "from-emerald-700 via-teal-600 to-violet-700";
+  if (score >= 2.5) return "from-violet-700 via-purple-600 to-indigo-600";
+  if (score >= 1.5) return "from-amber-700 via-orange-600 to-violet-700";
+  return "from-rose-700 via-rose-600 to-violet-700";
 }
 
 /** スコアに対応するテキスト色（カード上の白背景）*/

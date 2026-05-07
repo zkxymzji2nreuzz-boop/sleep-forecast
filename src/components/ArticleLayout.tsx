@@ -372,8 +372,63 @@ export function ArticleLayout({ article, related, dataBadge }: Props) {
       {/* 広告スロット: 記事末尾 */}
       <AdBanner slot="article-end" format="horizontal" className="mt-10" />
 
+      {/* 参考文献 (E-E-A-T 強化) */}
+      <section
+        aria-labelledby="article-references-heading"
+        className="mt-10 rounded-2xl border border-border bg-card/50 p-5"
+      >
+        <h2
+          id="article-references-heading"
+          className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground"
+        >
+          <BookOpen className="h-3.5 w-3.5 text-primary/80" aria-hidden="true" />
+          参考文献
+        </h2>
+        <ol className="space-y-2 text-xs text-muted-foreground list-none">
+          {[
+            {
+              no: 1,
+              text: "厚生労働省「健康づくりのための睡眠ガイド 2023」",
+              url: "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/kenkou/suimin/index.html",
+            },
+            {
+              no: 2,
+              text: "気象庁「地域気象観測システム（アメダス）データ」",
+              url: "https://www.jma.go.jp/jma/kishou/know/amedas/amedas.html",
+            },
+            {
+              no: 3,
+              text: "Sato J. et al. (2019). \"Weather changes and pain\" — Journal of Pain Research, 12, 2199–2206.",
+              url: "https://doi.org/10.2147/JPR.S186789",
+            },
+            {
+              no: 4,
+              text: "American Academy of Sleep Medicine「International Classification of Sleep Disorders (ICSD-3)」",
+              url: "https://aasm.org/",
+            },
+            {
+              no: 5,
+              text: "佐藤 純 (2013)「天気痛とその対処法」日本内科学会雑誌 102(4), 911–918.",
+              url: "https://doi.org/10.2169/naika.102.911",
+            },
+          ].map((ref) => (
+            <li key={ref.no} className="flex gap-2 leading-relaxed">
+              <span className="font-mono text-primary/60 shrink-0">[{ref.no}]</span>
+              <a
+                href={ref.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-foreground transition-colors underline underline-offset-2 decoration-primary/30 hover:decoration-primary/70"
+              >
+                {ref.text}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       {/* 医療免責 (必須・text-xs 固定) */}
-      <div className="mt-14 rounded-2xl border border-border bg-card/50 p-5">
+      <div className="mt-6 rounded-2xl border border-border bg-card/50 p-5">
         <div className="flex items-start gap-2">
           <Info
             className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground"

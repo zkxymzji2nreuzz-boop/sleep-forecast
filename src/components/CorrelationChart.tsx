@@ -232,12 +232,25 @@ export function CorrelationChart({
       {/* フッター: 相関係数 + 凡例 */}
       <div className="mt-3 flex flex-wrap items-center justify-between gap-y-2 text-[11px] text-muted-foreground">
         {validR && pearsonR !== null && (
-          <span className="shrink-0">
-            相関係数 r = <span className={
-              pearsonR <= -0.3 ? "font-semibold text-rose-400"
-              : pearsonR >= 0.3 ? "font-semibold text-emerald-400"
-              : "text-muted-foreground"
-            }>{pearsonR.toFixed(2)}</span>
+          <span className="shrink-0 flex flex-wrap items-baseline gap-1">
+            <span>
+              相関係数 r = <span className={
+                pearsonR <= -0.3 ? "font-semibold text-rose-400"
+                : pearsonR >= 0.3 ? "font-semibold text-emerald-400"
+                : "text-muted-foreground"
+              }>{pearsonR.toFixed(2)}</span>
+            </span>
+            <span className="text-[10px] text-muted-foreground/70">
+              {pearsonR <= -0.5
+                ? "（強い負の相関）"
+                : pearsonR <= -0.3
+                ? "（負の相関）"
+                : pearsonR >= 0.5
+                ? "（強い正の相関）"
+                : pearsonR >= 0.3
+                ? "（正の相関）"
+                : "（相関なし）"}
+            </span>
           </span>
         )}
         <div className="flex flex-wrap gap-x-3 gap-y-1">

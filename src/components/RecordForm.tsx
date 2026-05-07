@@ -77,8 +77,8 @@ type FormState = {
   note: string;
 };
 
-/** バリデーションエラー */
-type FormErrors = Partial<Record<keyof FormState, string>>;
+/** バリデーションエラー（手動気象入力フィールドも含む） */
+type FormErrors = Partial<Record<keyof FormState | "manualTemp" | "manualHum" | "manualPre", string>>;
 
 /** 手動入力フォールバック用の気象値 */
 type ManualWeather = {
@@ -245,6 +245,18 @@ export function RecordForm(): JSX.Element {
     if (form.bedtime && !TIME_RE.test(form.bedtime)) next.bedtime = "例: 23:30 のように入力してください";
     if (form.wakeTime && !TIME_RE.test(form.wakeTime)) next.wakeTime = "例: 07:00 のように入力してください";
     if (form.note.length > 280) next.note = "メモは 280 字以内で入力してください";
+    // 手動気象入力の範囲チェック
+    if (showManualFallback) {
+      const t = Number(manual.temperatureC);
+      const h = Number(manual.humidity);
+      const p = Number(manual.pressureHpa);
+      if (manual.temperatureC === "" || !Number.isFinite(t) || t < -40 || t > 60)
+        next.manualTemp = "気温は -40〜60 °C の範囲で入力してください";
+      if (manual.humidity === "" || !Number.isFinite(h) || h < 0 || h > 100)
+        next.manualHum = "湿度は 0〜100 % の範囲で入力してください";
+      if (manual.pressureHpa === "" || !Number.isFinite(p) || p < 900 || p > 1100)
+        next.manualPre = "気圧は 900〜1100 hPa の範囲で入力してください";
+    }
     setErrors(next);
     // 最初のエラー要素にスクロール + フォーカス
     if (Object.keys(next).length > 0) {
@@ -747,11 +759,12 @@ export function RecordForm(): JSX.Element {
             {/* 3) 自由メモ */}
             <div className="space-y-2">
               <Label htmlFor="note" className="text-sm font-medium text-foreground">
-                自由メモ (任意 · <span className="tabular-nums">{form.note.length}/280</span>)
+                自由メモ (任意 · <span id="note-counter" className="tabular-nums" aria-live="polite">{form.note.length}/280</span>)
               </Label>
               <textarea
                 id="note" maxLength={280} rows={3} value={form.note}
                 onChange={(e) => setForm((prev) => ({ ...prev, note: e.target.value }))}
+                aria-describedby="note-counter"
                 className="w-full rounded-md border-0 bg-card/50 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-1 focus:ring-primary"
                 placeholder="例: 夜中に一度目が覚めた / 寝る前にスマホを見すぎた"
               />
@@ -765,24 +778,39 @@ export function RecordForm(): JSX.Element {
                 <div className="grid grid-cols-3 gap-2">
                   <div className="space-y-1">
                     <Label htmlFor="manual-temp" className="text-xs text-muted-foreground">気温 (°C)</Label>
-                    <Input id="manual-temp" type="number" step="0.1" inputMode="decimal" value={manual.temperatureC}
+                    <Input
+                      id="manual-temp" type="number" step="0.1" inputMode="decimal"
+                      value={manual.temperatureC}
                       onChange={(e) => setManual((prev) => ({ ...prev, temperatureC: e.target.value }))}
+                      aria-invalid={!!errors.manualTemp}
+                      aria-describedby={errors.manualTemp ? "manual-temp-error" : undefined}
                       className="h-11 rounded-none border-0 border-b border-border bg-transparent px-0 text-foreground tabular-nums focus-visible:border-primary focus-visible:ring-0"
                     />
+                    {errors.manualTemp && <p id="manual-temp-error" className="text-[10px] text-rose-600 dark:text-rose-400" role="alert">{errors.manualTemp}</p>}
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="manual-hum" className="text-xs text-muted-foreground">湿度 (%)</Label>
-                    <Input id="manual-hum" type="number" step="1" inputMode="numeric" value={manual.humidity}
+                    <Input
+                      id="manual-hum" type="number" step="1" inputMode="numeric"
+                      value={manual.humidity}
                       onChange={(e) => setManual((prev) => ({ ...prev, humidity: e.target.value }))}
+                      aria-invalid={!!errors.manualHum}
+                      aria-describedby={errors.manualHum ? "manual-hum-error" : undefined}
                       className="h-11 rounded-none border-0 border-b border-border bg-transparent px-0 text-foreground tabular-nums focus-visible:border-primary focus-visible:ring-0"
                     />
+                    {errors.manualHum && <p id="manual-hum-error" className="text-[10px] text-rose-600 dark:text-rose-400" role="alert">{errors.manualHum}</p>}
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="manual-pre" className="text-xs text-muted-foreground">気圧 (hPa)</Label>
-                    <Input id="manual-pre" type="number" step="0.1" inputMode="decimal" value={manual.pressureHpa}
+                    <Input
+                      id="manual-pre" type="number" step="0.1" inputMode="decimal"
+                      value={manual.pressureHpa}
                       onChange={(e) => setManual((prev) => ({ ...prev, pressureHpa: e.target.value }))}
+                      aria-invalid={!!errors.manualPre}
+                      aria-describedby={errors.manualPre ? "manual-pre-error" : undefined}
                       className="h-11 rounded-none border-0 border-b border-border bg-transparent px-0 text-foreground tabular-nums focus-visible:border-primary focus-visible:ring-0"
                     />
+                    {errors.manualPre && <p id="manual-pre-error" className="text-[10px] text-rose-600 dark:text-rose-400" role="alert">{errors.manualPre}</p>}
                   </div>
                 </div>
               </div>
