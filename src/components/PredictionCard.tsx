@@ -39,7 +39,7 @@ function getConfidenceInfo(
       return { label: "信頼度：中", percent: 55, color: "bg-yellow-300" };
     case "low":
     default:
-      return { label: "信頼度：低", percent: 20, color: "bg-rose-400" };
+      return { label: "信頼度：低", percent: 20, color: "bg-slate-400" };
   }
 }
 
@@ -97,7 +97,7 @@ export function PredictionCard({
       {/* ヘッダー */}
       <div className="mb-3">
         <h2 className="text-white font-semibold text-lg leading-tight">
-          明日の眠気レベル
+          明日の睡眠予報
         </h2>
       </div>
 
@@ -105,13 +105,17 @@ export function PredictionCard({
       <div className="flex flex-col items-center justify-center py-3">
         <div className={`text-6xl font-bold tabular-nums ${scoreColor}`}>
           {prediction.predictedQuality.toFixed(1)}
+          <span className="text-2xl font-normal text-white/50 ml-1">/5.0</span>
         </div>
         <div className="mt-1 text-white text-base font-medium">
           {emotion.emoji} {emotion.label}
         </div>
-        <div className="mt-2 text-white/80 text-xs text-center max-w-xs">
-          {prediction.factorDescription}
-        </div>
+        {/* factorDescription は full バリアントの「主な要因」欄に表示するため、ここでは非表示 */}
+        {variant !== "full" && (
+          <div className="mt-2 text-white/80 text-xs text-center max-w-xs">
+            {prediction.factorDescription}
+          </div>
+        )}
       </div>
 
       {/* 信頼度プログレスバー */}

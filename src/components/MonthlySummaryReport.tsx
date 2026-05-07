@@ -288,7 +288,7 @@ export function MonthlySummaryReport({ records }: MonthlySummaryReportProps) {
               {summary.bestDay ? (
                 <>
                   <p className="text-sm font-bold text-emerald-300">{formatDate(summary.bestDay.date)}</p>
-                  <p className="text-[10px] text-[#a8b0c2]">品質 {summary.bestDay.quality}</p>
+                  <p className="text-[10px] text-[#a8b0c2]">{QUALITY_LABEL[summary.bestDay.quality as 1 | 3 | 5] ?? `品質${summary.bestDay.quality}`}</p>
                 </>
               ) : <p className="text-xs text-[#a8b0c2]">—</p>}
             </div>
@@ -298,7 +298,7 @@ export function MonthlySummaryReport({ records }: MonthlySummaryReportProps) {
               {summary.worstDay ? (
                 <>
                   <p className="text-sm font-bold text-rose-300">{formatDate(summary.worstDay.date)}</p>
-                  <p className="text-[10px] text-[#a8b0c2]">品質 {summary.worstDay.quality}</p>
+                  <p className="text-[10px] text-[#a8b0c2]">{QUALITY_LABEL[summary.worstDay.quality as 1 | 3 | 5] ?? `品質${summary.worstDay.quality}`}</p>
                 </>
               ) : <p className="text-xs text-[#a8b0c2]">—</p>}
             </div>
@@ -313,7 +313,7 @@ export function MonthlySummaryReport({ records }: MonthlySummaryReportProps) {
                 const pct = (count / maxDistCount) * 100;
                 return (
                   <div key={q} className="flex items-center gap-2">
-                    <span className="text-[10px] text-[#a8b0c2] w-14 shrink-0">{QUALITY_LABEL[q]}</span>
+                    <span className="text-[10px] text-[#a8b0c2] w-20 shrink-0 whitespace-nowrap">{QUALITY_LABEL[q]}</span>
                     <div className="flex-1 bg-white/10 rounded-full h-2 overflow-hidden">
                       <div
                         className="h-2 rounded-full transition-all duration-500"

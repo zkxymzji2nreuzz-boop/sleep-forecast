@@ -369,7 +369,7 @@ function generateAdvice(
   ) {
     advice.push({
       severity: "warning",
-      text: "気圧低下に備え、就寝 2 時間前から light な運動がおすすめです。",
+      text: "気圧低下に備え、就寝 2 時間前から軽めのストレッチや散歩がおすすめです。",
     });
   }
 

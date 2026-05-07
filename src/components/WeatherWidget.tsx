@@ -15,7 +15,7 @@
  */
 
 import * as React from "react";
-import { Moon, Sunrise, Sun, Sparkles, type LucideIcon } from "lucide-react";
+import { Moon, Sunrise, Sun, Sparkles, ChevronDown, type LucideIcon } from "lucide-react";
 import { PersonalPressureInsight } from "@/components/PersonalPressureInsight";
 import {
   Chart as ChartJS,
@@ -230,16 +230,16 @@ function TodayWeatherSection({ hourlyWeather }: { hourlyWeather: HourlyWeatherDa
 // ─────────────────────────────────────────────────────────────────────────────
 
 const WEEKLY_ROW_H = 36;
-const WEEKLY_LABEL_ROWS = ["日付", "天気", "最高", "最低", "降水確率", "気圧帯", "気圧注意", "月相（参考）"];
+const WEEKLY_LABEL_ROWS = ["日付", "天気", "最高", "最低", "降水確率", "気圧帯", "気圧注意", "月相"];
 
 function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
   const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
   return (
     <div>
       <div style={{ display: "flex" }}>
-        <div style={{ flexShrink: 0, width: "56px" }}>
+        <div style={{ flexShrink: 0, width: "68px" }}>
           {WEEKLY_LABEL_ROWS.map((label) => (
-            <div key={label} style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", fontSize: "10px", color: "#a8b0c2", fontWeight: label === "日付" ? 600 : 400 }}>
+            <div key={label} style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", fontSize: "10px", color: "#a8b0c2", fontWeight: label === "日付" ? 600 : 400, whiteSpace: "nowrap" }}>
               {label}
             </div>
           ))}
@@ -369,7 +369,11 @@ function SleepScoreHero({
             style={{ background: score100 >= 80 ? "#10b981" : score100 >= 45 ? "#a8b0c2" : score100 >= 25 ? "#f59e0b" : "#f87070" }}
           />
         )}
-        タップで内訳を見る {expanded ? "∧" : "∨"}
+        内訳を見る
+        <ChevronDown
+          className={`h-3.5 w-3.5 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
+          aria-hidden="true"
+        />
       </button>
 
       {/* 展開: 内訳 */}
@@ -1030,7 +1034,7 @@ function CorrelationChart() {
 
   const W = 600;
   const H = 165;
-  const PAD = { top: 16, right: 20, bottom: 36, left: 42 };
+  const PAD = { top: 16, right: 20, bottom: 36, left: 18 };
   const chartW = W - PAD.left - PAD.right;
   const chartH = H - PAD.top - PAD.bottom;
 
@@ -1059,15 +1063,13 @@ function CorrelationChart() {
         <rect x={Math.max(PAD.left, toX(1000))} y={PAD.top} width={Math.max(0, Math.min(toX(1008), W - PAD.right) - Math.max(PAD.left, toX(1000)))} height={chartH} fill="rgba(251,146,60,0.06)" />
         <rect x={Math.max(PAD.left, toX(1008))} y={PAD.top} width={Math.max(0, Math.min(toX(1016), W - PAD.right) - Math.max(PAD.left, toX(1008)))} height={chartH} fill="rgba(250,204,21,0.05)" />
         <rect x={Math.max(PAD.left, toX(1016))} y={PAD.top} width={Math.max(0, W - PAD.right - Math.max(PAD.left, toX(1016)))} height={chartH} fill="rgba(74,222,128,0.05)" />
-        {([1, 3, 5] as const).map((q) => {
-          const label = q === 5 ? "よく眠れた" : q === 3 ? "なんとか" : "眠れなかった";
-          return (
-            <g key={q}>
-              <line x1={PAD.left} y1={toY(q)} x2={W - PAD.right} y2={toY(q)} stroke="#1e2433" strokeWidth="1" />
-              <text x={PAD.left - 4} y={toY(q) + 4} textAnchor="end" fill="#a8b0c2" fontSize="9">{label}</text>
-            </g>
-          );
-        })}
+        {([1, 3, 5] as const).map((q) => (
+          <g key={q}>
+            <line x1={PAD.left} y1={toY(q)} x2={W - PAD.right} y2={toY(q)} stroke="#1e2433" strokeWidth="1" />
+            {/* Y軸マーカー: 色付き丸 */}
+            <circle cx={PAD.left - 8} cy={toY(q)} r="4" fill={QUALITY_COLORS[q] ?? "#a8b0c2"} fillOpacity="0.85" />
+          </g>
+        ))}
         {Math.abs(slope) > 0.00001 && (
           <line x1={PAD.left} y1={clamp(slope * pMin + intercept)} x2={W - PAD.right} y2={clamp(slope * pMax + intercept)} stroke="#7856ff" strokeWidth="1.5" strokeDasharray="5 3" opacity="0.65" />
         )}
@@ -1078,7 +1080,6 @@ function CorrelationChart() {
           <text key={p} x={toX(p)} y={H - 14} textAnchor="middle" fill="#a8b0c2" fontSize="10">{Math.round(p)}</text>
         ))}
         <text x={W / 2} y={H - 2} textAnchor="middle" fill="#a8b0c2" fontSize="9">気圧 (hPa)</text>
-        <text x={11} y={PAD.top + chartH / 2} textAnchor="middle" fill="#a8b0c2" fontSize="9" transform={`rotate(-90, 11, ${PAD.top + chartH / 2})`}>睡眠の質</text>
       </svg>
       <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
         {([5, 3, 1] as const).map((q) => (

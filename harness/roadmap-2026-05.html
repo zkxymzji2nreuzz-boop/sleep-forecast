@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SleepForecast ロードマップ — 2026年5月</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f0;
+      color: #1a1a1a;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 860px; margin: 0 auto; }
+
+    /* ヘッダー */
+    .page-header { margin-bottom: 2.5rem; }
+    .page-header h1 { font-size: 22px; font-weight: 600; color: #111; margin-bottom: 4px; }
+    .page-header p { font-size: 13px; color: #666; }
+    .page-header .meta { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
+    .page-header .meta-item { font-size: 12px; color: #888; background: #fff; border: 1px solid #e5e5e0; padding: 3px 10px; border-radius: 20px; }
+
+    /* スコアカード */
+    .score-section { margin-bottom: 2.5rem; }
+    .score-section h2 { font-size: 12px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+    .score-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+    .score-card { background: #fff; border: 1px solid #e5e5e0; border-radius: 10px; padding: 14px 16px; }
+    .score-card .label { font-size: 12px; color: #666; margin-bottom: 4px; }
+    .score-card .value { font-size: 26px; font-weight: 700; line-height: 1.1; }
+    .score-card .sub { font-size: 11px; color: #999; margin-top: 2px; }
+    .score-card.total { border-color: #c7d2fe; background: #eef2ff; }
+    .score-card.total .value { color: #4f46e5; }
+    .score-card.tech .value { color: #059669; }
+    .score-card.ux .value { color: #2563eb; }
+    .score-card.seo .value { color: #7c3aed; }
+    .score-card.strategy .value { color: #d97706; }
+
+    /* GO/NO-GO */
+    .signal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 2.5rem; }
+    .signal-card { border-radius: 10px; padding: 14px 16px; }
+    .signal-card.go { background: #f0fdf4; border: 1px solid #86efac; }
+    .signal-card.hold { background: #fffbeb; border: 1px solid #fcd34d; }
+    .signal-card .badge { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 4px; text-transform: uppercase; }
+    .signal-card.go .badge { color: #166534; }
+    .signal-card.hold .badge { color: #92400e; }
+    .signal-card .title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .signal-card.go .title { color: #15803d; }
+    .signal-card.hold .title { color: #b45309; }
+    .signal-card .body { font-size: 12px; color: #555; line-height: 1.6; }
+
+    /* フェーズ */
+    .phase { margin-bottom: 2rem; }
+    .phase-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .phase-badge { font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; white-space: nowrap; }
+    .phase-badge.now { background: #fee2e2; color: #991b1b; }
+    .phase-badge.soon { background: #fef3c7; color: #78350f; }
+    .phase-badge.ongoing { background: #d1fae5; color: #065f46; }
+    .phase-badge.later { background: #f3f4f6; color: #374151; }
+    .phase-header-text h3 { font-size: 15px; font-weight: 600; color: #111; }
+    .phase-header-text p { font-size: 12px; color: #777; }
+
+    /* タスクカード */
+    .task-list { display: flex; flex-direction: column; gap: 8px; }
+    .task { display: flex; gap: 12px; background: #fff; border: 1px solid #e5e5e0; border-radius: 8px; padding: 12px 14px; }
+    .task.done { opacity: 0.55; }
+    .task-left { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 5px; width: 42px; }
+    .task-id { font-size: 10px; font-weight: 600; color: #aaa; }
+    .task-type { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-align: center; white-space: nowrap; }
+    .type-dev { background: #dbeafe; color: #1e40af; }
+    .type-ops { background: #ede9fe; color: #5b21b6; }
+    .type-ext { background: #fce7f3; color: #9d174d; }
+    .type-day { background: #d1fae5; color: #065f46; }
+    .task-body { flex: 1; min-width: 0; }
+    .task-title { font-size: 13px; font-weight: 600; color: #111; margin-bottom: 2px; display: flex; align-items: center; gap: 6px; }
+    .task-desc { font-size: 12px; color: #555; line-height: 1.55; }
+    .task-meta { font-size: 11px; color: #aaa; margin-top: 4px; }
+    .task-check { width: 18px; height: 18px; border: 1.5px solid #d1d5db; border-radius: 4px; flex-shrink: 0; margin-top: 1px; }
+    .task.done .task-check { background: #6366f1; border-color: #6366f1; display: flex; align-items: center; justify-content: center; }
+    .task.done .task-check::after { content: ''; width: 10px; height: 6px; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg) translateY(-1px); display: block; }
+
+    /* 発火条件 */
+    .trigger-box { background: #fff; border: 1px solid #e5e5e0; border-radius: 10px; padding: 16px 18px; margin-bottom: 2.5rem; }
+    .trigger-box h3 { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 10px; }
+    .trigger-item { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; font-size: 13px; color: #444; }
+    .trigger-dot { width: 8px; height: 8px; border-radius: 50%; border: 2px solid #f59e0b; background: #fef3c7; flex-shrink: 0; }
+    .trigger-note { font-size: 11px; color: #aaa; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f3f4f6; }
+
+    /* エージェント評価詳細 */
+    .detail-section { margin-bottom: 2.5rem; }
+    .detail-section h2 { font-size: 12px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .detail-card { background: #fff; border: 1px solid #e5e5e0; border-radius: 10px; padding: 14px 16px; }
+    .detail-card h4 { font-size: 12px; font-weight: 600; color: #555; margin-bottom: 10px; }
+    .detail-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+    .detail-label { font-size: 11px; color: #888; width: 90px; flex-shrink: 0; }
+    .detail-bar-wrap { flex: 1; height: 6px; background: #f3f4f6; border-radius: 3px; overflow: hidden; }
+    .detail-bar { height: 100%; border-radius: 3px; }
+    .detail-val { font-size: 11px; font-weight: 600; color: #333; width: 26px; text-align: right; }
+
+    /* フッター */
+    .footer { text-align: center; font-size: 11px; color: #bbb; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #e5e5e0; }
+
+    @media (max-width: 600px) {
+      .signal-row { grid-template-columns: 1fr; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .score-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ヘッダー -->
+  <div class="page-header">
+    <h1>SleepForecast ロードマップ</h1>
+    <p>Opus 4エージェント並列レビューに基づく今後のタスク整理</p>
+    <div class="meta">
+      <span class="meta-item">評価日: 2026-05-05</span>
+      <span class="meta-item">本番: sleep-forecast.vercel.app</span>
+      <span class="meta-item">GA4: 稼働済み</span>
+      <span class="meta-item">AdSense: 審査中</span>
+      <span class="meta-item">記事: 23本</span>
+    </div>
+  </div>
+
+  <!-- スコアカード -->
+  <div class="score-section">
+    <h2>Opusエージェント評価スコア（4エージェント / 20軸）</h2>
+    <div class="score-grid">
+      <div class="score-card total">
+        <div class="label">総合スコア</div>
+        <div class="value">7.0 <span style="font-size:14px;font-weight:400;color:#818cf8;">/10</span></div>
+        <div class="sub">MVP超え・精鋭化フェーズへ</div>
+      </div>
+      <div class="score-card tech">
+        <div class="label">② 技術・セキュリティ</div>
+        <div class="value">7.7</div>
+        <div class="sub">最も強い軸。グロース受入可能</div>
+      </div>
+      <div class="score-card ux">
+        <div class="label">① UX / UI</div>
+        <div class="value">7.0</div>
+        <div class="sub">情報密度過多が主課題</div>
+      </div>
+      <div class="score-card seo">
+        <div class="label">③ SEO / マネタイズ</div>
+        <div class="value">6.9</div>
+        <div class="sub">技術◎ コンテンツ品質が鍵</div>
+      </div>
+      <div class="score-card strategy">
+        <div class="label">④ プロダクト戦略</div>
+        <div class="value">6.4</div>
+        <div class="sub">PMF数値検証が次ステップ</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GO/NO-GO -->
+  <div class="signal-row">
+    <div class="signal-card go">
+      <div class="badge">SNSアウトリーチ専念</div>
+      <div class="title">条件付き GO</div>
+      <div class="body">4エージェント全員が推奨。T-01〜T-04を先に完了させてからフル集中。技術基盤・SEO土台・PWAは流入を受け止められる水準。</div>
+    </div>
+    <div class="signal-card hold">
+      <div class="badge">iOS開発 本格着手</div>
+      <div class="title">発火条件待ち</div>
+      <div class="body">4エージェント中3名が「今は待て」。WAU 200 / Day30継続率15% / iOS要望10件が揃ったら着手。要件定義v4.0は温存。</div>
+    </div>
+  </div>
+
+  <!-- フェーズ1 -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-badge now">今すぐ（〜2週間）</span>
+      <div class="phase-header-text">
+        <h3>SNS GO の前提条件を閉じる</h3>
+        <p>4エージェント全員が指摘した最小限の修正。合計工数 10〜15h 程度。</p>
+      </div>
+    </div>
+    <div class="task-list">
+
+      <div class="task">
+        <div class="task-left">
+          <span class="task-id">T-01</span>
+          <span class="task-type type-dev">開発</span>
+        </div>
+        <div class="task-check"></div>
+        <div class="task-body">
+          <div class="task-title">ホームページ情報密度を50%削減</div>
+          <div class="task-desc">8カード並列 → 「今日の眠気予報」1枚主役化。その他カードはスクロール下に移動。初見30秒でアプリの価値が伝わる構成へ。CVRの直接改善につながる。</div>
+          <div class="task-meta">UX・戦略エージェント共通 最優先 / 工数: 2〜4h</div>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-left">
+          <span class="task-id">T-02</span>
+          <span class="task-type type-dev">開発</span>
+        </div>
+        <div class="task-check"></div>
+        <div class="task-body">
+          <div class="task-title">CSP unsafe-inline 排除 + API レート制限追加</div>
+          <div class="task-desc">next.config.js の CSP ヘッダーから unsafe-inline を段階削除。/api/weather に IP ベースのレート制限（upstash/ratelimit または middleware）を追加。大量流入前に閉じるべきセキュリティ要件。</div>
+          <div class="task-meta">技術エージェント 最優先 / 工数: 3〜5h</div>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-left">
+          <span class="task-id">T-03</span>
+          <span class="task-type type-ops">運用</span>
+        </div>
+        <div class="task-check"></div>
+        <div class="task-body">
+          <div class="task-title">アプリ内集計データをピラー記事に注入（独自統計）</div>
+          <div class="task-desc">「SleepForecastユーザーN人の記録から判明：気圧10hPa低下時の眠気スコア平均値」など。kishoubyou-kanzen-guide に1,500字以上の独自統計ブロックを追加。AdSense審査突破の決定打。擬似データでも初期は可。</div>
+          <div class="task-meta">SEOエージェント 最優先 / 工数: 2h（記事編集）</div>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-left">
+          <span class="task-id">T-04</span>
+          <span class="task-type type-dev">開発</span>
+        </div>
+        <div class="task-check"></div>
+        <div class="task-body">
+          <div class="task-title">動的OGP画像 + X シェアボタン実装</div>
+          <div class="task-desc">@vercel/og で「東京 明日の眠気レベル7（要注意）」カードを動的生成。予測結果ページに X シェアボタン＋定型文プリセット追加。SNS バイラルへの非線形成長ルートを開通させる。</div>
+          <div class="task-meta">SEO・戦略エージェント / 工数: 2〜3h</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- フェーズ2 -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-badge soon">1〜2ヶ月（SNS並行）</span>
+      <div class="phase-header-text">
+        <h3>AdSense審査通過 + トラフィック拡大</h3>
+        <p>SNSアウトリーチと並行して進める。外部調整が必要なT-05は早めに声がけ。</p>
+      </div>
+    </div>
+    <div class="task-list">
+
+      <div class="task">
+        <div class="task-left">
+          <span class="task-id">T-05</span>
+          <span class="task-type type-ext">外注</span>
+        </div>
+        <div class="task-check"></div>
+        <div class="task-body">
+          <div class="task-title">専門家監修1名を獲得（睡眠専門医 or 薬剤師）</div>
+          <div class="task-desc">ピラー記事3本に「監修：◯◯（資格）」を明記。ランサーズ・ミートモアで5,000〜10,000円/記事相場。AdSense通過率が体感3〜4倍向上。Person スキーマも sameAs で構造化。</div>
+          <div class="task-meta">SEOエージェント / 予算: 〜3万円 / 外部調整が必要なので早めに動く</div>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-left">
+          <span class="task-id">T-06</span>
+          <span class="task-type type-ops">運用</span>
+        </div>
+        <div class="task-check"></div>
+        <div class="task-body">
+          <div class="task-title">既存ユーザー10名インタビュー実施</div>
+          <div class="task-desc">「何を期待してアプリを使ったか」「何回で離脱したか」「眠気予測とアラートどちらが響いたか」を確認。PMF仮説の検証とDay30継続率改善のインプット。X フォロワーへの声がけから始める。</div>
+          <div class="task-meta">戦略エージェント 最優先 / DM or Googleフォームで収集</div>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-left">
+          <span class="task-id">T-07</span>
+          <span class="task-type type-ops">運用</span>
+        </div>
+        <div class="task-check"></div>
+        <div class="task-body">
+          <div class="task-title">アフィリエイトリンク設置開始（枕・アロマ・漢方）</div>
+          <div class="task-desc">楽天 / もしもアフィリエイトで「快眠グッズ」リンクを関連記事5本に追加。AdSense審査中でも問題なし。収益多角化の下地作り。</div>
+          <div class="task-meta">SEOエージェント / 工数: 2h / AdSense審査待ち中に着手推奨</div>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-left">
+          <span class="task-id">T-08</span>
+          <span class="task-type type-ops">運用</span>
+        </div>
+        <div class="task-check"></div>
+        <div class="task-body">
+          <div class="task-title">note 定期投稿（週1本）継続</div>
+          <div class="task-desc">「低気圧日記」「眠れなかった夜の記録」系コンテンツ。アプリへの自然な流入導線。SNS アウトリーチとセットで運用。</div>
+          <div class="task-meta">現在継続中 / 主体運用</div>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-left">
+          <span class="task-id">T-09</span>
+          <span class="task-type type-ops">運用</span>
+        </div>
+        <div class="task-check"></div>
+        <div class="task-body">
+          <div class="task-title">AdSense 再審査申請（月間PV 1,000 到達後）</div>
+          <div class="task-desc">T-03・T-05 完了後、PV 1,000 目安で「問題を修正しました」→「審査をリクエスト」。拒否後は最低14日空けてから再申請。連続拒否はサイト評価が下がるため注意。</div>
+          <div class="task-meta">人間が手動操作 / タイミング目安: 2026年6〜7月</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- フェーズ3（継続） -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-badge ongoing">継続（常時）</span>
+      <div class="phase-header-text">
+        <h3>SNSアウトリーチ — すでにGO</h3>
+        <p>現在進行中のルーティン。引き続き継続。</p>
+      </div>
+    </div>
+    <div class="task-list">
+
+      <div class="task">
+        <div class="task-left">
+          <span class="task-id">T-10</span>
+          <span class="task-type type-day">日次</span>
+        </div>
+        <div class="task-check"></div>
+        <div class="task-body">
+          <div class="task-title">X アウトリーチ（リプライ・フォロー・いいね）</div>
+          <div class="task-desc">「気象病」「低気圧」「眠れない」キーワードでツイート検索 → 共感リプライ → 関連アカウントフォロー → いいね。スキル活用。</div>
+          <div class="task-meta">x-sleep-forecast-outreach スキル / 日次ルーティン</div>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-left">
+          <span class="task-id">T-11</span>
+          <span class="task-type type-day">日次</span>
+        </div>
+        <div class="task-check"></div>
+        <div class="task-body">
+          <div class="task-title">note アウトリーチ（スキ返し・フォロー返し・ハッシュタグ巡回）</div>
+          <div class="task-desc">フォロワー11名 / フォロー43名から継続拡大。スキル活用。</div>
+          <div class="task-meta">note-sleep-forecast-outreach スキル / 日次ルーティン</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- iOS発火条件 -->
+  <div class="trigger-box">
+    <h3>iOS開発 本格着手の発火条件（3条件すべて揃ったら）</h3>
+    <div class="trigger-item"><span class="trigger-dot"></span>WAU（週間アクティブユーザー）200名以上</div>
+    <div class="trigger-item"><span class="trigger-dot"></span>Day30 継続率 15% 以上（GA4 または Supabase で計測）</div>
+    <div class="trigger-item"><span class="trigger-dot"></span>「iOSアプリがほしい」要望 10件以上（DM / フォームで収集）</div>
+    <div class="trigger-note">要件定義v4.0は温存。条件充足後に着手。推定タイミング: 2026年Q3〜Q4。</div>
+  </div>
+
+  <!-- エージェント評価詳細 -->
+  <div class="detail-section">
+    <h2>エージェント別スコア詳細（4エージェント / 20軸）</h2>
+    <div class="detail-grid">
+
+      <div class="detail-card">
+        <h4>① UX / UI（平均 7.0）</h4>
+        <div class="detail-row"><span class="detail-label">ユーザビリティ</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:75%;background:#3b82f6;"></div></div><span class="detail-val">7.5</span></div>
+        <div class="detail-row"><span class="detail-label">インタラクション</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:70%;background:#3b82f6;"></div></div><span class="detail-val">7.0</span></div>
+        <div class="detail-row"><span class="detail-label">情報設計</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:65%;background:#3b82f6;"></div></div><span class="detail-val">6.5</span></div>
+        <div class="detail-row"><span class="detail-label">感情設計</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:60%;background:#ef4444;"></div></div><span class="detail-val">6.0</span></div>
+        <div class="detail-row"><span class="detail-label">モバイルUX</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:80%;background:#3b82f6;"></div></div><span class="detail-val">8.0</span></div>
+      </div>
+
+      <div class="detail-card">
+        <h4>② 技術 / セキュリティ（平均 7.7）</h4>
+        <div class="detail-row"><span class="detail-label">コード品質</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:80%;background:#059669;"></div></div><span class="detail-val">8.0</span></div>
+        <div class="detail-row"><span class="detail-label">パフォーマンス</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:85%;background:#059669;"></div></div><span class="detail-val">8.5</span></div>
+        <div class="detail-row"><span class="detail-label">セキュリティ</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:75%;background:#059669;"></div></div><span class="detail-val">7.5</span></div>
+        <div class="detail-row"><span class="detail-label">テスト・QA</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:75%;background:#059669;"></div></div><span class="detail-val">7.5</span></div>
+        <div class="detail-row"><span class="detail-label">スケーラビリティ</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:70%;background:#059669;"></div></div><span class="detail-val">7.0</span></div>
+      </div>
+
+      <div class="detail-card">
+        <h4>③ SEO / マネタイズ（平均 6.9）</h4>
+        <div class="detail-row"><span class="detail-label">SEO技術実装</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:85%;background:#7c3aed;"></div></div><span class="detail-val">8.5</span></div>
+        <div class="detail-row"><span class="detail-label">コンテンツ品質</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:65%;background:#ef4444;"></div></div><span class="detail-val">6.5</span></div>
+        <div class="detail-row"><span class="detail-label">コンテンツ戦略</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:80%;background:#7c3aed;"></div></div><span class="detail-val">8.0</span></div>
+        <div class="detail-row"><span class="detail-label">マネタイズ準備</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:55%;background:#ef4444;"></div></div><span class="detail-val">5.5</span></div>
+        <div class="detail-row"><span class="detail-label">成長可能性</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:60%;background:#ef4444;"></div></div><span class="detail-val">6.0</span></div>
+      </div>
+
+      <div class="detail-card">
+        <h4>④ プロダクト戦略（平均 6.4）</h4>
+        <div class="detail-row"><span class="detail-label">PMF</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:75%;background:#d97706;"></div></div><span class="detail-val">7.5</span></div>
+        <div class="detail-row"><span class="detail-label">差別化</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:60%;background:#ef4444;"></div></div><span class="detail-val">6.0</span></div>
+        <div class="detail-row"><span class="detail-label">グロース設計</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:65%;background:#d97706;"></div></div><span class="detail-val">6.5</span></div>
+        <div class="detail-row"><span class="detail-label">iOS展開準備</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:65%;background:#d97706;"></div></div><span class="detail-val">6.5</span></div>
+        <div class="detail-row"><span class="detail-label">収益モデル</span><div class="detail-bar-wrap"><div class="detail-bar" style="width:55%;background:#ef4444;"></div></div><span class="detail-val">5.5</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- フッター -->
+  <div class="footer">
+    SleepForecast harness / roadmap-2026-05.html — Opus 4エージェント並列レビュー結果 2026-05-05<br>
+    harness/claude-progress.txt にも同内容を記録済み
+  </div>
+
+</div>
+</body>
+</html>

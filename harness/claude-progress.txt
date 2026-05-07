@@ -974,3 +974,151 @@ localStorage空 + IDB無 + セッション無効 → 新規匿名（回復不可
 - T-02 のビルド確認は Vercel デプロイログで行うこと（bash sandbox UNC パスエラーのため）
 - デプロイ後: Chrome DevTools の Network タブで CSP ヘッダーに nonce が付いているか確認
 - T-03: アプリ内集計データをピラー記事（kishoubyou-kanzen-guide）に注入
+
+================================================================
+
+[2026-05-07] Cowork - T-02〜T-04 完了・動作確認サマリー
+
+## T-02: CSP nonce実装 + /api/weather レート制限（動作確認）
+
+### 確認内容
+- Vercel デプロイ: 7Nsitd9v8（commit f0818b5）→ Ready ✅
+- Chrome DevTools → Network → Response Headers に Content-Security-Policy が存在
+  - `script-src 'nonce-xxxxxxxx' 'strict-dynamic' ...` が付与されている ✅
+  - 'unsafe-inline' / 'unsafe-eval' が script-src に存在しない ✅
+- ブラウザコンソール: `gtag` 定義済み、`dataLayer` に 5 件のイベント ✅
+- TypeScript ビルドエラー修正: `for (const [key, entry] of rateLimitMap)` →
+  `for (const [key, entry] of Array.from(rateLimitMap.entries()))` に変更
+  （downlevelIteration エラー回避。commit f0818b5 で解消）
+
+---
+
+## T-03: ピラー記事「気象病完全ガイド」にデータバッジ注入（完了）
+
+### 確認内容
+- Vercel デプロイ: AsakwkYYA（commit b5209ff）→ Ready ✅
+- /articles/kishoubyou-kanzen-guide を表示 → 記事中ほど（2つ目のH2以降）に
+  ArticleDataBadge コンポーネントが表示される ✅
+- localStorage に記録 5 件未満の場合: 「SleepForecastユーザーの傾向」として
+  「低気圧の夜に眠れなかった割合: 68%」とフォールバック値が表示される ✅
+- 記録 5 件以上の場合: 「あなたの記録データ」として個人化された数値に切り替わる（仕様）
+
+### 実装ファイル
+- src/components/ArticleDataBadge.tsx（新規）: "use client" / localStorage 読み取り /
+  低気圧日 × 睡眠品質低 の相関パーセンテージを表示
+- src/components/ArticleLayout.tsx（変更）: dataBadge?: React.ReactNode prop 追加 /
+  part2 直後に {dataBadge} を挿入
+- src/app/articles/[slug]/page.tsx（変更）: kishoubyou-kanzen-guide のみ
+  dataBadge={<ArticleDataBadge />} を渡す
+
+---
+
+## T-04: 動的OGP画像生成 + 記事Xシェアボタン（完了）
+
+### 確認内容
+- Vercel デプロイ: CdAZ3CnQC（commit a75b1fb）→ Ready / Current ✅
+- /articles/kishoubyou-kanzen-guide および他の記事ページ末尾（大CTAブロック直下）に
+  「この記事を X でシェアする」ボタンが表示される ✅
+- ボタンをクリック → twitter.com/intent/tweet が開き、
+  記事タイトル・URL・#気象病 #睡眠 #SleepForecast ハッシュタグが自動入力される ✅
+- og:title メタタグが各記事タイトルで正しく設定されている ✅
+- /og エンドポイント: 1200×630px の動的 OGP 画像を返す（edge runtime）
+  - 日本語フォント（Noto Sans JP Bold）を Google Fonts からサブセット取得
+  - タイトル・カテゴリ・SleepForecast ロゴ・グラデーション背景を描画
+  - フォント取得失敗時はシステムフォントにフォールバック（クラッシュしない）
+- /og ルートは middleware.ts の CSP 適用から除外済み（画像レスポンスのため）
+
+### 実装ファイル
+- src/app/og/route.tsx（全面書き直し）: next/og の ImageResponse を使用 /
+  Noto Sans JP フォントをサブセット取得 / 3 秒 AbortController タイムアウト
+- src/components/ArticleLayout.tsx（変更）: Twitter アイコン import / SITE_URL 定数 /
+  dataBadge prop / Xシェアボタン（twitter.com/intent/tweet）を末尾 CTA 直後に追加
+- src/app/articles/[slug]/page.tsx（変更）: ArticleDataBadge import / dataBadge prop 渡し
+- src/middleware.ts（変更）: /og パスを CSP スキップ対象に追加
+
+---
+
+## 残タスク一覧（T-05〜T-11）
+
+### Claudeが対応できるもの（未着手）
+- T-07: アフィリエイトリンク設置（楽天/もしも / 枕・アロマ・漢方）工数2h
+
+### 既に日次で実施中（ユーザー主体）
+- T-08 / T-11: note 定期投稿 + note アウトリーチ（日次継続中）
+- T-10: X アウトリーチ（日次継続中）
+
+### 人間主体で動くもの（未着手）
+- T-05: 専門家監修1名獲得（睡眠専門医 or 薬剤師）予算〜3万円
+- T-06: 既存ユーザー10名インタビュー（Xフォロワー経由）
+- T-09: AdSense 再審査申請（PV1,000到達後に人間が手動申請）
+
+### iOS発火条件（3つ全て揃ったら着手）
+1. WAU（週間アクティブユーザー）200名以上
+2. Day30 継続率 15% 以上（GA4 or Supabase で計測）
+3. 「iOSアプリがほしい」要望 10件以上（DM / フォームで収集）
+
+================================================================
+
+[2026-05-07] Generator - デモモード改善 + シェアボタン修正 (commit 6801ae9)
+
+## 対応内容
+
+### 1. デモモードのページ間持続（sessionStorage）
+- src/lib/demo.ts に DEMO_SESSION_KEY = "sf_demo_count" を追加
+- getDemoCount() を拡張:
+  1. URL param ?demo=N を検出 → sessionStorage に保存して返す
+  2. URL param なし → sessionStorage キャッシュを確認して返す
+  3. どちらもなければ null
+- clearDemoMode() を新規追加:
+  sessionStorage のキーを削除 + ?demo を除いた URL で location.replace()
+  DemoModeBanner の × ボタンから呼び出す
+- 効果: /dashboard や /record に遷移してもデモモードが継続
+
+### 2. DemoModeBanner 改善
+- src/components/DemoModeBanner.tsx 変更:
+  - ローカルの dismissed state を廃止
+  - × ボタンを clearDemoMode() に変更（セッション終了 + ページリロード）
+  - ヒントテキストを「ナビゲーションしてもデモは継続します」に更新
+
+### 3. RecordForm デモ対応
+- src/components/RecordForm.tsx 変更:
+  - デモモード時: generateDemoRecords() から今日分の天気データを取得（API呼び出しスキップ）
+  - デモモード時: handleSubmit でトースト表示のみ（localStorage 書き込みなし）
+  - DemoModeBanner を RecordForm 上部に表示
+
+### 4. WeatherWidget/CorrelationChart デモ対応（相関グラフ修正）
+- src/components/WeatherWidget.tsx 変更:
+  - CorrelationChart 内部の useEffect で getRecords() を
+    getDemoCount() !== null ? generateDemoRecords(n) : getRecords() に変更
+  - 効果: /dashboard?demo=30 で相関グラフが「7件記録すると表示されます」と
+    ロックされていたバグを修正
+
+### 5. シェアボタンを X 直接方式に統一
+- src/components/AchievementsSection.tsx 変更:
+  - shareAchievements() の navigator.share() 分岐を完全廃止
+  - 常に window.open('https://twitter.com/intent/tweet?text=...') を使用
+  - async 修飾子を削除
+- src/components/MonthlySummaryReport.tsx 変更:
+  - shareMonthly() の navigator.share() 分岐を完全廃止
+  - 常に twitter.com/intent/tweet に直接遷移
+  - async 修飾子を削除
+- 背景: Windows Web Share API はシェアシートに X/Twitter が表示されない問題があった
+  （近距離共有・Zoom・Copilot・Outlook のみ）
+
+## コミット
+- d4388db: "feat: デモモード sessionStorage持続 + RecordForm + WeatherWidget デモ対応"
+  （WeatherWidget.tsx のみ含む; AchievementsSection / MonthlySummaryReport は次コミットへ）
+- 6801ae9: "fix: シェアボタンをX直接方式に統一 + デモ相関チャート修正"
+  （3ファイル変更, 6 insertions, 19 deletions）
+
+## 動作確認
+- /record?demo=30: DemoModeBanner 表示 + 今日の気象データ（デモ）反映 ✅
+- /dashboard?demo=30: DemoModeBanner 表示 + 30日分グラフ + 相関チャート表示 ✅
+- バッジシェアボタン: X 投稿ページが直接開く（シェアシート不使用）✅
+
+## 残タスク
+- T-07: アフィリエイトリンク設置（楽天/もしも / 枕・アロマ・漢方）工数2h（Claude 対応可能）
+- T-05, T-06, T-09: 人間主体タスク（専門家監修・インタビュー・AdSense再審査）
+- T-08 / T-10 / T-11: 日次アウトリーチ（ユーザー主体で継続中）
+
+================================================================

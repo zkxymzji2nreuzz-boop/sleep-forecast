@@ -80,14 +80,15 @@ const DashboardChartsSection = dynamic(
 // 定数
 // ---------------------------------------------------------------------------
 
-/** ツールチップ・テキスト表示用（フル版） */
-const QUALITY_FULL_MAP: Record<1 | 2 | 3 | 4 | 5, string> = {
-  1: "とても悪い",
-  2: "悪い",
-  3: "普通",
-  4: "良い",
-  5: "とても良い",
-};
+/**
+ * 平均品質スコア（連続値）→ 3段階ラベルに変換。
+ * 記録フォームは 1 / 3 / 5 の3択なので、平均は 1〜5 の実数になる。
+ */
+function qualityLabel(avg: number): string {
+  if (avg < 2) return "眠れなかった";
+  if (avg < 4) return "なんとか眠れた";
+  return "よく眠れた";
+}
 
 // B案: 感情別カラー (warning=rose / info=sky / positive=emerald)
 const INSIGHT_BORDER: Record<InsightItem["severity"], string> = {
@@ -248,7 +249,7 @@ export default function DashboardPage() {
           value={stats.avg7Days !== null ? stats.avg7Days.toFixed(1) : "--"}
           subtitle={
             stats.avg7Days !== null
-              ? QUALITY_FULL_MAP[Math.round(stats.avg7Days) as 1 | 2 | 3 | 4 | 5]
+              ? qualityLabel(stats.avg7Days)
               : undefined
           }
         />
@@ -284,7 +285,7 @@ export default function DashboardPage() {
             value={stats.worstDay ? toShortLabel(stats.worstDay.date) : "--"}
             subtitle={
               stats.worstDay
-                ? QUALITY_FULL_MAP[stats.worstDay.quality as 1 | 2 | 3 | 4 | 5]
+                ? qualityLabel(stats.worstDay.quality)
                 : undefined
             }
           />

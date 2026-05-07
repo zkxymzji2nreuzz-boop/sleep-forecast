@@ -23,6 +23,12 @@ const QUALITY_COLOR: Record<number, string> = {
   1: "#f87171", 2: "#fb923c", 3: "#facc15", 4: "#4ade80", 5: "#34d399",
 };
 
+const QUALITY_LABEL: Record<1 | 3 | 5, string> = {
+  1: "眠れなかった",
+  3: "なんとか眠れた",
+  5: "よく眠れた",
+};
+
 function getPastNDays(n: number): string[] {
   const days: string[] = [];
   for (let i = 0; i < n; i++) {
@@ -144,12 +150,12 @@ export function WeeklyInsightCard() {
         <div className="flex-1 rounded-lg bg-white/5 px-3 py-2">
           <p className="text-[10px] text-[#a8b0c2] mb-0.5">今週の最良日</p>
           <p className="text-sm font-bold text-emerald-300">{formatMD(stats.best.date)}</p>
-          <p className="text-[10px] text-[#a8b0c2]">品質 {stats.best.quality}</p>
+          <p className="text-[10px] text-[#a8b0c2]">{QUALITY_LABEL[stats.best.quality as 1 | 3 | 5] ?? `品質${stats.best.quality}`}</p>
         </div>
         <div className="flex-1 rounded-lg bg-white/5 px-3 py-2">
-          <p className="text-[10px] text-[#a8b0c2] mb-0.5">今週の最悪日</p>
+          <p className="text-[10px] text-[#a8b0c2] mb-0.5">今週の最低日</p>
           <p className="text-sm font-bold text-rose-300">{formatMD(stats.worst.date)}</p>
-          <p className="text-[10px] text-[#a8b0c2]">品質 {stats.worst.quality}</p>
+          <p className="text-[10px] text-[#a8b0c2]">{QUALITY_LABEL[stats.worst.quality as 1 | 3 | 5] ?? `品質${stats.worst.quality}`}</p>
         </div>
         {stats.pressureDropDays > 0 && (
           <div className="flex-1 rounded-lg bg-white/5 px-3 py-2">

@@ -279,7 +279,7 @@ function buildBarOptions(): ChartOptions<"bar"> {
       y: {
         min: 0,
         max: 5,
-        ticks: { stepSize: 0.5, color: "#a8b0c2" },
+        ticks: { stepSize: 1, color: "#a8b0c2" },
         grid: { color: "rgba(139, 146, 165, 0.10)" },
       },
     },

@@ -7,7 +7,7 @@
  * これによりダッシュボード・記録など全ページでデモが終了する。
  */
 
-import { FlaskConical, X } from "lucide-react";
+import { PlayCircle, X } from "lucide-react";
 import { clearDemoMode } from "@/lib/demo";
 
 type Props = {
@@ -21,19 +21,21 @@ export function DemoModeBanner({ recordCount }: Props) {
       aria-live="polite"
       className="mb-5 flex items-center gap-3 rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm"
     >
-      <FlaskConical
+      <PlayCircle
         className="h-4 w-4 shrink-0 text-amber-400"
         aria-hidden="true"
       />
-      <p className="flex-1 leading-snug text-amber-200">
-        <span className="font-semibold">デモモード</span>
-        <span className="ml-2 text-amber-300/80">
-          {recordCount} 日分のサンプルデータで表示中。本番データには影響しません。
-        </span>
-        <span className="ml-2 text-amber-400/60 text-xs">
+      <div className="flex-1 min-w-0">
+        <p className="leading-snug text-amber-200">
+          <span className="font-semibold">デモモード</span>
+          <span className="ml-2 text-amber-300/80">
+            {recordCount} 日分のサンプルデータで表示中。本番データには影響しません。
+          </span>
+        </p>
+        <p className="text-xs text-amber-400/60 hidden sm:block">
           ナビゲーションしてもデモは継続します
-        </span>
-      </p>
+        </p>
+      </div>
       <button
         type="button"
         onClick={() => clearDemoMode()}

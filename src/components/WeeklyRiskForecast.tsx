@@ -156,7 +156,11 @@ export function WeeklyRiskForecast({
           })}
         </div>
         <p className="mt-1.5 text-[9px] text-[#a8b0c2]/40">
-          Weather data by Open-Meteo.com (CC BY 4.0)
+          Weather data by{" "}
+          <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-[#a8b0c2]/70 transition-colors">
+            Open-Meteo.com
+          </a>{" "}
+          (CC BY 4.0)
         </p>
       </div>
     );
