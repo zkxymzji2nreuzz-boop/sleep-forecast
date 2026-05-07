@@ -111,11 +111,15 @@ function shareAchievements(earnedCount: number, statuses: ReturnType<typeof calc
     "https://sleep-forecast.vercel.app",
   ].filter(Boolean).join("\n");
 
-  window.open(
-    `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`,
-    "_blank",
-    "noopener,noreferrer"
-  );
+  const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+  // <a> クリック方式でポップアップブロッカーを回避
+  const a = document.createElement("a");
+  a.href = url;
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 interface AchievementsSectionProps {

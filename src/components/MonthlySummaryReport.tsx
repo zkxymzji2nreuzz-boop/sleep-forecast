@@ -183,7 +183,14 @@ function buildShareText(summary: MonthlySummary): string {
 function shareMonthly(summary: MonthlySummary) {
   const text = buildShareText(summary);
   const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-  window.open(url, "_blank", "noopener,noreferrer");
+  // <a> クリック方式でポップアップブロッカーを回避
+  const a = document.createElement("a");
+  a.href = url;
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

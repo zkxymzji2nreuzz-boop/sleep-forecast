@@ -196,7 +196,9 @@ export function generateDemoRecords(n: number): SleepRecord[] {
     const noise = (seededRand(s + 5) - 0.5) * 2.0;
     base += noise;
 
-    const quality = clamp(Math.round(base), 1, 5) as SleepQuality;
+    // 記録フォームは 1・3・5 の3択のみ → デモデータも同様にスナップ
+    const rawQ = clamp(Math.round(base), 1, 5);
+    const quality = (rawQ <= 2 ? 1 : rawQ <= 4 ? 3 : 5) as SleepQuality;
 
     // ── レコード組み立て ────────────────────────────────────────────────────
     const ts = new Date(`${date}T08:00:00+09:00`).toISOString();

@@ -995,11 +995,10 @@ function WakeupSubSection({
 // ─────────────────────────────────────────────────────────────────────────────
 
 
+// 記録フォームは 1・3・5 の3択のみ
 const QUALITY_COLORS: Record<number, string> = {
   5: "#4ade80",
-  4: "#86efac",
   3: "#facc15",
-  2: "#fb923c",
   1: "#f87171",
 };
 
@@ -1060,12 +1059,15 @@ function CorrelationChart() {
         <rect x={Math.max(PAD.left, toX(1000))} y={PAD.top} width={Math.max(0, Math.min(toX(1008), W - PAD.right) - Math.max(PAD.left, toX(1000)))} height={chartH} fill="rgba(251,146,60,0.06)" />
         <rect x={Math.max(PAD.left, toX(1008))} y={PAD.top} width={Math.max(0, Math.min(toX(1016), W - PAD.right) - Math.max(PAD.left, toX(1008)))} height={chartH} fill="rgba(250,204,21,0.05)" />
         <rect x={Math.max(PAD.left, toX(1016))} y={PAD.top} width={Math.max(0, W - PAD.right - Math.max(PAD.left, toX(1016)))} height={chartH} fill="rgba(74,222,128,0.05)" />
-        {[1, 2, 3, 4, 5].map((q) => (
-          <g key={q}>
-            <line x1={PAD.left} y1={toY(q)} x2={W - PAD.right} y2={toY(q)} stroke="#1e2433" strokeWidth="1" />
-            <text x={PAD.left - 4} y={toY(q) + 4} textAnchor="end" fill="#a8b0c2" fontSize="10">{q}</text>
-          </g>
-        ))}
+        {([1, 3, 5] as const).map((q) => {
+          const label = q === 5 ? "よく眠れた" : q === 3 ? "なんとか" : "眠れなかった";
+          return (
+            <g key={q}>
+              <line x1={PAD.left} y1={toY(q)} x2={W - PAD.right} y2={toY(q)} stroke="#1e2433" strokeWidth="1" />
+              <text x={PAD.left - 4} y={toY(q) + 4} textAnchor="end" fill="#a8b0c2" fontSize="9">{label}</text>
+            </g>
+          );
+        })}
         {Math.abs(slope) > 0.00001 && (
           <line x1={PAD.left} y1={clamp(slope * pMin + intercept)} x2={W - PAD.right} y2={clamp(slope * pMax + intercept)} stroke="#7856ff" strokeWidth="1.5" strokeDasharray="5 3" opacity="0.65" />
         )}
@@ -1079,11 +1081,11 @@ function CorrelationChart() {
         <text x={11} y={PAD.top + chartH / 2} textAnchor="middle" fill="#a8b0c2" fontSize="9" transform={`rotate(-90, 11, ${PAD.top + chartH / 2})`}>睡眠の質</text>
       </svg>
       <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
-        {([5, 4, 3, 2, 1] as const).map((q) => (
+        {([5, 3, 1] as const).map((q) => (
           <div key={q} className="flex items-center gap-1">
             <div className="w-2.5 h-2.5 rounded-full" style={{ background: QUALITY_COLORS[q] }} />
             <span className="text-[10px] text-[#a8b0c2]">
-              {q === 5 ? "とても良い" : q === 4 ? "良い" : q === 3 ? "普通" : q === 2 ? "悪い" : "とても悪い"}
+              {q === 5 ? "よく眠れた" : q === 3 ? "なんとか眠れた" : "眠れなかった"}
             </span>
           </div>
         ))}

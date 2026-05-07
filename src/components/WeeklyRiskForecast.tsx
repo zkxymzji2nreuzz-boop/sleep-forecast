@@ -143,7 +143,19 @@ export function WeeklyRiskForecast({
             );
           })}
         </div>
-        <p className="mt-2 text-[9px] text-[#a8b0c2]/40">
+        {/* 凡例 */}
+        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-0.5">
+          {(["high", "medium", "stable"] as const).map((level) => {
+            const cfg = RISK_CONFIG[level];
+            return (
+              <div key={level} className="flex items-center gap-1">
+                <div className={`h-1.5 w-3 rounded-full ${cfg.barClass}`} />
+                <span className="text-[9px] text-[#a8b0c2]/70">{cfg.label}</span>
+              </div>
+            );
+          })}
+        </div>
+        <p className="mt-1.5 text-[9px] text-[#a8b0c2]/40">
           Weather data by Open-Meteo.com (CC BY 4.0)
         </p>
       </div>
