@@ -22,19 +22,16 @@ function formatYearMonth(ym: string): string {
   return `${y}年${parseInt(m)}月`;
 }
 
+// 記録フォームは 1/3/5 の3択のみ
 const QUALITY_LABEL: Record<number, string> = {
-  1: "とても悪い",
-  2: "悪い",
-  3: "普通",
-  4: "良い",
-  5: "とても良い",
+  1: "眠れなかった",
+  3: "なんとか眠れた",
+  5: "よく眠れた",
 };
 
 const QUALITY_COLOR: Record<number, string> = {
   1: "#f87171",
-  2: "#fb923c",
   3: "#facc15",
-  4: "#4ade80",
   5: "#34d399",
 };
 
@@ -311,7 +308,7 @@ export function MonthlySummaryReport({ records }: MonthlySummaryReportProps) {
           <div className="mb-4">
             <p className="text-[10px] text-[#a8b0c2] font-semibold mb-2 uppercase tracking-wide">品質分布</p>
             <div className="space-y-1.5">
-              {([5, 4, 3, 2, 1] as const).map((q) => {
+              {([5, 3, 1] as const).map((q) => {
                 const count = summary.qualityDist[q];
                 const pct = (count / maxDistCount) * 100;
                 return (

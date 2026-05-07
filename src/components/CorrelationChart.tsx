@@ -45,21 +45,17 @@ ChartJS.register(
   Legend
 );
 
-/** quality 1〜5 の色マッピング (spec.md 準拠) */
-const QUALITY_COLORS: Record<1 | 2 | 3 | 4 | 5, string> = {
-  1: "#ef4444",
-  2: "#f97316",
+/** quality 1/3/5 の色マッピング（記録フォームは3択のみ） */
+const QUALITY_COLORS: Record<number, string> = {
+  1: "#f87171",
   3: "#facc15",
-  4: "#4ade80",
-  5: "#6366f1",
+  5: "#4ade80",
 };
 
-const QUALITY_LABELS: Record<1 | 2 | 3 | 4 | 5, string> = {
-  1: "とても悪い",
-  2: "悪い",
-  3: "普通",
-  4: "良い",
-  5: "とても良い",
+const QUALITY_LABELS: Record<number, string> = {
+  1: "眠れなかった",
+  3: "なんとか眠れた",
+  5: "よく眠れた",
 };
 
 export type CorrelationChartProps = {
@@ -156,8 +152,8 @@ export function CorrelationChart({
               // 回帰直線の点 → "傾向線" と表示
               return `傾向線 (${raw.x.toFixed(1)} hPa)`;
             }
-            const q = raw.quality as 1 | 2 | 3 | 4 | 5;
-            const label = QUALITY_LABELS[q];
+            const q = raw.quality;
+            const label = QUALITY_LABELS[q] ?? `品質 ${q}`;
             return `気圧変化: ${raw.x >= 0 ? "+" : ""}${raw.x.toFixed(1)} hPa — 品質: ${label}`;
           },
         },
@@ -184,8 +180,8 @@ export function CorrelationChart({
           color: "#a8b0c2",
           callback: (value) => {
             const v = Number(value);
-            if (!Number.isInteger(v) || v < 1 || v > 5) return "";
-            return QUALITY_LABELS[v as 1 | 2 | 3 | 4 | 5];
+            if (!Number.isInteger(v)) return "";
+            return QUALITY_LABELS[v] ?? "";
           },
         },
         grid: { color: "rgba(139, 146, 165, 0.10)" },
@@ -228,7 +224,7 @@ export function CorrelationChart({
           </span>
         )}
         <div className="flex flex-wrap gap-x-3 gap-y-1">
-          {([5, 4, 3, 2, 1] as const).map((q) => (
+          {([5, 3, 1] as const).map((q) => (
             <span key={q} className="flex items-center gap-1">
               <span
                 className="inline-block h-2 w-2 shrink-0 rounded-full"

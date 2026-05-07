@@ -72,13 +72,11 @@ const DEMO_THRESHOLD = 7;
 // チャート用定数
 // ---------------------------------------------------------------------------
 
-/** グラフ Y 軸ラベル用（短縮版） */
-const QUALITY_LABEL_MAP: Record<1 | 2 | 3 | 4 | 5, string> = {
-  1: "最低",
-  2: "悪い",
-  3: "普通",
-  4: "良い",
-  5: "最高",
+// 記録フォームは 1/3/5 の3択のみ → Y軸は3点だけ表示
+const QUALITY_LABEL_MAP: Record<number, string> = {
+  1: "眠れなかった",
+  3: "なんとか眠れた",
+  5: "よく眠れた",
 };
 
 const PRESSURE_BUCKETS = ["急上昇 (+3以上)", "横ばい", "急低下 (-3以下)"] as const;
@@ -221,12 +219,12 @@ function buildLineOptions(): ChartOptions<"line"> {
             return `${y}/${m}/${d}`;
           },
           label: (ctx: TooltipItem<"line">) => {
-            const q = Math.round(Number(ctx.parsed.y)) as 1 | 2 | 3 | 4 | 5;
-            if (q < 1 || q > 5) return "";
-            const QUALITY_FULL: Record<1 | 2 | 3 | 4 | 5, string> = {
-              1: "とても悪い", 2: "悪い", 3: "普通", 4: "良い", 5: "とても良い",
+            const q = Math.round(Number(ctx.parsed.y));
+            const QUALITY_FULL: Record<number, string> = {
+              1: "眠れなかった", 3: "なんとか眠れた", 5: "よく眠れた",
             };
-            return `品質: ${QUALITY_FULL[q]} (${q})`;
+            const label = QUALITY_FULL[q] ?? `品質 ${q}`;
+            return `品質: ${label} (${ctx.parsed.y.toFixed(1)})`;
           },
         },
       },
