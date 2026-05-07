@@ -1,5 +1,39 @@
 ================================================================
 
+[2026-05-08] Cowork - 句読点統一・グラフクリッピング・WeatherWidget視認性向上 (commit 0145d19)
+
+## 作業概要
+ユーザー目視確認による全ページのUI文言修正（句読点ルール統一）と
+グラフのドット切れ・視認性改善。
+
+## 実施内容
+### テキスト句読点修正（Task #136） — 12ファイル
+- 句点「。」→全角スペース「　」または句点削除のルール統一
+- 対象: prediction.ts / dashboard/page.tsx / PredictionCard.tsx / wsi.ts /
+  WeeklyInsightCard.tsx / MonthlySummaryReport.tsx / AchievementsSection.tsx /
+  Footer.tsx / RecordForm.tsx / PersonalPressureInsight.tsx /
+  SettingsForm.tsx / ArticleLayout.tsx
+
+### グラフクリッピング修正（Task #137）
+- CorrelationChart.tsx: `clip: false` + `layout.padding` 追加（散布図）
+- DashboardChartsSection.tsx: 同上（折れ線グラフ）
+- 「眠れなかった」ドットが下部で半円クリップされる問題を解消
+
+### 気圧グラフ視認性向上（Task #138）
+- WeatherWidget.tsx: x軸ティック 9px→10px、y軸 10px→11px
+
+### 週間コンディション凡例サイズ調整（Task #139）
+- WeatherWidget.tsx: ラベル列フォント 10px→11px、幅 68px→72px
+
+### 記事CTA文言修正（Task #140）
+- ArticleLayout.tsx: 読点削除・「やさしく見える化」→「やさしく可視化」に変更
+
+## コミット
+- 0145d19: fix: 句読点統一・グラフクリッピング・WeatherWidget視認性向上
+  17 files changed, 120 insertions(+), 38 deletions(-)
+
+================================================================
+
 [2026-05-07] Cowork - WCAG AA コントラスト全修正 + Vercel ビルドエラー修正 (commits 417c6e5〜2d6567b)
 
 ## 作業概要

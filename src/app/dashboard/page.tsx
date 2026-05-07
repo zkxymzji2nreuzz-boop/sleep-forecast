@@ -430,30 +430,30 @@ function WeatherAdviceCard({ weather }: { weather: WeatherData }) {
   if (weather.pressureDeltaHpa <= -5) {
     tips.push({
       icon: "🌀",
-      text: "気圧が急降下中。入浴は38〜40℃のぬるめで副交感神経を整えましょう。",
+      text: "気圧が急降下中　入浴は38〜40℃のぬるめで副交感神経を整えましょう",
       color: "border-rose-400 dark:border-rose-400/50 bg-rose-50 dark:bg-rose-500/[0.05]",
     });
     tips.push({
       icon: "💊",
-      text: "頭痛や体のだるさを感じる場合は早めに横になって安静にしてください。",
+      text: "頭痛や体のだるさを感じる場合は早めに横になって安静にしてください",
       color: "border-rose-400 dark:border-rose-400/50 bg-rose-50 dark:bg-rose-500/[0.05]",
     });
   } else if (weather.pressureDeltaHpa <= -3) {
     tips.push({
       icon: "🌧",
-      text: "気圧がやや低め。就寝1時間前のスマホを控えてブルーライトを減らしましょう。",
+      text: "気圧がやや低め　就寝1時間前のスマホを控えてブルーライトを減らしましょう",
       color: "border-amber-400 dark:border-amber-400/50 bg-amber-50 dark:bg-amber-500/[0.05]",
     });
   } else if (weather.pressureDeltaHpa >= 3) {
     tips.push({
       icon: "☀️",
-      text: "気圧が上昇傾向。体調が整いやすい日です。適度な運動で睡眠の質を高めましょう。",
+      text: "気圧が上昇傾向　体調が整いやすい日です　適度な運動で睡眠の質を高めましょう",
       color: "border-emerald-400 dark:border-emerald-400/50 bg-emerald-50 dark:bg-emerald-500/[0.05]",
     });
   } else {
     tips.push({
       icon: "🌤",
-      text: "気圧は安定しています。規則正しい就寝時間を意識してみましょう。",
+      text: "気圧は安定しています　規則正しい就寝時間を意識してみましょう",
       color: "border-sky-400 dark:border-sky-400/50 bg-sky-50 dark:bg-sky-500/[0.05]",
     });
   }
@@ -462,13 +462,13 @@ function WeatherAdviceCard({ weather }: { weather: WeatherData }) {
   if (weather.temperatureC >= 27) {
     tips.push({
       icon: "🌡",
-      text: "気温が高め。寝室を26〜28℃に保つと入眠しやすくなります。エアコンを活用して。",
+      text: "気温が高め　寝室を26〜28℃に保つと入眠しやすくなります　エアコンを活用して",
       color: "border-orange-400 dark:border-orange-400/50 bg-orange-50 dark:bg-orange-500/[0.05]",
     });
   } else if (weather.temperatureC <= 8) {
     tips.push({
       icon: "🧣",
-      text: "冷え込みが強い夜。湯たんぽや靴下で足元を温めると深部体温が下がりやすくなります。",
+      text: "冷え込みが強い夜　湯たんぽや靴下で足元を温めると深部体温が下がりやすくなります",
       color: "border-primary/25 bg-primary/[0.07]",
     });
   }
@@ -477,13 +477,13 @@ function WeatherAdviceCard({ weather }: { weather: WeatherData }) {
   if (weather.humidity >= 75) {
     tips.push({
       icon: "💧",
-      text: "湿度が高め。除湿機や換気で湿度50〜60%を目安にすると眠りが浅くなりにくいです。",
+      text: "湿度が高め　除湿機や換気で湿度50〜60%を目安にすると眠りが浅くなりにくいです",
       color: "border-cyan-400 dark:border-cyan-400/50 bg-cyan-50 dark:bg-cyan-500/[0.05]",
     });
   } else if (weather.humidity < 40) {
     tips.push({
       icon: "🌵",
-      text: "空気が乾燥しています。加湿器で50%前後を保つと喉の乾燥を防げます。",
+      text: "空気が乾燥しています　加湿器で50%前後を保つと喉の乾燥を防げます",
       color: "border-yellow-400 dark:border-yellow-400/50 bg-yellow-50 dark:bg-yellow-500/[0.05]",
     });
   }

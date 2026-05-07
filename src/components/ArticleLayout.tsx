@@ -116,7 +116,7 @@ function RelatedActions({ article }: { article: ArticleFull }) {
     href: "/record",
     icon: <PenLine className="h-4 w-4 text-primary/80" aria-hidden />,
     label: "今日の睡眠を記録する",
-    description: "記録を続けると、気象との相関があなただけのグラフで見えてきます。",
+    description: "記録を続けると、気象との相関があなただけのグラフで見えてきます",
   });
 
   // ダッシュボードへのアクション（気圧・相関・分析系タグがある場合）
@@ -129,7 +129,7 @@ function RelatedActions({ article }: { article: ArticleFull }) {
       href: "/dashboard",
       icon: <BarChart2 className="h-4 w-4 text-purple-600 dark:text-purple-300" aria-hidden />,
       label: "ダッシュボードで分析する",
-      description: "記録データから気圧・月齢別の睡眠パターンを確認できます。",
+      description: "記録データから気圧・月齢別の睡眠パターンを確認できます",
     });
   }
 
@@ -139,7 +139,7 @@ function RelatedActions({ article }: { article: ArticleFull }) {
       href: "/articles",
       icon: <Sparkles className="h-4 w-4 text-rose-600 dark:text-rose-300" aria-hidden />,
       label: "ほかの読みものを見る",
-      description: "気象病・睡眠・自律神経に関するコラムをまとめています。",
+      description: "気象病・睡眠・自律神経に関するコラムをまとめています",
     });
   }
 

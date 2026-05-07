@@ -94,8 +94,8 @@ export function ArticleDataBadge() {
           ) : (
             <p className="mt-2 text-xs text-muted-foreground">
               {stats.totalDays > 0
-                ? `※ あと ${5 - stats.totalDays} 日記録すると、あなた専用のデータに切り替わります。`
-                : "※ 7日間記録を続けると、あなた専用のデータに切り替わります。"}
+                ? `※ あと ${5 - stats.totalDays} 日記録すると、あなた専用のデータに切り替わります`
+                : "※ 7日間記録を続けると、あなた専用のデータに切り替わります"}
             </p>
           )}
         </div>

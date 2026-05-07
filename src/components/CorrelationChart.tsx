@@ -198,12 +198,12 @@ export function CorrelationChart({
     if (records.length === 0) return "";
     const trend =
       validR && pearsonR !== null && pearsonR <= -0.3
-        ? "気圧が下がるほど睡眠品質が低下する傾向があります。"
+        ? "気圧が下がるほど睡眠品質が低下する傾向があります"
         : validR && pearsonR !== null && pearsonR >= 0.3
-        ? "気圧が上がるほど睡眠品質が向上する傾向があります。"
-        : "現時点では明確な相関は見られません。";
+        ? "気圧が上がるほど睡眠品質が向上する傾向があります"
+        : "現時点では明確な相関は見られません";
     return `${records.length}日分の記録をもとにした、気圧変化と睡眠品質の散布図です。${
-      validR && pearsonR !== null ? `相関係数 r = ${pearsonR.toFixed(2)}。` : ""
+      validR && pearsonR !== null ? `相関係数 r = ${pearsonR.toFixed(2)}　` : ""
     }${trend}`;
   }, [records.length, validR, pearsonR]);
 

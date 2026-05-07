@@ -302,7 +302,7 @@ export function RecordForm(): JSX.Element {
       if (todayDemo) setSavedView({ ...todayDemo, quality: form.quality as SleepQuality });
       toast({
         title: "デモモード: 保存はスキップされました",
-        description: "本番データには影響しません。",
+        description: "本番データには影響しません",
       });
       return;
     }
@@ -320,7 +320,7 @@ export function RecordForm(): JSX.Element {
         } catch {
           toast({
             title: "気象データの取得に失敗しました",
-            description: "ネットワークや Open-Meteo API の状態をご確認ください。手動入力でも保存できます。",
+            description: "ネットワークや Open-Meteo API の状態をご確認ください　手動入力でも保存できます",
             variant: "destructive",
           });
           setShowManualFallback(true);
@@ -401,14 +401,14 @@ export function RecordForm(): JSX.Element {
       const q = savedView.quality;
       if (delta <= -5) {
         weatherNarrative = q <= 2
-          ? "気圧が急落した夜でした。低気圧の影響が出やすいパターンかもしれません。記録を続けて傾向を確認しましょう。"
-          : "気圧が急落する中でも眠れた夜でした。引き続き記録して、あなたの耐性パターンを掴みましょう。";
+          ? "気圧が急落した夜でした　低気圧の影響が出やすいパターンかもしれません　記録を続けて傾向を確認しましょう"
+          : "気圧が急落する中でも眠れた夜でした　引き続き記録して、あなたの耐性パターンを掴みましょう";
       } else if (delta <= -3) {
         weatherNarrative = q <= 2
-          ? "低気圧の夜は眠りに影響が出やすい傾向があります。データが増えると相関がはっきり見えてきます。"
-          : "気圧がやや低めでも眠れましたね。気象と睡眠の関係を引き続き記録で確認しましょう。";
+          ? "低気圧の夜は眠りに影響が出やすい傾向があります　データが増えると相関がはっきり見えてきます"
+          : "気圧がやや低めでも眠れましたね　気象と睡眠の関係を引き続き記録で確認しましょう";
       } else if (delta >= 3) {
-        weatherNarrative = "気圧が上昇した安定した夜でした。高気圧の日は比較的眠りやすい傾向があります。";
+        weatherNarrative = "気圧が上昇した安定した夜でした　高気圧の日は比較的眠りやすい傾向があります";
       }
     }
 
@@ -774,7 +774,7 @@ export function RecordForm(): JSX.Element {
             {/* 手動入力フォールバック */}
             {showManualFallback ? (
               <div className="space-y-3 rounded-md border border-dashed border-[#f59e0b]/40 bg-[#f59e0b]/5 p-4" role="group" aria-label="気象データの手動入力">
-                <p className="text-xs text-[#f59e0b]">気象 API に接続できませんでした。以下に手動で入力して保存できます。</p>
+                <p className="text-xs text-[#f59e0b]">気象 API に接続できませんでした　以下に手動で入力して保存できます</p>
                 <div className="grid grid-cols-3 gap-2">
                   <div className="space-y-1">
                     <Label htmlFor="manual-temp" className="text-xs text-muted-foreground">気温 (°C)</Label>

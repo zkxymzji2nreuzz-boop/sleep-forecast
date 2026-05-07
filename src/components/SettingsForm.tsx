@@ -260,9 +260,9 @@ export function SettingsForm() {
       (err) => {
         setGeoLoading(false);
         if (err.code === 1) {
-          setGeoError("位置情報へのアクセスが拒否されました。手動で都道府県を選択してください。");
+          setGeoError("位置情報へのアクセスが拒否されました　手動で都道府県を選択してください");
         } else {
-          setGeoError("現在地の取得に失敗しました。手動で選択してください。");
+          setGeoError("現在地の取得に失敗しました　手動で選択してください");
         }
       },
       { timeout: 10000, maximumAge: 300000 }
