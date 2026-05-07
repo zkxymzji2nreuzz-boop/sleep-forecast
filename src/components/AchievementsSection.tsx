@@ -79,7 +79,7 @@ function BadgeCard({ status }: BadgeCardProps) {
       {earned ? (
         <span
           className="text-[9px] font-medium px-1.5 py-0.5 rounded-full"
-          style={{ background: "rgba(99,102,241,0.2)", color: "#a5b4fc" }}
+          style={{ background: "rgba(99,102,241,0.2)", color: "hsl(var(--primary))" }}
         >
           達成！
         </span>

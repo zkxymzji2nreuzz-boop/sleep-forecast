@@ -74,9 +74,9 @@ function isToday(dateStr: string): boolean {
 }
 
 function precipColor(prob: number): string {
-  if (prob >= 70) return "#60a5fa";
-  if (prob >= 40) return "#93c5fd";
-  return "#a8b0c2";
+  // WCAG AA 対応: CSS変数で light/dark 両モード対応
+  if (prob >= 40) return "hsl(var(--primary))";
+  return "hsl(var(--muted-foreground))";
 }
 
 function weatherCodeToDisplay(
@@ -101,24 +101,27 @@ function weatherCodeToDisplay(
 }
 
 function pressureArrow(delta: number): { arrow: string; color: string } {
-  if (isNaN(delta)) return { arrow: "—", color: "#a8b0c2" };
-  if (delta <= -3) return { arrow: "↙", color: "#f87171" };
-  if (delta <= -1) return { arrow: "↘", color: "#fb923c" };
-  if (delta >= 3)  return { arrow: "↑", color: "#4ade80" };
-  if (delta >= 1)  return { arrow: "↗", color: "#60a5fa" };
-  return                  { arrow: "→", color: "#a8b0c2" };
+  // WCAG AA 対応: CSS変数で light/dark 両モード対応
+  if (isNaN(delta)) return { arrow: "—", color: "hsl(var(--muted-foreground))" };
+  if (delta <= -3) return { arrow: "↙", color: "hsl(var(--destructive))" };
+  if (delta <= -1) return { arrow: "↘", color: "hsl(var(--destructive))" };
+  if (delta >= 3)  return { arrow: "↑", color: "hsl(var(--primary))" };
+  if (delta >= 1)  return { arrow: "↗", color: "hsl(var(--primary))" };
+  return                  { arrow: "→", color: "hsl(var(--muted-foreground))" };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // WSIスコア 5段階ランク（新定義）
 // ─────────────────────────────────────────────────────────────────────────────
 
-function getWSIBadge(score100: number): { badge: string; color: string } {
-  if (score100 >= 80) return { badge: "とても良い夜", color: "#10b981" };
-  if (score100 >= 65) return { badge: "良い夜",       color: "#4a90d9" };
-  if (score100 >= 45) return { badge: "普通の夜",     color: "#8b98a5" };
-  if (score100 >= 25) return { badge: "注意の夜",     color: "#f59e0b" };
-  return                     { badge: "難しい夜",     color: "#f87070" };
+function getWSIBadge(score100: number): { badge: string; color: string; textClass: string } {
+  // color: カード背景・ボーダー用の装飾色
+  // textClass: WCAG AA 準拠のテキスト用 Tailwind クラス
+  if (score100 >= 80) return { badge: "とても良い夜", color: "#10b981", textClass: "text-emerald-700 dark:text-emerald-400" };
+  if (score100 >= 65) return { badge: "良い夜",       color: "#4a90d9", textClass: "text-sky-700 dark:text-sky-400" };
+  if (score100 >= 45) return { badge: "普通の夜",     color: "#8b98a5", textClass: "text-slate-600 dark:text-slate-400" };
+  if (score100 >= 25) return { badge: "注意の夜",     color: "#f59e0b", textClass: "text-amber-700 dark:text-amber-400" };
+  return                     { badge: "難しい夜",     color: "#f87070", textClass: "text-rose-700 dark:text-rose-400" };
 }
 
 // 月相絵文字
@@ -271,20 +274,20 @@ function DailyForecastSection({ forecast }: { forecast: DailyForecast[] }) {
             return (
               <div key={day.date} style={{ display: "flex", flexDirection: "column", borderLeft: columnBorder, background: columnBg }}>
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: "10px", fontWeight: 700, color: isDangerDay ? "#f87171" : isCurrentDay ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))" }}>{dayLabel}</span>
+                  <span style={{ fontSize: "10px", fontWeight: 700, color: isDangerDay ? "hsl(var(--destructive))" : isCurrentDay ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))" }}>{dayLabel}</span>
                   <span style={{ fontSize: "9px", color: "hsl(var(--muted-foreground))" }}>{weekLabel}</span>
                 </div>
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px" }}>{weather.emoji}</div>
-                <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "#fb923c" }}>{Math.round(day.tempMax)}°</div>
-                <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", color: "#93c5fd" }}>{Math.round(day.tempMin)}°</div>
+                <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "hsl(var(--destructive))" }}>{Math.round(day.tempMax)}°</div>
+                <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", color: "hsl(var(--primary))" }}>{Math.round(day.tempMin)}°</div>
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", color: precipColor(day.precipProbability) }}>{day.precipProbability}%</div>
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: "9px", fontWeight: 700, padding: "2px 5px", borderRadius: "9999px", background: zoneConfig.bg, color: zoneConfig.color, whiteSpace: "nowrap" }}>{zoneConfig.label}</span>
+                  <span style={{ fontSize: "9px", fontWeight: 700, padding: "2px 5px", borderRadius: "9999px", background: zoneConfig.bg, color: zoneConfig.textColor, whiteSpace: "nowrap" }}>{zoneConfig.label}</span>
                 </div>
                 {/* 気圧注意バッジ行 */}
                 <div style={{ height: `${WEEKLY_ROW_H}px`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   {isDangerDay ? (
-                    <span style={{ fontSize: "9px", fontWeight: 700, padding: "2px 4px", borderRadius: "9999px", background: "rgba(239,68,68,0.15)", color: "#f87171", border: "1px solid rgba(239,68,68,0.30)", whiteSpace: "nowrap" }}>
+                    <span style={{ fontSize: "9px", fontWeight: 700, padding: "2px 4px", borderRadius: "9999px", background: "rgba(239,68,68,0.15)", color: "hsl(var(--destructive))", border: "1px solid rgba(239,68,68,0.30)", whiteSpace: "nowrap" }}>
                       ⚠ 要注意
                     </span>
                   ) : (
@@ -322,7 +325,7 @@ function SleepScoreHero({
   hourlyPressureTimes, hourlyPressureValues,
   currentPressureDelta, humidity, tempDelta, apparentTempC,
 }: SleepScoreHeroProps) {
-  const { badge, color } = getWSIBadge(score100);
+  const { badge, color, textClass: badgeTextClass } = getWSIBadge(score100);
   const [expanded, setExpanded] = React.useState(false);
   const contrib = estimatePtContrib(wsiScore.pressureDelta6h, wsiScore.tempDelta, wsiScore.humidity);
 
@@ -339,10 +342,7 @@ function SleepScoreHero({
 
       {/* バッジ（主役）*/}
       <div className="flex items-center gap-3 mb-2">
-        <span
-          className="text-2xl font-black leading-none"
-          style={{ color }}
-        >
+        <span className={`text-2xl font-black leading-none ${badgeTextClass}`}>
           {badge}
         </span>
         <span className="text-sm font-semibold tabular-nums text-muted-foreground">
@@ -384,7 +384,7 @@ function SleepScoreHero({
                 {wsiScore.pressureDelta6h >= 0 ? "+" : ""}{wsiScore.pressureDelta6h.toFixed(1)}
                 <span className="text-[9px] font-normal text-muted-foreground">hPa</span>
               </p>
-              <p className="text-[9px] tabular-nums" style={{ color: contrib.pressure >= 0 ? "#10b981" : "#f87171" }}>
+              <p className="text-[9px] tabular-nums" style={{ color: contrib.pressure >= 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}>
                 {contrib.pressure >= 0 ? "+" : ""}{contrib.pressure}pt
               </p>
             </div>
@@ -394,7 +394,7 @@ function SleepScoreHero({
                 {wsiScore.tempDelta.toFixed(0)}
                 <span className="text-[9px] font-normal text-muted-foreground">°C</span>
               </p>
-              <p className="text-[9px] tabular-nums" style={{ color: contrib.temp >= 0 ? "#10b981" : "#f87171" }}>
+              <p className="text-[9px] tabular-nums" style={{ color: contrib.temp >= 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}>
                 {contrib.temp >= 0 ? "+" : ""}{contrib.temp}pt
               </p>
             </div>
@@ -404,7 +404,7 @@ function SleepScoreHero({
                 {wsiScore.humidity}
                 <span className="text-[9px] font-normal text-muted-foreground">%</span>
               </p>
-              <p className="text-[9px] tabular-nums" style={{ color: contrib.humid >= 0 ? "#10b981" : "#f87171" }}>
+              <p className="text-[9px] tabular-nums" style={{ color: contrib.humid >= 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}>
                 {contrib.humid >= 0 ? "+" : ""}{contrib.humid}pt
               </p>
             </div>
@@ -555,7 +555,7 @@ function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: Pres
       >
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold" style={{ color: "#f87171" }}>
+            <p className="text-sm font-semibold" style={{ color: "hsl(var(--destructive))" }}>
               🌧 今夜は気圧が急変しそうです
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -577,7 +577,7 @@ function PressureAlertBanner({ hourlyPressureTimes, hourlyPressureValues }: Pres
       >
         <div className="mb-3 flex items-start justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold" style={{ color: "#f87171" }}>
+            <p className="text-sm font-semibold" style={{ color: "hsl(var(--destructive))" }}>
               🌧 今夜は気圧が急変しそうです
             </p>
             <p className="mt-1 text-xs text-muted-foreground">

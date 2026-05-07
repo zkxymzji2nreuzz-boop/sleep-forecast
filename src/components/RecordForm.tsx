@@ -228,11 +228,11 @@ export function RecordForm(): JSX.Element {
   }, [yesterdayRecord]);
 
   const yesterdayBadge = yesterdayScore === null ? null
-    : yesterdayScore >= 80 ? { label: "とても良い夜", color: "#10b981" }
-    : yesterdayScore >= 65 ? { label: "良い夜", color: "#4a90d9" }
-    : yesterdayScore >= 45 ? { label: "普通の夜", color: "#a8b0c2" }
-    : yesterdayScore >= 25 ? { label: "注意の夜", color: "#f59e0b" }
-    : { label: "難しい夜", color: "#f87070" };
+    : yesterdayScore >= 80 ? { label: "とても良い夜", textClass: "text-emerald-700 dark:text-emerald-400" }
+    : yesterdayScore >= 65 ? { label: "良い夜",       textClass: "text-sky-700 dark:text-sky-400" }
+    : yesterdayScore >= 45 ? { label: "普通の夜",     textClass: "text-slate-600 dark:text-slate-400" }
+    : yesterdayScore >= 25 ? { label: "注意の夜",     textClass: "text-amber-700 dark:text-amber-400" }
+    : { label: "難しい夜",                            textClass: "text-rose-700 dark:text-rose-400" };
 
   const handleQualityPick = (value: SleepQuality): void => {
     setForm((prev) => ({ ...prev, quality: value }));
@@ -645,7 +645,7 @@ export function RecordForm(): JSX.Element {
         <div className="mb-4 rounded-xl border border-border bg-secondary/40 px-4 py-3">
           <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">昨夜の予報</p>
           <p className="text-sm text-foreground">
-            <span className="font-semibold" style={{ color: yesterdayBadge.color }}>{yesterdayBadge.label}</span>
+            <span className={`font-semibold ${yesterdayBadge.textClass}`}>{yesterdayBadge.label}</span>
             <span className="ml-1.5 tabular-nums text-muted-foreground">（{yesterdayScore}点）</span>
           </p>
           <p className="mt-1 text-xs text-muted-foreground">実際はどうでしたか？↓</p>
