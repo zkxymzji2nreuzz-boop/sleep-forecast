@@ -88,7 +88,7 @@ export function AccountSection() {
         /* ── 匿名ユーザー: メール登録を促す ─────────────────────── */
         <div className="space-y-4">
           <div className="rounded-xl border border-amber-400/20 bg-amber-500/[0.05] p-4">
-            <p className="flex items-center gap-1.5 text-xs font-semibold text-amber-400">
+            <p className="flex items-center gap-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
               <CloudOff className="h-3.5 w-3.5" aria-hidden="true" />
               データはこの端末にのみ保存されています
             </p>
@@ -143,7 +143,7 @@ export function AccountSection() {
             </div>
           ) : (
             <div className="rounded-xl border border-emerald-400/20 bg-emerald-500/[0.05] p-4">
-              <p className="flex items-center gap-1.5 text-sm font-semibold text-emerald-400">
+              <p className="flex items-center gap-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
                 <Check className="h-4 w-4" aria-hidden="true" />
                 確認メールを送信しました
               </p>
@@ -157,7 +157,7 @@ export function AccountSection() {
         /* ── 登録済みユーザー: 同期状態 + 取り込みボタン ──────── */
         <div className="space-y-4">
           <div className="rounded-xl border border-emerald-400/20 bg-emerald-500/[0.05] p-4">
-            <p className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
+            <p className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
               <User className="h-3.5 w-3.5" aria-hidden="true" />
               クラウドバックアップ有効
             </p>

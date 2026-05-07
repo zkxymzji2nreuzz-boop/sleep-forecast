@@ -127,7 +127,7 @@ function RelatedActions({ article }: { article: ArticleFull }) {
   if (needsDashboard) {
     actions.push({
       href: "/dashboard",
-      icon: <BarChart2 className="h-4 w-4 text-purple-300" aria-hidden />,
+      icon: <BarChart2 className="h-4 w-4 text-purple-600 dark:text-purple-300" aria-hidden />,
       label: "ダッシュボードで分析する",
       description: "記録データから気圧・月齢別の睡眠パターンを確認できます。",
     });
@@ -137,7 +137,7 @@ function RelatedActions({ article }: { article: ArticleFull }) {
   if (actions.length < 2) {
     actions.push({
       href: "/articles",
-      icon: <Sparkles className="h-4 w-4 text-rose-300" aria-hidden />,
+      icon: <Sparkles className="h-4 w-4 text-rose-600 dark:text-rose-300" aria-hidden />,
       label: "ほかの読みものを見る",
       description: "気象病・睡眠・自律神経に関するコラムをまとめています。",
     });

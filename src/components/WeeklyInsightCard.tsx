@@ -16,6 +16,15 @@ const QUALITY_COLOR: Record<number, string> = {
   1: "#ef4444", 2: "#f97316", 3: "#f59e0b", 4: "#34d399", 5: "#10b981",
 };
 
+/** ライト/ダーク両対応のテキストカラークラス（WCAG AA準拠） */
+function getQualityTextClass(q: number): string {
+  if (q >= 4.5) return "text-emerald-700 dark:text-emerald-400";
+  if (q >= 3.5) return "text-teal-700 dark:text-teal-400";
+  if (q >= 2.5) return "text-yellow-700 dark:text-yellow-400";
+  if (q >= 1.5) return "text-orange-700 dark:text-orange-400";
+  return "text-rose-700 dark:text-rose-400";
+}
+
 const QUALITY_LABEL: Record<1 | 3 | 5, string> = {
   1: "眠れなかった",
   3: "なんとか眠れた",
@@ -97,7 +106,6 @@ export function WeeklyInsightCard() {
   if (stats === "loading" || stats === null) return null;
 
   const diff = stats.prevAvg !== null ? stats.avg - stats.prevAvg : null;
-  const avgColor = QUALITY_COLOR[Math.round(stats.avg) as 1|2|3|4|5] ?? "currentColor";
 
   return (
     <div className="mb-8 rounded-2xl border border-border bg-card p-5">
@@ -113,7 +121,7 @@ export function WeeklyInsightCard() {
       <div className="flex items-end gap-3 mb-4">
         <div>
           <p className="text-[10px] text-muted-foreground mb-0.5">平均品質</p>
-          <span className="text-4xl font-bold tabular-nums" style={{ color: avgColor }}>
+          <span className={`text-4xl font-bold tabular-nums ${getQualityTextClass(stats.avg)}`}>
             {stats.avg.toFixed(1)}
           </span>
           <span className="text-sm text-muted-foreground ml-1">/ 5.0</span>
@@ -128,14 +136,13 @@ export function WeeklyInsightCard() {
               <Minus className="h-4 w-4 text-muted-foreground" />
             )}
             <span
-              className="text-sm font-semibold tabular-nums"
-              style={{
-                color: diff > 0.1
-                  ? QUALITY_COLOR[5]
+              className={`text-sm font-semibold tabular-nums ${
+                diff > 0.1
+                  ? "text-emerald-700 dark:text-emerald-400"
                   : diff < -0.1
-                  ? QUALITY_COLOR[1]
-                  : undefined,
-              }}
+                  ? "text-rose-700 dark:text-rose-400"
+                  : "text-foreground"
+              }`}
             >
               {diff > 0 ? "+" : ""}{diff.toFixed(1)}
             </span>
@@ -148,12 +155,12 @@ export function WeeklyInsightCard() {
       <div className="flex gap-2 mb-4">
         <div className="flex-1 rounded-lg bg-secondary/40 px-3 py-2">
           <p className="text-[10px] text-muted-foreground mb-0.5">今週の最良日</p>
-          <p className="text-sm font-bold" style={{ color: QUALITY_COLOR[5] }}>{formatMD(stats.best.date)}</p>
+          <p className={`text-sm font-bold ${getQualityTextClass(stats.best.quality)}`}>{formatMD(stats.best.date)}</p>
           <p className="text-[10px] text-muted-foreground">{QUALITY_LABEL[stats.best.quality as 1 | 3 | 5] ?? `品質${stats.best.quality}`}</p>
         </div>
         <div className="flex-1 rounded-lg bg-secondary/40 px-3 py-2">
           <p className="text-[10px] text-muted-foreground mb-0.5">今週の最低日</p>
-          <p className="text-sm font-bold" style={{ color: QUALITY_COLOR[1] }}>{formatMD(stats.worst.date)}</p>
+          <p className={`text-sm font-bold ${getQualityTextClass(stats.worst.quality)}`}>{formatMD(stats.worst.date)}</p>
           <p className="text-[10px] text-muted-foreground">{QUALITY_LABEL[stats.worst.quality as 1 | 3 | 5] ?? `品質${stats.worst.quality}`}</p>
         </div>
         {stats.pressureDropDays > 0 && (

@@ -235,8 +235,8 @@ export function CorrelationChart({
           <span className="shrink-0 flex flex-wrap items-baseline gap-1">
             <span>
               相関係数 r = <span className={
-                pearsonR <= -0.3 ? "font-semibold text-rose-400"
-                : pearsonR >= 0.3 ? "font-semibold text-emerald-400"
+                pearsonR <= -0.3 ? "font-semibold text-rose-600 dark:text-rose-400"
+                : pearsonR >= 0.3 ? "font-semibold text-emerald-600 dark:text-emerald-400"
                 : "text-muted-foreground"
               }>{pearsonR.toFixed(2)}</span>
             </span>

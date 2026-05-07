@@ -426,9 +426,9 @@ export function RecordForm(): JSX.Element {
                 : "bg-primary/[0.07] shadow-[0_0_40px_-10px_rgba(99,102,241,0.5)] ring-primary/15"
             ].join(" ")}>
               {isFirstRecord
-                ? <Sparkles className="h-7 w-7 text-emerald-400" aria-hidden="true" />
+                ? <Sparkles className="h-7 w-7 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
                 : isMilestone7
-                ? <Sparkles className="h-7 w-7 text-purple-400" aria-hidden="true" />
+                ? <Sparkles className="h-7 w-7 text-purple-600 dark:text-purple-400" aria-hidden="true" />
                 : <CheckCircle2 className="h-7 w-7 text-primary" aria-hidden="true" />
               }
             </div>
@@ -450,7 +450,7 @@ export function RecordForm(): JSX.Element {
             {/* 初回特別セレブレーション */}
             {isFirstRecord && (
               <div className="rounded-xl border border-emerald-400/25 bg-emerald-500/[0.07] p-4 text-center">
-                <p className="text-sm font-semibold text-emerald-300">
+                <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">
                   最初の一歩、おめでとうございます！
                 </p>
                 <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
@@ -471,14 +471,14 @@ export function RecordForm(): JSX.Element {
             {/* 7日達成マイルストーン */}
             {isMilestone7 && (
               <div className="rounded-xl border border-purple-400/25 bg-purple-500/[0.07] p-4 text-center">
-                <p className="text-sm font-semibold text-purple-300">
+                <p className="text-sm font-semibold text-purple-700 dark:text-purple-300">
                   7日分のデータが揃いました！
                 </p>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                   ダッシュボードで気圧・月齢との相関グラフが見られるようになりました
                 </p>
                 {showFreezeEarned && (
-                  <p className="mt-2 flex items-center justify-center gap-1 text-xs font-semibold text-amber-300">
+                  <p className="mt-2 flex items-center justify-center gap-1 text-xs font-semibold text-amber-700 dark:text-amber-300">
                     <Shield className="h-3.5 w-3.5" aria-hidden="true" />
                     ストリークシールドを獲得しました！（残り {freezeCountAfterSave} 枚）
                   </p>
@@ -489,7 +489,7 @@ export function RecordForm(): JSX.Element {
             {/* ストリークシールド獲得（7日マイルストーン以外） */}
             {showFreezeEarned && !isMilestone7 && (
               <div className="rounded-xl border border-amber-400/25 bg-amber-500/[0.07] p-4 text-center">
-                <p className="flex items-center justify-center gap-1.5 text-sm font-semibold text-amber-300">
+                <p className="flex items-center justify-center gap-1.5 text-sm font-semibold text-amber-700 dark:text-amber-300">
                   <Shield className="h-4 w-4" aria-hidden="true" />
                   ストリークシールドを獲得！
                 </p>
@@ -502,9 +502,9 @@ export function RecordForm(): JSX.Element {
             {/* ストリークシールド使用通知 */}
             {showFreezeUsed && (
               <div className="flex items-start gap-2.5 rounded-xl border border-amber-400/20 bg-amber-500/[0.05] px-4 py-3">
-                <Shield className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" aria-hidden="true" />
+                <Shield className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-300" aria-hidden="true" />
                 <div>
-                  <p className="text-xs font-semibold text-amber-300">シールドを使用しました</p>
+                  <p className="text-xs font-semibold text-amber-700 dark:text-amber-300">シールドを使用しました</p>
                   <p className="mt-0.5 text-xs text-muted-foreground">
                     昨日の空白をシールドで補填しました（残り {freezeCountAfterSave} 枚）
                   </p>
@@ -522,7 +522,7 @@ export function RecordForm(): JSX.Element {
                 <dt className="text-[11px] uppercase tracking-wider text-muted-foreground">気圧 (24h 差)</dt>
                 <dd className="mt-1 text-xl font-semibold tabular-nums text-foreground">
                   {w.pressureHpa.toFixed(1)}{" "}
-                  <span className={`text-sm tabular-nums ${w.pressureDeltaHpa <= -3 ? "text-rose-400" : w.pressureDeltaHpa >= 3 ? "text-emerald-400" : "text-muted-foreground"}`}>
+                  <span className={`text-sm tabular-nums ${w.pressureDeltaHpa <= -3 ? "text-rose-600 dark:text-rose-400" : w.pressureDeltaHpa >= 3 ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"}`}>
                     {w.pressureDeltaHpa >= 0 ? "+" : ""}{w.pressureDeltaHpa.toFixed(1)}
                   </span>
                 </dd>
@@ -667,9 +667,9 @@ export function RecordForm(): JSX.Element {
               <span className="text-foreground">{todayWeather.pressureHpa.toFixed(1)} hPa</span>
               <span className={
                 todayWeather.pressureDeltaHpa <= -3
-                  ? "text-xs text-rose-400"
+                  ? "text-xs text-rose-600 dark:text-rose-400"
                   : todayWeather.pressureDeltaHpa >= 3
-                  ? "text-xs text-emerald-400"
+                  ? "text-xs text-emerald-600 dark:text-emerald-400"
                   : "text-xs text-muted-foreground"
               }>
                 {todayWeather.pressureDeltaHpa >= 0 ? "+" : ""}{todayWeather.pressureDeltaHpa.toFixed(1)}
@@ -685,7 +685,7 @@ export function RecordForm(): JSX.Element {
             </span>
           </div>
           {todayWeather.pressureDeltaHpa <= -3 && (
-            <p className="mt-2 text-[11px] leading-snug text-rose-300/80">
+            <p className="mt-2 text-[11px] leading-snug text-rose-600/80 dark:text-rose-300/80">
               気圧が下がっています。睡眠への影響が出やすい日です。
             </p>
           )}

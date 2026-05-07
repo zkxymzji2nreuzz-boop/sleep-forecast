@@ -19,27 +19,27 @@ export function DemoModeBanner({ recordCount }: Props) {
     <div
       role="status"
       aria-live="polite"
-      className="mb-5 flex items-center gap-3 rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm"
+      className="mb-5 flex items-center gap-3 rounded-xl border border-amber-300 dark:border-amber-400/30 bg-amber-50 dark:bg-amber-500/10 px-4 py-3 text-sm"
     >
       <PlayCircle
-        className="h-4 w-4 shrink-0 text-amber-400"
+        className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400"
         aria-hidden="true"
       />
       <div className="flex-1 min-w-0">
-        <p className="leading-snug text-amber-200">
+        <p className="leading-snug text-amber-800 dark:text-amber-200">
           <span className="font-semibold">デモモード</span>
-          <span className="ml-2 text-amber-300/80">
+          <span className="ml-2 text-amber-700/80 dark:text-amber-300/80">
             {recordCount} 日分のサンプルデータで表示中。本番データには影響しません。
           </span>
         </p>
-        <p className="text-xs text-amber-400/60 hidden sm:block">
+        <p className="text-xs text-amber-600/70 dark:text-amber-400/60 hidden sm:block">
           ナビゲーションしてもデモは継続します
         </p>
       </div>
       <button
         type="button"
         onClick={() => clearDemoMode()}
-        className="ml-2 shrink-0 rounded text-amber-400/60 transition-colors hover:text-amber-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400"
+        className="ml-2 shrink-0 rounded text-amber-600/60 dark:text-amber-400/60 transition-colors hover:text-amber-700 dark:hover:text-amber-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-500"
         aria-label="デモモードを終了する"
       >
         <X className="h-4 w-4" />

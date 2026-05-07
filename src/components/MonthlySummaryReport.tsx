@@ -35,6 +35,15 @@ const QUALITY_COLOR: Record<number, string> = {
   5: "#34d399",
 };
 
+/** ライト/ダーク両対応のテキストカラークラス（WCAG AA準拠） */
+function getAvgQualityClass(avg: number): string {
+  if (avg >= 4.5) return "text-emerald-700 dark:text-emerald-400";
+  if (avg >= 3.5) return "text-teal-700 dark:text-teal-400";
+  if (avg >= 2.5) return "text-yellow-700 dark:text-yellow-400";
+  if (avg >= 1.5) return "text-orange-700 dark:text-orange-400";
+  return "text-rose-700 dark:text-rose-400";
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // 月次集計ロジック
 // ─────────────────────────────────────────────────────────────────────────────
@@ -275,8 +284,7 @@ export function MonthlySummaryReport({ records }: MonthlySummaryReportProps) {
             <div className="rounded-lg bg-muted p-3 text-center">
               <p className="text-[10px] text-muted-foreground mb-1">平均品質</p>
               <p
-                className="text-2xl font-bold"
-                style={{ color: QUALITY_COLOR[Math.round(summary.avgQuality) as 1 | 2 | 3 | 4 | 5] ?? "hsl(256 43% 93%)" }}
+                className={`text-2xl font-bold ${getAvgQualityClass(summary.avgQuality)}`}
               >
                 {summary.avgQuality.toFixed(1)}
               </p>
@@ -287,7 +295,7 @@ export function MonthlySummaryReport({ records }: MonthlySummaryReportProps) {
               <p className="text-[10px] text-muted-foreground mb-1">最良日</p>
               {summary.bestDay ? (
                 <>
-                  <p className="text-sm font-bold text-emerald-300">{formatDate(summary.bestDay.date)}</p>
+                  <p className="text-sm font-bold text-emerald-700 dark:text-emerald-300">{formatDate(summary.bestDay.date)}</p>
                   <p className="text-[10px] text-muted-foreground">{QUALITY_LABEL[summary.bestDay.quality as 1 | 3 | 5] ?? `品質${summary.bestDay.quality}`}</p>
                 </>
               ) : <p className="text-xs text-muted-foreground">—</p>}
@@ -297,7 +305,7 @@ export function MonthlySummaryReport({ records }: MonthlySummaryReportProps) {
               <p className="text-[10px] text-muted-foreground mb-1">最悪日</p>
               {summary.worstDay ? (
                 <>
-                  <p className="text-sm font-bold text-rose-300">{formatDate(summary.worstDay.date)}</p>
+                  <p className="text-sm font-bold text-rose-600 dark:text-rose-300">{formatDate(summary.worstDay.date)}</p>
                   <p className="text-[10px] text-muted-foreground">{QUALITY_LABEL[summary.worstDay.quality as 1 | 3 | 5] ?? `品質${summary.worstDay.quality}`}</p>
                 </>
               ) : <p className="text-xs text-muted-foreground">—</p>}

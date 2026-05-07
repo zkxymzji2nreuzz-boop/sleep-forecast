@@ -377,13 +377,13 @@ export function SettingsForm() {
           {geoLoading ? "検出中..." : "現在地から自動検出"}
         </button>
         {geoDetected && (
-          <p className="mb-2 flex items-center gap-1 text-xs text-emerald-400">
+          <p className="mb-2 flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
             <Check className="h-3.5 w-3.5" aria-hidden="true" />
             {geoDetected} を設定しました
           </p>
         )}
         {geoError && (
-          <p className="mb-2 text-xs text-rose-400">{geoError}</p>
+          <p className="mb-2 text-xs text-rose-600 dark:text-rose-400">{geoError}</p>
         )}
 
         {/* 都道府県セレクト */}
@@ -452,7 +452,7 @@ export function SettingsForm() {
         </p>
 
         {deleteSuccess && (
-          <p className="mb-4 flex items-center gap-1.5 text-sm text-green-400">
+          <p className="mb-4 flex items-center gap-1.5 text-sm text-green-600 dark:text-green-400">
             <Check className="h-4 w-4" aria-hidden="true" />
             全記録を削除しました
           </p>
@@ -541,7 +541,7 @@ export function SettingsForm() {
           {/* 権限拒否 */}
           {notifPermission === "denied" && (
             <div className="mb-4 rounded-xl border border-rose-400/20 bg-rose-500/[0.05] px-4 py-3">
-              <p className="flex items-center gap-1.5 text-xs font-semibold text-rose-400">
+              <p className="flex items-center gap-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400">
                 <BellOff className="h-3.5 w-3.5" aria-hidden="true" />
                 通知がブラウザでブロックされています
               </p>
@@ -712,13 +712,13 @@ function CookieSettingsSection() {
       {consent && (
         <p className="mb-3 text-xs text-muted-foreground">
           現在の設定:{" "}
-          <span className={consent === "accepted" ? "font-semibold text-emerald-400" : "font-semibold text-foreground/60"}>
+          <span className={consent === "accepted" ? "font-semibold text-emerald-600 dark:text-emerald-400" : "font-semibold text-foreground/60"}>
             {consent === "accepted" ? "同意済み" : "拒否"}
           </span>
         </p>
       )}
       {consent === null && (
-        <p className="mb-3 text-xs text-amber-400/80">
+        <p className="mb-3 text-xs text-amber-600/80 dark:text-amber-400/80">
           まだ選択されていません。
         </p>
       )}
@@ -744,7 +744,7 @@ function CookieSettingsSection() {
       </div>
 
       {saved && (
-        <p className="mt-2 flex items-center gap-1 text-xs text-emerald-400">
+        <p className="mt-2 flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
           <Check className="h-3.5 w-3.5" aria-hidden="true" />
           保存しました
         </p>
