@@ -149,7 +149,7 @@ export function PersonalPressureInsight({ currentDelta }: PersonalPressureInsigh
         {/* アドバイス */}
         <p className="text-xs text-muted-foreground leading-relaxed">
           {isSensitive
-            ? "今日のような気圧急落の日は、早めに就寝・カフェイン控えめ・入浴でケアを。"
+            ? "今日のような気圧急落の日は、早めに就寝・カフェイン控えめ・入浴でケアを"
             : "気圧変化の影響は人それぞれ。記録を続けることで傾向がより明確になります。"}
         </p>
       </div>

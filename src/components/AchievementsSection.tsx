@@ -106,7 +106,7 @@ function shareAchievements(earnedCount: number, statuses: ReturnType<typeof calc
   const text = [
     `SleepForecastで${earnedCount}個のバッジを獲得しました！ 🏆`,
     badgeEmojis ? `最近の実績: ${badgeEmojis}` : "",
-    "気象と睡眠の相関を記録して、自分だけの予報を作ろう。",
+    "気象と睡眠の相関を記録して、自分だけの予報を作ろう",
     "#気象病 #低気圧 #睡眠記録",
     "https://sleep-forecast.vercel.app",
   ].filter(Boolean).join("\n");
@@ -160,11 +160,13 @@ export function AchievementsSection({ records }: AchievementsSectionProps) {
             <button
               key={key}
               onClick={() => setActiveCategory(key)}
-              className="text-[11px] px-2.5 py-1 rounded-full font-medium transition-colors"
+              className={`text-[11px] px-2.5 py-1 rounded-full font-medium transition-colors ${
+                isActive ? "" : "bg-muted text-muted-foreground"
+              }`}
               style={
                 isActive
                   ? { background: "rgba(99,102,241,0.25)", color: "#a5b4fc" }
-                  : { background: "rgba(255,255,255,0.06)", color: "#a8b0c2" }
+                  : undefined
               }
             >
               {label}

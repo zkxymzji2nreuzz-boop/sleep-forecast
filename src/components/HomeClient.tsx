@@ -282,7 +282,7 @@ export function HomeClient() {
               {
                 step: "03",
                 title: "ダッシュボードで傾向を把握",
-                desc: "気圧・気温・月齢との相関グラフで、眠れない夜の原因が分かります。",
+                desc: "気圧・気温・月齢との相関グラフで、眠れない夜の原因が分かります",
                 href: "/dashboard",
               },
             ].map(({ step, title, desc, href }) => (

@@ -179,7 +179,7 @@ export default function DashboardPage() {
             過去 30 日の記録から、気象と睡眠品質の関係を分析します。
           </p>
         </header>
-        <div className="flex flex-col items-center justify-center gap-6 rounded-xl border border-gray-700/50 bg-card px-6 py-16 text-center">
+        <div className="flex flex-col items-center justify-center gap-6 rounded-xl border border-border bg-card px-6 py-16 text-center">
           <Moon className="h-12 w-12 text-primary opacity-60" aria-hidden />
           <div>
             <h2 className="text-lg font-semibold text-foreground">まだ記録がありません</h2>
@@ -395,14 +395,13 @@ type KpiCardProps = {
 
 function KpiCard({ icon, label, value, subtitle, small }: KpiCardProps) {
   return (
-    // B案: グラデーション背景 + ホバー時 violet ボーダー
-    <div className="flex flex-col gap-2 rounded-xl border border-gray-700/50 bg-gradient-to-br from-gray-900 to-[#161a24] p-4 shadow-md transition-all duration-200 hover:border-primary/15 hover:shadow-lg">
-      <div className="flex items-center gap-2 text-gray-400">
+    <div className="flex flex-col gap-2 rounded-xl border border-border bg-card p-4 shadow-sm transition-all duration-200 hover:border-primary/30 hover:shadow-md">
+      <div className="flex items-center gap-2 text-muted-foreground">
         <span className="text-primary">{icon}</span>
         <span className="text-xs font-medium">{label}</span>
       </div>
       <p
-        className={`font-bold tabular-nums text-gray-100 ${
+        className={`font-bold tabular-nums text-foreground ${
           small ? "text-xl" : "text-3xl"
         }`}
       >

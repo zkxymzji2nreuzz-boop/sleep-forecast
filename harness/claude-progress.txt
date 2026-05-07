@@ -1,4 +1,64 @@
 ================================================================
+
+[2026-05-07] Cowork - フルリデザイン "Twilight Lavender" 完了 (commit 18cbe9f)
+
+## 作業概要
+Pattern ③「Twilight Lavender」に基づくフルリデザインを実施。
+ライト/ダーク両対応、WCAG 2.1 AA 準拠、30-50代女性ターゲット向け配色。
+
+## 実施内容
+
+### 設計フェーズ（打合せ → 要件定義）
+- ライト/ダークモード: OS/ブラウザ prefers-color-scheme 自動追従 + localStorage 手動オーバーライド
+- ThemeToggle をヘッダー右側に配置（☀️/🌙 アイコン）
+- harness/design-requirements.md に全仕様を記録
+
+### Phase 1: globals.css リライト
+- :root（ライト）+ .dark（ダーク）を HSL トークンで定義
+  - ライト: bg #FBF9FC / primary #6B5BA8
+  - ダーク: bg #15121F / primary #A599D6
+- FOUC 防止インラインスクリプトを layout.tsx に追加
+- suppressHydrationWarning を <html> に追加
+
+### Phase 2: ThemeProvider / ThemeToggle 新規作成
+- src/components/ThemeProvider.tsx（新規）: Context + localStorage 管理
+- src/components/ThemeToggle.tsx（新規）: 40×40px タップターゲット、ヘッダー右側
+- src/app/layout.tsx 更新: FOUC スクリプト / ThemeProvider ラップ / viewport.themeColor 配列
+
+### Phase 3: 共通コンポーネント CSS 変数化
+- Header.tsx: ThemeToggle 追加 / bg-background/90 backdrop-blur / text-primary 活性状態
+- Footer.tsx: bg-background / text-muted-foreground / hover:text-foreground
+- BottomNav.tsx: 全色 CSS 変数化 / FAB = bg-primary text-primary-foreground
+
+### Phase 4: カード・機能コンポーネント CSS 変数化（12ファイル一括）
+- PredictionCard.tsx: Oura Ring 方式スコア別グラデーション（5段階）
+- WeeklyInsightCard.tsx: bg-card border-border / bg-secondary/40
+- WeeklyRiskForecast.tsx: dark: プレフィックスで light/dark 両対応
+- ContinuousRecordBadge.tsx: text-background / text-foreground
+- PersonalPressureInsight, AchievementsSection, AccountSection, SettingsForm,
+  ArticleLayout, dashboard/page, privacy/page, about/page, contact/page,
+  settings/page, record/page, articles/page: ハードコード HEX → CSS 変数クラス
+
+### Phase 5: 検証（全確認完了）
+- npx tsc --noEmit: エラー 0 件 ✅
+- git push: [main 18cbe9f] 40ファイル変更, 1230 insertions, 888 deletions ✅
+- Vercel デプロイ: Ready ✅
+- ダーク: #15121F 背景 + ラベンダーアクセント ✅
+- ThemeToggle でライト切替: #FBF9FC 背景 + ラベンダーカード ✅
+- PredictionCard スコア別グラデーション（score 1.0 → rose/red）✅
+- ナビゲーション活性状態 text-primary（ラベンダー）✅
+- テーマ ページ遷移後も持続 ✅
+
+## 未対応（低優先度）
+- WeatherWidget.tsx: inline style `color: "#a8b0c2"` が残存（ライトモード時に暗めになる）
+  → 機能影響なし、次セッションで随時対応可
+
+## 次セッションへの申し送り
+- T-07: アフィリエイトリンク設置（楽天/もしも / 枕・アロマ・漢方）未着手・Claude 対応可能
+- T-05, T-06, T-09: 人間主体タスク継続
+- T-08 / T-10 / T-11: 日次アウトリーチ継続
+
+================================================================
 SleepForecast - Claude Progress Log
 ================================================================
 このファイルは Planner / Generator / Evaluator の 3 エージェントが

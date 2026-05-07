@@ -451,7 +451,7 @@ export function RecordForm(): JSX.Element {
                   7日分のデータが揃いました！
                 </p>
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                  ダッシュボードで気圧・月齢との相関グラフが見られるようになりました。
+                  ダッシュボードで気圧・月齢との相関グラフが見られるようになりました
                 </p>
                 {showFreezeEarned && (
                   <p className="mt-2 flex items-center justify-center gap-1 text-xs font-semibold text-amber-300">

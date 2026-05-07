@@ -106,11 +106,11 @@ export function PwaInstallPrompt() {
             <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
               Safariの共有ボタン（
               <span className="font-mono text-primary/80">⬆</span>
-              ）→「ホーム画面に追加」でアプリとして使えます。
+              ）→「ホーム画面に追加」でアプリとして使えます
             </p>
           ) : (
             <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
-              インストールするとオフラインでも閲覧でき、通知も確実に届きます。
+              インストールするとオフラインでも閲覧でき、通知も確実に届きます
             </p>
           )}
           {!showIosHint && (

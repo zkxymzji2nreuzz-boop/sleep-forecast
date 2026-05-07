@@ -158,7 +158,7 @@ export function WeeklyRiskForecast({
         <span className="shrink-0 text-[9px] text-muted-foreground/50">Open-Meteo</span>
       </div>
       <p className="mb-4 text-[11px] leading-relaxed text-muted-foreground">
-        天気予報じゃなく、「あなたの体調予報」です。
+        天気予報じゃなく、「あなたの体調予報」です
       </p>
 
       {/* 7日間バーグリッド */}
@@ -232,7 +232,7 @@ export function WeeklyRiskForecast({
           気象データから算出した参考予報です。医療行為ではなく、体調管理の目安としてご活用ください。
         </p>
         <p className="mt-1 text-[10px] leading-relaxed text-muted-foreground/60">
-          それでも、気圧の変化を知っておくことは、明日のあなたへの小さな備えになります。
+          それでも、気圧の変化を知っておくことは、明日のあなたへの小さな備えになります
         </p>
       </div>
 
@@ -240,7 +240,7 @@ export function WeeklyRiskForecast({
       {recordCount < 7 && (
         <div className="rounded-xl border border-primary/15 bg-primary/[0.07] px-4 py-3">
           <p className="mb-2 text-xs font-medium text-foreground">
-            今は「みんなの予報」。育てると「あなたの予報」に。
+            今は「みんなの予報」、育てると「あなたの予報」に
           </p>
 
           <div className="mb-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">

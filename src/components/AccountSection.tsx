@@ -93,7 +93,7 @@ export function AccountSection() {
               データはこの端末にのみ保存されています
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              メールアドレスを登録すると、複数端末でデータを同期・引き継ぎできます。
+              メールアドレスを登録すると、複数端末でデータを同期・引き継ぎできます
             </p>
           </div>
 
@@ -138,7 +138,7 @@ export function AccountSection() {
                 </p>
               )}
               <p className="text-xs text-muted-foreground">
-                確認メールのリンクをクリックするだけで登録完了。
+                確認メールのリンクをクリックするだけで登録完了
               </p>
             </div>
           ) : (
@@ -148,7 +148,7 @@ export function AccountSection() {
                 確認メールを送信しました
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                {email} のメールに届いたリンクをクリックして登録を完了してください。
+                {email} のメールに届いたリンクをクリックして登録を完了してください
               </p>
             </div>
           )}
@@ -169,7 +169,7 @@ export function AccountSection() {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            別の端末で記録したデータをこの端末に取り込む場合は、クラウドから同期してください。
+            別の端末で記録したデータをこの端末に取り込む場合は、クラウドから同期してください
           </p>
 
           <button
