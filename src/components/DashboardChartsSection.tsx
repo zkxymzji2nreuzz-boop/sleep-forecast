@@ -223,8 +223,7 @@ function buildLineOptions(): ChartOptions<"line"> {
             const QUALITY_FULL: Record<number, string> = {
               1: "眠れなかった", 3: "なんとか眠れた", 5: "よく眠れた",
             };
-            const label = QUALITY_FULL[q] ?? `品質 ${q}`;
-            return `品質: ${label} (${ctx.parsed.y.toFixed(1)})`;
+            return `品質: ${QUALITY_FULL[q] ?? q}`;
           },
         },
       },
