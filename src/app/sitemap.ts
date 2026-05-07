@@ -10,12 +10,15 @@ const BASE_URL = "https://sleep-forecast.vercel.app";
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [
-    { url: BASE_URL,                     lastModified: new Date("2026-04-29"), changeFrequency: "weekly",   priority: 1.0 },
-    { url: `${BASE_URL}/record`,         lastModified: new Date("2026-04-29"), changeFrequency: "monthly",  priority: 0.8 },
-    { url: `${BASE_URL}/dashboard`,      lastModified: new Date("2026-04-29"), changeFrequency: "monthly",  priority: 0.8 },
-    { url: `${BASE_URL}/articles`,       lastModified: new Date("2026-04-29"), changeFrequency: "weekly",   priority: 0.7 },
-    { url: `${BASE_URL}/settings`,       lastModified: new Date("2026-04-29"), changeFrequency: "yearly",   priority: 0.4 },
-    { url: `${BASE_URL}/privacy`,        lastModified: new Date("2026-04-01"), changeFrequency: "yearly",   priority: 0.3 },
+    { url: BASE_URL,                     lastModified: new Date("2026-05-08"), changeFrequency: "weekly",   priority: 1.0 },
+    { url: `${BASE_URL}/record`,         lastModified: new Date("2026-05-08"), changeFrequency: "monthly",  priority: 0.8 },
+    { url: `${BASE_URL}/dashboard`,      lastModified: new Date("2026-05-08"), changeFrequency: "monthly",  priority: 0.8 },
+    { url: `${BASE_URL}/articles`,       lastModified: new Date("2026-05-08"), changeFrequency: "weekly",   priority: 0.7 },
+    { url: `${BASE_URL}/about`,          lastModified: new Date("2026-05-08"), changeFrequency: "monthly",  priority: 0.6 },
+    { url: `${BASE_URL}/settings`,       lastModified: new Date("2026-05-08"), changeFrequency: "yearly",   priority: 0.4 },
+    { url: `${BASE_URL}/privacy`,        lastModified: new Date("2026-05-08"), changeFrequency: "yearly",   priority: 0.3 },
+    { url: `${BASE_URL}/terms`,          lastModified: new Date("2026-05-08"), changeFrequency: "yearly",   priority: 0.3 },
+    { url: `${BASE_URL}/contact`,        lastModified: new Date("2026-05-08"), changeFrequency: "yearly",   priority: 0.3 },
   ];
 
   let articlePages: MetadataRoute.Sitemap = [];
