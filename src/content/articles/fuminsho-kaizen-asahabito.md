@@ -9,6 +9,8 @@ tags: ["不眠", "睡眠改善", "朝の習慣", "体内時計", "自律神経",
 relatedSlugs: ["jiritsu-shinkei", "suimin-shitsu-up", "kiatsu-nemurenaie"]
 wordCount: 2300
 ---
+> **PR（広告表記）：** 本記事には楽天アフィリエイトリンクが含まれます。商品を購入された場合、当サイトに少額の報酬が入ることがありますが、記事内容・推薦基準への影響はありません。
+
 
 「寝つきが悪い」「夜中に目が覚める」「朝起きても疲れが取れない」——こんな不眠の悩みを抱えている人は多くいます。でも、多くの人が「夜に何とかしよう」と考えてしまいがちです。
 
@@ -84,6 +86,14 @@ wordCount: 2300
 これは「グラティチュード実践（感謝の習慣）」として、睡眠研究でも一定の効果が確認されています。
 
 ## 夜にやってはいけないことを「朝から決める」
+**おすすめのアイテム（PR）**
+
+<a href="https://hb.afl.rakuten.co.jp/ichiba/538f8699.eb9eda0e.538f869a.e5e92a11/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fl-plus%2F7147369%2F" rel="nofollow sponsored noopener" target="_blank">▶ 花王 めぐりズム 蒸気でホットアイマスク 12枚入 — 楽天で見る</a>（就寝前のリラックスに）
+
+**気になる方はこちら（PR）**
+
+<a href="https://hb.afl.rakuten.co.jp/ichiba/538f8699.eb9eda0e.538f869a.e5e92a11/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fproe-shop%2Fs1%2F" rel="nofollow sponsored noopener" target="_blank">▶ 睡眠サプリ GABA・グリシン・テアニン配合 30日分 — 楽天で見る</a>（栄養機能食品・日本製）
+
 
 良い朝習慣と並行して、夜の行動を事前にルール化しておくことが重要です。
 
