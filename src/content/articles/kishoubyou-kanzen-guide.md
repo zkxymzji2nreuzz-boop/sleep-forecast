@@ -167,9 +167,6 @@ wordCount: 5500
 **楽天で購入できる五苓散（PR）**
 
 [▶ てんぐ五苓散（顆粒）1.6g×30包 ¥1,800 — 楽天で見る](https://hb.afl.rakuten.co.jp/ichiba/538f8699.eb9eda0e.538f869a.e5e92a11/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbenkyo%2F4987397006296mail%2F)（第2類医薬品）
-
-**楽天で購入できる五苓散（PR）**
-
 [▶ てんぐ五苓散（顆粒）1.6g×30包 ¥1,800 — 楽天で見る](https://hb.afl.rakuten.co.jp/ichiba/538f8699.eb9eda0e.538f869a.e5e92a11/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbenkyo%2F4987397006296mail%2F)（第2類医薬品）
 （ごれいさん）の活用
 
