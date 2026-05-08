@@ -77,7 +77,11 @@ wordCount: 2400
 ### ④ 室温・湿度を「眠れる環境」に整える
 **おすすめのアイテム（PR）**
 
-<a href="https://hb.afl.rakuten.co.jp/ichiba/538f8699.eb9eda0e.538f869a.e5e92a11/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fl-plus%2F7147369%2F" rel="nofollow sponsored noopener" target="_blank">▶ 花王 めぐりズム 蒸気でホットアイマスク 12枚入 — 楽天で見る</a>（就寝前のリラックスに）
+[▶ 花王 めぐりズム 蒸気でホットアイマスク 12枚入 — 楽天で見る](https://hb.afl.rakuten.co.jp/ichiba/538f8699.eb9eda0e.538f869a.e5e92a11/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fl-plus%2F7147369%2F)（就寝前のリラックスに）
+
+**おすすめのアイテム（PR）**
+
+[▶ 花王 めぐりズム 蒸気でホットアイマスク 12枚入 — 楽天で見る](https://hb.afl.rakuten.co.jp/ichiba/538f8699.eb9eda0e.538f869a.e5e92a11/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fl-plus%2F7147369%2F)（就寝前のリラックスに）
 
 
 低気圧の日は外の気温や湿度も変化しやすく、室内環境も乱れがちです。眠りやすい室内の目安は次のとおりです。
