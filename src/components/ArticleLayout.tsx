@@ -204,6 +204,17 @@ export function ArticleLayout({ article, related, dataBadge }: Props) {
         </p>
 
         <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3 text-xs text-muted-foreground">
+          {/* 著者バイライン */}
+          <span className="inline-flex items-center gap-1.5">
+            <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />
+            <span>著者：</span>
+            <a
+              href="/about"
+              className="font-medium text-foreground/80 underline decoration-primary/30 underline-offset-4 transition-colors hover:decoration-primary/70"
+            >
+              辻要
+            </a>
+          </span>
           {article.tags.length > 0 && (
             <span className="inline-flex flex-wrap items-center gap-1.5">
               <Tag className="h-3.5 w-3.5" aria-hidden="true" />

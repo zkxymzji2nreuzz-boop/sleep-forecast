@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Moon, Info, Database, Shield, BookOpen, ExternalLink } from "lucide-react";
+import { Moon, Info, Database, Shield, BookOpen, ExternalLink, User } from "lucide-react";
 import { Breadcrumb } from "@/components/Breadcrumb";
 
 const SITE_URL =
@@ -8,7 +8,7 @@ const SITE_URL =
 export const metadata: Metadata = {
   title: "運営者情報",
   description:
-    "SleepForecastの運営者情報・開発ストーリー・データソース・お問い合わせ先をご案内します。",
+    "SleepForecastの運営者・辻要のプロフィール、開発ストーリー、データソース、お問い合わせ先をご案内します。",
   alternates: { canonical: `${SITE_URL}/about` },
 };
 
@@ -16,9 +16,12 @@ export const metadata: Metadata = {
 const personJsonLd = {
   "@context": "https://schema.org",
   "@type": "Person",
-  name: "SleepForecast 運営者",
-  url: SITE_URL,
-  sameAs: ["https://twitter.com/Sleep_Forecast"],
+  name: "辻要",
+  url: `${SITE_URL}/about`,
+  sameAs: [
+    "https://twitter.com/Sleep_Forecast",
+    "https://note.com/sleep_forecast",
+  ],
   knowsAbout: [
     "気象病",
     "低気圧頭痛",
@@ -26,9 +29,10 @@ const personJsonLd = {
     "自律神経",
     "気圧と健康",
     "ヘルスケアアプリ開発",
+    "Webアプリケーション開発",
   ],
   description:
-    "気象病・低気圧による体調不良に悩む家族のために、睡眠と気象データの相関分析 Web アプリ SleepForecast を個人開発・運営しています。",
+    "ITエンジニア。気象病に悩む家族のために、睡眠と気象データの相関分析 Web アプリ SleepForecast を個人開発・運営。",
 };
 
 /** WebSite 構造化データ */
@@ -42,8 +46,8 @@ const webSiteJsonLd = {
   inLanguage: "ja",
   publisher: {
     "@type": "Person",
-    name: "SleepForecast 運営者",
-    url: SITE_URL,
+    name: "辻要",
+    url: `${SITE_URL}/about`,
   },
 };
 
@@ -72,6 +76,9 @@ export default function AboutPage() {
         <h1 className="text-center text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
           運営者情報
         </h1>
+        <p className="mt-2 text-center text-sm text-muted-foreground">
+          SleepForecast 開発者・辻要について
+        </p>
         <div className="mt-6 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
       </div>
 
@@ -79,13 +86,73 @@ export default function AboutPage() {
 
       <div className="space-y-10 text-sm leading-[1.85] text-foreground/85">
 
-        {/* SleepForecast について */}
-        <section className="rounded-2xl border border-border bg-card/50 p-5 sm:p-6">
-          <h2 className="mb-4 border-l-[3px] border-primary/70 pl-4 text-lg font-bold text-foreground leading-snug">
+        {/* 著者プロフィール */}
+        <section className="rounded-3xl border border-primary/15 bg-gradient-to-br from-primary/[0.08] via-primary/[0.04] to-transparent p-6 sm:p-8">
+          <h2 className="mb-5 flex items-center gap-2 border-l-[3px] border-primary/70 pl-4 text-lg font-bold text-foreground leading-snug">
+            <User className="h-5 w-5 text-primary/70" aria-hidden="true" />
+            著者プロフィール
+          </h2>
+          <div className="flex items-start gap-5">
+            {/* アバタープレースホルダー */}
+            <div
+              aria-hidden="true"
+              className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/30 to-primary/15 text-2xl font-bold text-primary/60"
+            >
+              辻
+            </div>
+            <div className="min-w-0">
+              <p className="text-base font-bold text-foreground">辻 要（つじ かなめ）</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">ITエンジニア / SleepForecast 開発者</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <a
+                  href="https://twitter.com/Sleep_Forecast"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 rounded-full border border-border bg-card/60 px-3 py-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                  X @Sleep_Forecast
+                </a>
+                <a
+                  href="https://note.com/sleep_forecast"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 rounded-full border border-border bg-card/60 px-3 py-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                  note
+                </a>
+              </div>
+            </div>
+          </div>
+          <div className="mt-5 space-y-3 text-sm leading-[1.85]">
+            <p>
+              ITエンジニアとして Web サービスの開発に携わる傍ら、家族の「気象病」をきっかけに
+              SleepForecast を個人開発しました。低気圧や台風が近づくたびに頭痛や不眠に悩まされる
+              家族の様子を見て、「明日は眠れるだろうか」という不安を数字で見える化できないか、
+              と考えたのが出発点です。
+            </p>
+            <p>
+              既存の気象病アプリは「今日は注意」という通知が中心でしたが、それでは後手の対応しか
+              できません。個人の過去データと気象データの相関を分析して、自分だけの「眠りの天気予報」
+              を前日に届けるサービスを作りたいと思い、2024年に開発を開始しました。
+            </p>
+            <p>
+              エンジニアとして培ったデータ分析・アルゴリズム設計の知識を活かしつつ、
+              医療・健康情報の正確な取り扱いには細心の注意を払っています。
+              気象病は医学的に認知された疾患概念であり、本サービスはその実態に基づいた設計をしています。
+            </p>
+          </div>
+        </section>
+
+        {/* 開発ストーリー */}
+        <section className="rounded-3xl border border-border bg-gradient-to-br from-primary/[0.06] via-primary/[0.03] to-transparent p-6 sm:p-8">
+          <h2 className="mb-4 flex items-center gap-2 border-l-[3px] border-primary/70 pl-4 text-lg font-bold text-foreground leading-snug">
+            <Moon className="h-5 w-5 text-primary/70" aria-hidden="true" />
             SleepForecast について
           </h2>
           <p>
-            SleepForecastは、気温・湿度・気圧・月齢などの気象データと
+            SleepForecast は、気温・湿度・気圧・月齢などの気象データと
             日々の睡眠記録を組み合わせて「明日の眠気レベル」を予測する、ウェアラブル不要の
             ヘルスケア Web アプリです。
           </p>
@@ -94,27 +161,20 @@ export default function AboutPage() {
             気象があなたの眠りにどう影響しているかを見える化します。
             個人差が大きい気象病の症状を「自分のデータ」で把握できることが、本サービス最大の特徴です。
           </p>
-        </section>
-
-        {/* 開発ストーリー */}
-        <section className="rounded-3xl border border-border bg-gradient-to-br from-primary/[0.06] via-primary/[0.03] to-transparent p-6 sm:p-8">
-          <h2 className="mb-4 flex items-center gap-2 border-l-[3px] border-primary/70 pl-4 text-lg font-bold text-foreground leading-snug">
-            <Moon className="h-5 w-5 text-primary/70" aria-hidden="true" />
-            開発ストーリー
-          </h2>
-          <p>
-            開発者の家族に、低気圧や台風が近づくと頭痛や不眠に悩まされる「気象病」を抱えている
-            人がいます。「明日は眠れるだろうか」という不安を少しでも和らげたい
-            ── そんな思いから SleepForecast は生まれました。
-          </p>
-          <p className="mt-3">
-            既存の気象病対策アプリは通知が中心ですが、SleepForecast は個人の過去データと
-            気象データの相関分析を行い、自分だけの「眠りの天気予報」を提供します。
-            誰もが自分の体調パターンを理解し、前もって備えられる世界を目指しています。
-          </p>
           <p className="mt-3">
             2024年の開発開始から、実際に気象病に悩む方々のフィードバックをもとに改善を続けています。
-            気象病は医学的に認知された疾患概念であり、本サービスはその実態に基づいた設計をしています。
+            誰もが自分の体調パターンを理解し、前もって備えられる世界を目指しています。
+          </p>
+        </section>
+
+        {/* 監修者スロット（将来の専門家監修用） */}
+        <section className="rounded-2xl border border-dashed border-border bg-card/30 p-5 sm:p-6">
+          <h2 className="mb-3 border-l-[3px] border-primary/40 pl-4 text-base font-bold text-foreground leading-snug">
+            専門家監修（準備中）
+          </h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            より正確・信頼性の高い情報をお届けするため、睡眠専門医または薬剤師による記事監修の導入を
+            準備しています。監修者が決まり次第、こちらにプロフィールを掲載します。
           </p>
         </section>
 
@@ -126,7 +186,7 @@ export default function AboutPage() {
           <dl className="space-y-3">
             <div className="flex gap-4">
               <dt className="w-28 shrink-0 font-medium text-muted-foreground">運営者名</dt>
-              <dd>SleepForecast 運営者</dd>
+              <dd>辻 要（辻要）</dd>
             </div>
             <div className="flex gap-4">
               <dt className="w-28 shrink-0 font-medium text-muted-foreground">サービス名</dt>
@@ -146,6 +206,20 @@ export default function AboutPage() {
                   className="inline-flex items-center gap-1 text-primary/80 underline decoration-primary/40 underline-offset-4 transition-colors hover:decoration-primary/80"
                 >
                   @Sleep_Forecast
+                  <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                </a>
+              </dd>
+            </div>
+            <div className="flex gap-4">
+              <dt className="w-28 shrink-0 font-medium text-muted-foreground">note</dt>
+              <dd>
+                <a
+                  href="https://note.com/sleep_forecast"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-primary/80 underline decoration-primary/40 underline-offset-4 transition-colors hover:decoration-primary/80"
+                >
+                  note.com/sleep_forecast
                   <ExternalLink className="h-3 w-3" aria-hidden="true" />
                 </a>
               </dd>

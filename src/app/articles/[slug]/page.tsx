@@ -113,9 +113,12 @@ export default async function ArticlePage({ params }: Params) {
     },
     author: {
       "@type": "Person",
-      name: "SleepForecast 運営者",
-      url: SITE_URL,
-      sameAs: ["https://twitter.com/Sleep_Forecast"],
+      name: "辻要",
+      url: `${SITE_URL}/about`,
+      sameAs: [
+        "https://twitter.com/Sleep_Forecast",
+        "https://note.com/sleep_forecast",
+      ],
     },
     publisher: {
       "@type": "Organization",
