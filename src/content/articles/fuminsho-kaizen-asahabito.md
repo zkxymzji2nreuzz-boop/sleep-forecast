@@ -90,9 +90,9 @@ wordCount: 2300
 
 [▶ 花王 めぐりズム 蒸気でホットアイマスク 12枚入 — 楽天で見る](https://hb.afl.rakuten.co.jp/ichiba/538f8699.eb9eda0e.538f869a.e5e92a11/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fl-plus%2F7147369%2F)（就寝前のリラックスに）
 
-**気になる方はこちら（PR）**
+**おすすめのアイテム（PR）**
 
-[▶ 睡眠サプリ GABA・グリシン・テアニン配合 30日分 — 楽天で見る](https://hb.afl.rakuten.co.jp/ichiba/538f8699.eb9eda0e.538f869a.e5e92a11/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fproe-shop%2Fs1%2F)（栄養機能食品・日本製）
+[▶ 睡眠サプリ GABA・テアニン配合（PROE）— 楽天で見る](https://hb.afl.rakuten.co.jp/ichiba/538f8699.eb9eda0e.538f869a.e5e92a11/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fproe-shop%2Fs1%2F)（睡眠の質を整えたい方に）
 
 良い朝習慣と並行して、夜の行動を事前にルール化しておくことが重要です。
 
