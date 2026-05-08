@@ -185,7 +185,7 @@ export default function PrivacyPage() {
             </li>
             <li className="flex items-start gap-2">
               <span className="mt-0.5 text-primary" aria-hidden="true">•</span>
-              <span><strong className="text-foreground">楽天アフィリエイト</strong>（アフィリエイト広告）— 本サービスは楽天株式会社のアフィリエイトプログラムに参加しています。記事内の一部リンクを経由して商品を購入された場合、当サイトに報酬が発生することがあります。購入者側の費用は一切変わりません。</span>
+              <span><strong className="text-foreground">楽天アフィリエイト</strong>（アフィリエイト広告）— 本サービスは楽天グループ株式会社のアフィリエイトプログラムに参加しています。記事内の一部リンクを経由して商品を購入された場合、当サイトに報酬が発生することがあります。購入者側の費用は一切変わりません。</span>
             </li>
           </ul>
         </section>
