@@ -23,7 +23,7 @@ export default function PrivacyPage() {
         <h1 className="text-center text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
           プライバシーポリシー
         </h1>
-        <p className="mt-2 text-center text-xs text-muted-foreground">最終更新日：2026年5月1日</p>
+        <p className="mt-2 text-center text-xs text-muted-foreground">最終更新日：2026年5月8日</p>
         <div className="mt-6 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
       </div>
 
@@ -182,6 +182,10 @@ export default function PrivacyPage() {
             <li className="flex items-start gap-2">
               <span className="mt-0.5 text-primary" aria-hidden="true">•</span>
               <span><strong className="text-foreground">Supabase</strong>（クラウドDB・認証）— クラウド同期機能をご利用の場合のみ。米国 AWS 上でデータを保管</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-0.5 text-primary" aria-hidden="true">•</span>
+              <span><strong className="text-foreground">楽天アフィリエイト</strong>（アフィリエイト広告）— 本サービスは楽天株式会社のアフィリエイトプログラムに参加しています。記事内の一部リンクを経由して商品を購入された場合、当サイトに報酬が発生することがあります。購入者側の費用は一切変わりません。</span>
             </li>
           </ul>
         </section>
