@@ -10,6 +10,8 @@ relatedSlugs: ["fuminshou-sign", "suimin-shitsu-up", "blue-light"]
 wordCount: 2300
 ---
 
+> **PR（広告表記）：** 本記事には楽天アフィリエイトリンクが含まれます。商品を購入された場合、当サイトに少額の報酬が入ることがありますが、記事内容・推薦基準への影響はありません。
+
 平日は5時間睡眠。週末に10時間寝て取り戻す。——なのに月曜の朝が一週間で一番しんどい。
 
 この矛盾に気づいたことがある人は、すでに睡眠負債の当事者です。
@@ -80,6 +82,10 @@ wordCount: 2300
 
 **5. 睡眠環境を整える**
 温度・湿度・光・音の4要素を見直す。[睡眠の質を上げる7つの習慣](/articles/suimin-shitsu-up)も参考に。
+
+**おすすめのアイテム（PR）**
+
+[▶ GOKUMIN ホテルスタイルピロー 高反発枕（横向き対応・丸洗い可）— 楽天で見る](https://hb.afl.rakuten.co.jp/ichiba/538f8699.eb9eda0e.538f869a.e5e92a11/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fgokumin%2Fhsp-wata-01%2F)（快眠環境づくりに）
 
 ## 記録で「見える化」する
 
