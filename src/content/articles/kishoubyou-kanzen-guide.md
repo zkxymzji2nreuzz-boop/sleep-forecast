@@ -167,7 +167,6 @@ wordCount: 5500
 **楽天で購入できる五苓散（PR）**
 
 [▶ てんぐ五苓散（顆粒）1.6g×30包 ¥1,800 — 楽天で見る](https://hb.afl.rakuten.co.jp/ichiba/538f8699.eb9eda0e.538f869a.e5e92a11/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbenkyo%2F4987397006296mail%2F)（第2類医薬品）
-[▶ てんぐ五苓散（顆粒）1.6g×30包 ¥1,800 — 楽天で見る](https://hb.afl.rakuten.co.jp/ichiba/538f8699.eb9eda0e.538f869a.e5e92a11/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbenkyo%2F4987397006296mail%2F)（第2類医薬品）
 （ごれいさん）の活用
 
 漢方薬の「五苓散（ごれいさん）」は、体内の水分バランスを整える処方として、天気痛・めまい・頭痛に有効であることが複数の研究で示されています。佐藤純教授らの研究グループも、五苓散が気象病の症状軽減に有効である可能性を報告しています。
